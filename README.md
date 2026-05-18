@@ -1,186 +1,82 @@
-# Mono LCD Spectral Prototype
+# LCD_forward — thesis modelling and reconstruction backend
 
-This repository contains a prototype pipeline for mono-LCD-based programmable diffractive imaging.
+LCD_forward is the modelling and reconstruction backend for the mono-LCD programmable diffraction imaging thesis loop. It consumes measured HDF5 exports from `optic_system` and performs forward validation, rendering, and minimal reconstruction. Hardware control remains in `optic_system`.
 
-Current scope:
-- mono LCD only
-- low-dimensional effective forward model
-- mask -> PSF learning
-- PSF + object -> frame rendering
-- frame -> multispectral / multichannel reconstruction
+## Project identity
 
-Out of scope for the current prototype:
-- RGB LCD
-- hardware control
-- camera ISP
-- device synchronization
-- full calibration automation
-- full first-principles optical simulation
+This is a **thesis-closure project**, not a long-term research platform.
 
-## Physical assumptions
+Goal: validate that a mono LCD can act as a stable, programmable diffraction encoder whose mask-dependent PSFs can be measured, modelled at a simple level, and used in a minimal multiframe / multichannel reconstruction loop.
 
-The current prototype assumes:
-- mono LCD
-- non-coherent imaging
-- paraxial approximation
-- far-field approximation
-- discrete wavelength bins
-- low-dimensional effective forward model
+Non-goals:
 
-These assumptions are part of the prototype definition and should not be changed implicitly.
+- SOTA performance or optimal reconstruction quality
+- learned mask / end-to-end optimal design
+- full first-principles optical modelling
+- complete complex pupil reconstruction
+- long-term generality or reusable experimental platform
 
-## Repository structure
-
-```text
-src/
-  datasets/     HDF5 datasets
-  forward/      forward models and renderer
-  recon/        reconstruction baseline
-  losses/       forward/recon losses and metrics
-  train/        train / validation loops
-  utils/        seed and utility functions
-
-scripts/
-  prepare_sample_dataset.py
-  train_forward.py
-  train_recon.py
-  eval_forward.py
-  eval_recon.py
-  smoke_test.py
-
-tests/
-  test_shapes.py
-  test_forward_model.py
-  test_renderer.py
+## Relationship with optic_system
 
 ```
-
-## Data format
-
-Training tensors use the following conventions.
-
-Forward calibration:
-
-- masks: [N, T, 1, Hm, Wm]
-- psfs: [N, T, L, Hp, Wp]
-
-Reconstruction:
-
-- objects: [N, L, H, W]
-- frames: [N, T, 1, H, W] (optional in HDF5; may be rendered online)
-- masks: [N, T, 1, Hm, Wm]
-
-Optional metadata:
-
-- wavelengths: [L]
-- spectral_response: [L]
-
-A single .h5 file may contain both forward and reconstruction tensors.
-
-## Core interfaces
-
-Forward model:
-```pycon
-out = forward_model(masks)
-psfs = out["psfs"]
+optic_system                          LCD_forward
+-----------                          -----------
+hardware control          <--X-->     backend only
+raw capture HDF5                      reads HDF5 exports
+measured PSF dictionary  ──export──>  forward validation
+dOTF diagnostics                      rendering
+PSF ROI / pupil calib                 linear reconstruction
+                                      thesis figures
 ```
 
+LCD_forward does not control cameras, LCDs, or TLS light sources, and does not create raw capture HDF5 files.
 
-Renderer:
-```pycon
-frames = render_frames(objects, psfs, spectral_response=None, noise_std=0.0)
+## Input data
+
+Expected Phase 3.4 export from `optic_system`:
+
+```
+data/optic_system/psf_dictionary/
+    train.h5
+    val.h5
+    test.h5
 ```
 
+See `docs/data_contracts.md` for the full HDF5 format specification.
 
-Reconstruction model:
-```pycon
-out = recon_model(frames)
-objects_hat = out["objects"]
-```
+## Thesis phases
 
-## Forward models
+| Phase  | Title                                     | Owner        |
+|--------|-------------------------------------------|--------------|
+| 3.0–3.4| Hardware calibration & PSF dictionary     | optic_system |
+| 3.5    | Measured PSF forward validation           | LCD_forward  |
+| 3.6    | Minimal multiframe / multichannel reconstruction | LCD_forward  |
+| 3.7    | Thesis figures and report freeze          | LCD_forward  |
 
-Two forward-model families are currently supported.
+Current state: **thesis branch initialized**. Phase 3.5/3.6 implementation starts after `optic_system` Phase 3.4 export is available.
 
-### 1. complex_field_basis
+## Quick links
 
-Primary model.
+- First read: `docs/thesis_background.md`
+- Phase plan: `docs/bishe_plan.md`
+- Data contracts: `docs/data_contracts.md`
+- Project boundary: `docs/project_boundary.md`
+- Agent constraints: `AGENTS.md`
 
-Structure:
+## Installation
 
-- low-resolution mask encoder
-- low-dimensional complex coefficients
-- complex field basis synthesis
-- intensity projection to PSF
-
-This is the preferred route because it preserves a low-dimensional amplitude-phase coupling model without explicitly reconstructing microscopic LCD geometry.
-
-### 2. psf_basis
-
-Baseline model.
-
-Structure:
-
-- low-resolution mask encoder
-- low-dimensional coefficients
-- direct low-rank PSF synthesis
-
-This is a stable baseline and sanity-check path.
-
-## Quick start
-
-Install:
-```Bash
+```bash
 pip install -e .
 ```
 
-Generate sample data:
-```Bash
-python scripts/prepare_sample_dataset.py
+## Repository structure
+
 ```
-
-Run smoke test:
-```bash
-python scripts/smoke_test.py
+configs/       YAML configs for forward validation and linear reconstruction
+data/          HDF5 input data (not in version control)
+docs/          Thesis documentation and data contracts
+outputs/       Derived figures, metrics, and reports (not in version control)
+scripts/       Entry-point scripts
+src/           Forward models, renderer, reconstruction, datasets, utilities
+tests/         Shape and module tests
 ```
-
-Train forward model:
-```bash
-python scripts/train_forward.py
-```
-Evaluate forward model:
-```bash
-python scripts/eval_forward.py
-```
-Train reconstruction baseline:
-```bash
-python scripts/train_recon.py
-```
-Evaluate reconstruction baseline:
-
-```bash
-python scripts/eval_recon.py
-```
-
-Run tests:
-```bash
-pytest -q
-```
-
-## Current development order
-
-Recommended implementation / experimentation order:
-
-1. sample dataset generation
-2. single-wavelength single-frame forward training
-3. held-out mask generalization check
-4. renderer verification
-5. reconstruction baseline
-6. multi-wavelength extension
-7. learnable masks / multiframe coding design
-## Notes
-
-The sample dataset generator is only a synthetic placeholder for engineering validation.
-It should not be interpreted as a physically faithful mono-LCD forward simulator.
-
-Real calibrated data should be converted into the same HDF5 tensor format so that the training and evaluation stack remains unchanged.

@@ -1,0 +1,16 @@
+experiment_id: linear_recon_phase3_6
+
+data:
+  psf_dictionary_h5: data/optic_system/psf_dictionary/train.h5
+  target_mode: synthetic
+  synthetic_object_channels: 3
+  synthetic_spatial_size: [64, 64]
+
+reconstruction:
+  method: ridge
+  regularization: 1.0
+  selected_masks: auto
+  num_frames: 4
+
+output:
+  output_dir: outputs/linear_recon

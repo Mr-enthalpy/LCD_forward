@@ -8,8 +8,25 @@ __pycache__/
 .venv/
 venv/
 env/
-outputs/*
-!outputs/.gitkeep
+.codex/
+
+# IDE
 .idea/
 .DS_Store
 
+# Data files — not in version control
+data/**/*.h5
+data/**/*.npy
+
+# Output files — not in version control
+outputs/**/*.h5
+outputs/**/*.npy
+outputs/**/*.npz
+outputs/**/*.png
+outputs/**/*.pdf
+outputs/**/*.json
+outputs/**/*.md
+
+# Keep README files
+!data/**/README.md
+!outputs/**/README.md

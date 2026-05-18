@@ -1,13 +1,31 @@
-# Data Layout
+# Data directory
 
-This directory holds the sample H5 placeholders used by the prototype.
+`data/` is not a repository for large experimental HDF5 files.
 
-Expected conventions:
-- `data/sample/train.h5`
-- `data/sample/val.h5`
-- `data/sample/test.h5`
+Place `optic_system` exports here manually or point configs to their external paths.
 
-The current project skeleton keeps these files lightweight so the directory
-layout exists immediately. The synthetic dataset code in `src/datasets/h5_dataset.py`
-can also work without real HDF5 payloads.
+## Expected Phase 3.4 export
 
+```
+data/optic_system/psf_dictionary/
+    train.h5
+    val.h5
+    test.h5
+```
+
+See `docs/data_contracts.md` for the full HDF5 format specification.
+
+## Sample data (from original prototype)
+
+```
+data/sample/
+    train.h5
+    val.h5
+    test.h5
+```
+
+These are synthetic placeholders from the original prototype. They should not be interpreted as physically faithful mono-LCD forward simulations.
+
+## Data not in version control
+
+All `*.h5` and `*.npy` files under `data/` are git-ignored. Only `README.md` files are tracked.
