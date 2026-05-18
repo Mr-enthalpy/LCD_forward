@@ -68,10 +68,6 @@ $ python scripts/aggregate_bishe_figures.py --config configs/bishe_figures.yaml
 
 Collects figures from all source phases into `outputs/bishe_figures/` and generates `figure_manifest.json`.
 
-## Script naming convention
-
-All Phase 3.5/3.6 scripts should be `scripts/phase35_*.py` or `scripts/phase36_*.py` to clearly distinguish them from the original prototype scripts.
-
 ## Configuration
 
 All scripts should accept a `--config` argument pointing to a YAML file in `configs/`. Shared parameters (data paths, model parameters, output directories) live in the config; script-specific parameters may be overridden via command-line flags.

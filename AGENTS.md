@@ -54,14 +54,14 @@ Optional metadata:
 
 The sample and training format is HDF5.
 
-## Forward model variants
+## Forward validation priority for the thesis branch
 
-Preferred order:
-1. `complex_field_basis`
-2. `psf_basis`
+1. dictionary lookup / measured-PSF sanity baseline
+2. PCA basis + ridge regression
+3. small MLP only if needed
+4. `psf_basis` / `complex_field_basis` only if they are already easy to reuse
 
-`complex_field_basis` is the main prototype route.
-`psf_basis` is the baseline / control model.
+Do not start Phase 3.5 from `complex_field_basis`.
 
 ## Thesis minimal success chain
 
