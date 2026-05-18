@@ -10,10 +10,9 @@ model:
   pca_components: 16
   mask_normalization: code_to_unit_interval
 
-training:
-  epochs: 100
-  learning_rate: 0.001
-  batch_size: 32
+baseline_fit:
+  max_iterations: 100
+  ridge_alpha: 1.0
 
 output:
   output_dir: outputs/forward_validation

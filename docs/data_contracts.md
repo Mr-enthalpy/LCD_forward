@@ -28,8 +28,8 @@ Or configure external paths via `configs/forward_validation.yaml` and `configs/l
 
 | Key    | Shape                     | Dtype   | Description                                |
 |--------|---------------------------|---------|--------------------------------------------|
-| masks  | `[N, T, 1, Hm, Wm]`      | uint8   | Low-resolution LCD control variables       |
-| psfs   | `[N, T, L, Hp, Wp]`      | float32 | Measured PSF crops from `psf_roi.json`     |
+| masks  | `[N, T, 1, Hm, Wm]`      | uint8                | Low-resolution LCD control variables       |
+| psfs   | `[N, T, L, Hp, Wp]`      | float32 or float64   | Measured PSF crops from `psf_roi.json`     |
 
 Phase 3.4 single-wavelength single-frame dictionary:
 
@@ -44,7 +44,7 @@ psfs:  [N, 1, 1, Hp, Wp]
 
 | Key              | Dtype   | Description                          |
 |------------------|---------|--------------------------------------|
-| mask_id          | int32   | Unique mask identifier per sample    |
+| mask_id          | str     | Unique mask identifier per sample, e.g. `all_open_window`, `random_lowfreq_001` |
 | mask_family      | str     | Mask family or category label        |
 | metadata_json    | str     | JSON string with provenance data     |
 
@@ -76,6 +76,7 @@ psfs:  [N, 1, 1, Hp, Wp]
 
 - Measured PSF crops exported from `optic_system`, already associated with `psf_roi.json`.
 - Shape `[Hp, Wp]` is determined by the PSF ROI calibration (Phase 3.2a).
+- Dtype may be `float32` or `float64` depending on `optic_system` export version. Loaders should cast to `float32` internally when needed.
 
 ### psf normalization
 
