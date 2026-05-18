@@ -1,8 +1,12 @@
-# Phase 3 backend workflow
+# Phase 3 backend workflow — planned / target
+
+> **Status: planned.** None of the scripts referenced below exist yet.
+> This document defines the target workflow for Phase 3.5 / 3.6 implementation.
+> All shell commands are illustrative and will fail if run now.
 
 This document describes the end-to-end workflow that `LCD_forward` scripts should follow once Phase 3.5 / 3.6 implementation begins.
 
-## Forward validation workflow (Phase 3.5)
+## Forward validation workflow (Phase 3.5) — target
 
 ```
 1. Verify input data
@@ -11,7 +15,7 @@ This document describes the end-to-end workflow that `LCD_forward` scripts shoul
 2. Basic data visualization
    $ python scripts/visualize_psf_dictionary.py --config configs/forward_validation.yaml
 
-3. Forward baseline training
+3. Forward baseline fit
    $ python scripts/run_forward_baseline.py --config configs/forward_validation.yaml
 
 4. Forward validation evaluation
@@ -31,7 +35,7 @@ Expected outputs per step:
 | 4    | `outputs/forward_validation/psf_error_metrics.json` |
 | 5    | `outputs/forward_validation/measured_vs_predicted_psf.png`, `outputs/forward_validation/representative_cases/` |
 
-## Linear reconstruction workflow (Phase 3.6)
+## Linear reconstruction workflow (Phase 3.6) — target
 
 ```
 1. Generate or load multi-frame observations
@@ -56,7 +60,7 @@ Expected outputs per step:
 | 3    | `outputs/linear_recon/reconstruction_metrics.json` |
 | 4    | `outputs/linear_recon/recon_comparison.png` |
 
-## Thesis figure aggregation (Phase 3.7)
+## Thesis figure aggregation (Phase 3.7) — target
 
 ```
 $ python scripts/aggregate_bishe_figures.py --config configs/bishe_figures.yaml
