@@ -1,0 +1,18 @@
+experiment_id: forward_validation_phase3_5
+
+data:
+  train_h5: data/optic_system/psf_dictionary/train.h5
+  val_h5: data/optic_system/psf_dictionary/val.h5
+  test_h5: data/optic_system/psf_dictionary/test.h5
+
+model:
+  baseline: psf_pca_ridge
+  pca_components: 16
+  mask_normalization: code_to_unit_interval
+
+baseline_fit:
+  max_iterations: 100
+  ridge_alpha: 1.0
+
+output:
+  output_dir: outputs/forward_validation

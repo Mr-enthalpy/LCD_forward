@@ -1,25 +1,23 @@
-# Mono LCD Spectral Prototype
+# Agent constraints for LCD_forward thesis branch
 
-This repository contains a prototype pipeline for mono-LCD-based programmable diffractive imaging.
+This file defines mandatory constraints for any agent working on this repository.
 
-Current scope:
-- mono LCD only
-- low-dimensional effective forward model
-- mask -> PSF learning
-- PSF + object -> frame rendering
-- frame -> multispectral / multichannel reconstruction
+## Thesis-closure constraints
 
-Out of scope for the current prototype:
-- RGB LCD main route
-- full hardware control
-- camera ISP
-- alignment / synchronization with real devices
-- full physical calibration automation
-- explicit high-resolution LCD micro-geometry as the main path
+1. Do not add hardware control code.
+2. Do not import `optic_system` device services (camera, LCD, TLS).
+3. Do not optimize for mainline generality after Phase 3.5.
+4. Thesis goal is feasibility and internal consistency, not superiority.
+5. Prefer direct scripts and readable reports.
+6. Do not train complex models before simple baselines.
+7. Always preserve data provenance.
+8. Outputs must trace back to input HDF5 and config.
+
+Phase 3.5/3.6 are thesis-closure stages. Prefer minimal, explicit, reproducible baselines over architectural elegance.
 
 ## Core assumptions
 
-This prototype currently assumes:
+This thesis prototype assumes:
 - mono LCD
 - non-coherent imaging
 - paraxial / far-field approximation
@@ -56,16 +54,34 @@ Optional metadata:
 
 The sample and training format is HDF5.
 
-## Forward model variants
+## Forward validation priority for the thesis branch
 
-Preferred order:
-1. `complex_field_basis`
-2. `psf_basis`
+1. dictionary lookup / measured-PSF sanity baseline
+2. PCA basis + ridge regression
+3. small MLP only if needed
+4. `psf_basis` / `complex_field_basis` only if they are already easy to reuse
 
-`complex_field_basis` is the main prototype route.
-`psf_basis` is the baseline / control model.
+Do not start Phase 3.5 from `complex_field_basis`.
+
+## Thesis minimal success chain
+
+```
+1. Load optic_system export (train.h5 / val.h5 / test.h5)
+2. Visualize measured PSF dictionary
+3. Forward validation: simple baseline predicts PSF from mask
+4. Render multi-frame observations via measured PSFs
+5. Linear reconstruction: least squares / ridge / Tikhonov
+6. Thesis figures: stable figures for report
+```
+
+## Priority order
+
+```
+data readable > figures reproducible > honest conclusions > model elegance
+```
 
 ## Installation
 
 ```bash
 pip install -e .
+```
