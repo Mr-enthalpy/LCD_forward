@@ -1,0 +1,29 @@
+model = "gpt-5-codex"
+
+[project]
+root = "."
+default_branch = "main"
+
+[environment]
+setup = "pip install -e ."
+python = "3.14"
+
+[commands]
+smoke_test = "python scripts/smoke_test.py"
+train_forward = "python scripts/train_forward.py --config configs/forward_single_lambda.yaml"
+eval_forward = "python scripts/eval_forward.py --config configs/forward_single_lambda.yaml"
+train_recon = "python scripts/train_recon.py --config configs/recon_single_lambda.yaml"
+test = "pytest -q"
+
+[policies]
+network_access = false
+allow_shell = true
+
+[guidance]
+summary = """
+Work within the mono-LCD route only.
+Preserve tensor shape conventions.
+Prefer low-dimensional forward models.
+Do not add hardware-facing code.
+Always keep smoke tests runnable.
+"""

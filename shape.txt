@@ -1,0 +1,56 @@
+LCD_forward
+├── README.md
+├── AGENTS.md
+├── pyproject.toml
+├── .gitignore
+├── .codex/
+│   └── config.toml
+├── configs/
+│   ├── forward_single_lambda.yaml
+│   ├── forward_multilambda.yaml
+│   ├── recon_single_lambda.yaml
+│   └── recon_multiframe.yaml
+├── data/
+│   ├── sample/
+│   │   ├── train.h5
+│   │   ├── val.h5
+│   │   └── test.h5
+│   └── README.md
+├── outputs/
+│   └── .gitkeep
+├── scripts/
+│   ├── prepare_sample_dataset.py
+│   ├── train_forward.py
+│   ├── train_recon.py
+│   ├── eval_forward.py
+│   ├── eval_recon.py
+│   └── smoke_test.py
+├── src/
+│   ├── __init__.py
+│   ├── datasets/
+│   │   ├── __init__.py
+│   │   └── h5_dataset.py
+│   ├── forward/
+│   │   ├── __init__.py
+│   │   ├── psf_basis.py
+│   │   ├── complex_field_basis.py
+│   │   └── renderer.py
+│   ├── recon/
+│   │   ├── __init__.py
+│   │   └── recon_net.py
+│   ├── losses/
+│   │   ├── __init__.py
+│   │   └── losses.py
+│   ├── utils/
+│   │   ├── __init__.py
+│   │   ├── io.py
+│   │   ├── vis.py
+│   │   └── seed.py
+│   └── train/
+│       ├── __init__.py
+│       ├── train_forward_impl.py
+│       └── train_recon_impl.py
+└── tests/
+    ├── test_shapes.py
+    ├── test_forward_model.py
+    └── test_renderer.py

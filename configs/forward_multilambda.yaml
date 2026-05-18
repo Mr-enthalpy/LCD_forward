@@ -1,0 +1,36 @@
+seed: 42
+
+model_name: complex_field_basis
+
+num_wavelengths: 3
+num_frames: 1
+
+mask_size: 64
+image_size: 64
+psf_size: 17
+
+rank: 24
+embed_dim: 128
+normalize_psf: true
+coeff_scale: 1.0
+
+batch_size: 4
+epochs: 20
+learning_rate: 1.0e-3
+weight_decay: 0.0
+num_workers: 0
+
+sample_n_train: 48
+sample_n_val: 12
+sample_n_test: 12
+
+spectral_response: [1.0, 1.0, 1.0]
+
+loss:
+  w_l1: 1.0
+  w_mse: 0.5
+  w_fft: 0.1
+  w_energy: 0.0
+  w_centroid: 0.0
+
+forward_checkpoint: null
