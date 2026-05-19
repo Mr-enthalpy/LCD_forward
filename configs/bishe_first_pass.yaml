@@ -1,0 +1,51 @@
+experiment_id: bishe_first_pass_phase3_5_3_6
+run_id: auto_timestamp
+
+release:
+  root: ${LCD_RELEASE_ROOT:D:/datasets/optic_system/phase3_release_20260520}
+
+data:
+  train_h5: ${LCD_TRAIN_H5}
+  val_h5: ${LCD_VAL_H5}
+  test_h5: ${LCD_TEST_H5}
+
+cave:
+  enabled: true
+  root: ${CAVE_ROOT:D:/CAVE}
+  processed_dir: ${CAVE_PROCESSED}
+  test_h5: ${CAVE_TEST_H5}
+
+forward_validation:
+  method: psf_pca_ridge
+  mask_normalization: code_to_unit_interval
+  psf_working_size: [256, 256]
+  pca_components: 24
+  ridge_alpha: 1.0
+  train_per_wavelength: true
+  metrics:
+    - mse
+    - relative_l2
+    - normalized_correlation
+  num_examples_to_plot: 6
+
+linear_recon:
+  mode: synthetic
+  synthetic_object_size: [256, 256]
+  cave_object_size: [256, 256]
+  wavelengths_nm: [450.0, 550.0, 650.0]
+  selected_masks:
+    strategy: diverse_family_first
+    count: 12
+  psf_source: measured_dictionary
+  psf_working_size: [256, 256]
+  solver: frequency_domain_ridge
+  ridge_alpha: 1.0e-6
+  ridge_policy: adaptive
+  compare_single_frame: true
+  add_noise:
+    enabled: false
+  synthetic_fixed_seed: 42
+  num_cave_eval_scenes: 3
+
+output:
+  root: outputs/bishe_first_pass
