@@ -180,35 +180,50 @@ def run_linear_recon_synthetic(cfg, run_dir, env_map):
     psf_working_size = tuple(lr_cfg["psf_working_size"])
     wavelengths = np.array(lr_cfg["wavelengths_nm"], dtype=np.float32)
     alpha = lr_cfg["ridge_alpha"]
+    policy = lr_cfg.get("ridge_policy", "adaptive")
     n_masks = lr_cfg["selected_masks"]["count"]
     seed = lr_cfg.get("synthetic_fixed_seed", 42)
+    mask_strategy = lr_cfg["selected_masks"].get("strategy", "representative_first")
 
     train_h5 = resolve_config_value(cfg["data"]["train_h5"], env_map)
     print(f"Loading PSF dictionary: {train_h5}")
     psf_data = load_psf_dictionary(train_h5, psf_working_size=psf_working_size)
 
-    print(f"Selecting {n_masks} masks for encoding")
-    sel_masks, sel_psfs, sel_ids, sel_families = select_masks_by_strategy(
-        psf_data, strategy="representative_first", count=n_masks,
-    )
+    print(f"Selecting {n_masks} masks for encoding (strategy={mask_strategy})")
+    if mask_strategy == "diverse_family_first":
+        from scripts.compare_recon_strategies import select_diverse_masks
+        _, sel_psfs, sel_ids, sel_families = select_diverse_masks(psf_data, count=n_masks)
+        sel_masks_display = np.array([psf_data["masks"][psf_data["mask_id"].index(mid)] for mid in sel_ids])
+    else:
+        sel_masks, sel_psfs, sel_ids, sel_families = select_masks_by_strategy(
+            psf_data, strategy=mask_strategy, count=n_masks,
+        )
+        sel_masks_display = sel_masks[:, 0, 0, :, :]
 
     print(f"Generating synthetic object: size={obj_size}")
     obj_np = generate_synthetic_object(n_channels=3, spatial_size=obj_size, seed=seed)
     obj = torch.from_numpy(obj_np).float()
 
     print(f"Selected {len(sel_ids)} masks")
-    psfs_t = torch.from_numpy(sel_psfs[:, 0, :, :, :]).float()
+    if isinstance(sel_psfs, torch.Tensor):
+        psfs_t = sel_psfs.float()
+    elif sel_psfs.ndim == 5:
+        psfs_t = torch.from_numpy(sel_psfs[:, 0, :, :, :]).float()
+    else:
+        psfs_t = torch.from_numpy(sel_psfs).float()
+    if psfs_t.ndim == 5:
+        psfs_t = psfs_t[:, 0]
 
     print("Rendering frames via FFT convolution")
     frames = render_frames_fft(obj, psfs_t)
     frames_np = frames.numpy()
 
     print("Running single-frame reconstruction (baseline)")
-    recon_single = single_frame_reconstruct(frames, psfs_t, alpha=alpha)
+    recon_single = single_frame_reconstruct(frames, psfs_t, alpha=alpha, policy=policy)
     recon_single_np = recon_single.numpy()
 
     print("Running multi-frame reconstruction")
-    recon_multi = frequency_domain_ridge_reconstruct(frames, psfs_t, alpha=alpha)
+    recon_multi = frequency_domain_ridge_reconstruct(frames, psfs_t, alpha=alpha, policy=policy)
     recon_multi_np = recon_multi.numpy()
 
     print("Computing metrics")
@@ -219,8 +234,7 @@ def run_linear_recon_synthetic(cfg, run_dir, env_map):
 
     plot_synthetic_objects(obj_np, recon_dir / "synthetic_objects.png")
 
-    mask_display = sel_masks[:, 0, 0, :, :]
-    plot_mask_grid(mask_display, sel_ids, recon_dir / "selected_masks.png", title="Selected Encoding Masks")
+    plot_mask_grid(sel_masks_display, sel_ids, recon_dir / "selected_masks.png", title="Selected Encoding Masks")
 
     plot_rendered_frames(frames_np, recon_dir / "rendered_frames.png")
 
@@ -304,15 +318,32 @@ def run_linear_recon_cave(cfg, run_dir, env_map):
     psf_working_size = tuple(lr_cfg["psf_working_size"])
     wavelengths = np.array(lr_cfg["wavelengths_nm"], dtype=np.float32)
     alpha = lr_cfg["ridge_alpha"]
+    policy = lr_cfg.get("ridge_policy", "adaptive")
     n_masks = lr_cfg["selected_masks"]["count"]
     obj_size = tuple(lr_cfg["cave_object_size"])
+    mask_strategy = lr_cfg["selected_masks"].get("strategy", "representative_first")
 
     train_h5 = resolve_config_value(cfg["data"]["train_h5"], env_map)
     psf_data = load_psf_dictionary(train_h5, psf_working_size=psf_working_size)
-    sel_masks, sel_psfs, sel_ids, sel_families = select_masks_by_strategy(
-        psf_data, strategy="representative_first", count=n_masks,
-    )
-    psfs_t = torch.from_numpy(sel_psfs[:, 0, :, :, :]).float()
+    if mask_strategy == "diverse_family_first":
+        from scripts.compare_recon_strategies import select_diverse_masks
+        _, sel_psfs, sel_ids, sel_families = select_diverse_masks(psf_data, count=n_masks)
+    else:
+        _, sel_psfs, sel_ids, sel_families = select_masks_by_strategy(
+            psf_data, strategy=mask_strategy, count=n_masks,
+        )
+        if sel_psfs.ndim == 5:
+            sel_psfs = sel_psfs[:, 0]
+    if isinstance(sel_psfs, torch.Tensor):
+        psfs_t = sel_psfs.float()
+    elif sel_psfs.ndim == 5:
+        psfs_t = torch.from_numpy(sel_psfs[:, 0, :, :, :]).float()
+    else:
+        psfs_t = torch.from_numpy(sel_psfs).float()
+    if psfs_t.ndim == 5:
+        psfs_t = psfs_t[:, 0]
+    if psfs_t.ndim != 4:
+        raise ValueError(f"Expected psfs_t [T, L, H, W], got shape {psfs_t.shape}")
 
     cave_dir = _ensure_dir(run_dir / "linear_recon_cave")
     all_metrics = []
@@ -331,8 +362,8 @@ def run_linear_recon_cave(cfg, run_dir, env_map):
             ).squeeze(0)
 
         frames = render_frames_fft(obj, psfs_t)
-        recon_single = single_frame_reconstruct(frames, psfs_t, alpha=alpha)
-        recon_multi = frequency_domain_ridge_reconstruct(frames, psfs_t, alpha=alpha)
+        recon_single = single_frame_reconstruct(frames, psfs_t, alpha=alpha, policy=policy)
+        recon_multi = frequency_domain_ridge_reconstruct(frames, psfs_t, alpha=alpha, policy=policy)
 
         metrics_s = compute_recon_metrics(obj, recon_single)
         metrics_m = compute_recon_metrics(obj, recon_multi)

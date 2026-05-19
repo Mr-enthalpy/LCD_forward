@@ -30,12 +30,13 @@ linear_recon:
   cave_object_size: [256, 256]
   wavelengths_nm: [450.0, 550.0, 650.0]
   selected_masks:
-    strategy: representative_first
-    count: 9
+    strategy: diverse_family_first
+    count: 12
   psf_source: measured_dictionary
   psf_working_size: [256, 256]
   solver: frequency_domain_ridge
-  ridge_alpha: 1.0
+  ridge_alpha: 1.0e-6
+  ridge_policy: adaptive
   compare_single_frame: true
   add_noise:
     enabled: false

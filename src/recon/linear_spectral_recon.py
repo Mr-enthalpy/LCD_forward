@@ -101,10 +101,58 @@ def render_frames_fft(
     return frames
 
 
+def _resize_psfs_for_recon(psfs, target_h, target_w, n_lambda, n_frames, device):
+    hp, wp = psfs.shape[-2:]
+    if (target_h, target_w) != (hp, wp):
+        psfs_list = []
+        for t in range(n_frames):
+            psfs_l = []
+            for l in range(n_lambda):
+                psf_resized = resize_psf_tensor(psfs[t, l], (target_h, target_w))
+                psfs_l.append(psf_resized)
+            psfs_list.append(torch.stack(psfs_l, dim=0))
+        return torch.stack(psfs_list, dim=0)
+    return psfs
+
+
+def _solve_per_frequency(H, y, alpha, policy, eye, cond_threshold=1e4):
+    HTH = H.conj().T @ H
+    Hty = H.conj().T @ y
+    H_norm = (HTH.abs().max() + 1e-12).real
+
+    if policy == "none" or alpha == 0.0:
+        try:
+            return torch.linalg.solve(HTH, Hty)
+        except RuntimeError:
+            s = torch.linalg.svdvals(HTH)
+            rcond = (s[-1] / (s[0] + 1e-12)).real
+            min_reg = 1e-12 * H_norm
+            return torch.linalg.solve(HTH + min_reg * eye, Hty)
+
+    elif policy == "threshold":
+        s = torch.linalg.svdvals(HTH)
+        cond = (s[0] / (s[-1] + 1e-12)).real
+        if cond < cond_threshold:
+            return torch.linalg.solve(HTH, Hty)
+        else:
+            reg = alpha * H_norm * eye
+            return torch.linalg.solve(HTH + reg, Hty)
+
+    elif policy == "adaptive":
+        reg = alpha * H_norm * eye
+        return torch.linalg.solve(HTH + reg, Hty)
+
+    else:
+        reg = alpha * H_norm * eye
+        return torch.linalg.solve(HTH + reg, Hty)
+
+
 def frequency_domain_ridge_reconstruct(
     frames: torch.Tensor,
     psfs: torch.Tensor,
-    alpha: float = 1.0,
+    alpha: float = 1e-4,
+    policy: str = "adaptive",
+    cond_threshold: float = 1e3,
 ) -> torch.Tensor:
     if frames.ndim != 3:
         raise ValueError(f"frames must be [T, H, W], got {frames.shape}")
@@ -117,15 +165,7 @@ def frequency_domain_ridge_reconstruct(
     if n_frames != n_frames2:
         raise ValueError(f"Frame mismatch: frames T={n_frames}, psfs T={n_frames2}")
 
-    if (h, w) != (hp, wp):
-        psfs_list = []
-        for t in range(n_frames):
-            psfs_l = []
-            for l in range(n_lambda):
-                psf_resized = resize_psf_tensor(psfs[t, l], (h, w))
-                psfs_l.append(psf_resized)
-            psfs_list.append(torch.stack(psfs_l, dim=0))
-        psfs = torch.stack(psfs_list, dim=0)
+    psfs = _resize_psfs_for_recon(psfs, h, w, n_lambda, n_frames, frames.device)
 
     reconstruction = torch.zeros(n_lambda, h, w, dtype=torch.complex64, device=frames.device)
     frames_fft = torch.fft.fft2(frames)
@@ -137,14 +177,7 @@ def frequency_domain_ridge_reconstruct(
         for j in range(w):
             H = psfs_fft[:, :, i, j]
             y = frames_fft[:, i, j]
-
-            HTH = H.conj().T @ H
-            H_norm = (HTH.abs().max() + 1e-12).real
-            reg = alpha * H_norm * eye
-            Hty = H.conj().T @ y
-
-            x_hat = torch.linalg.solve(HTH + reg, Hty)
-            reconstruction[:, i, j] = x_hat
+            reconstruction[:, i, j] = _solve_per_frequency(H, y, alpha, policy, eye, cond_threshold)
 
     for c in range(n_lambda):
         reconstruction[c] = torch.fft.ifft2(reconstruction[c]).real
@@ -156,13 +189,15 @@ def frequency_domain_ridge_reconstruct(
 def single_frame_reconstruct(
     frames: torch.Tensor,
     psfs: torch.Tensor,
-    alpha: float = 1.0,
+    alpha: float = 1e-4,
+    policy: str = "adaptive",
+    cond_threshold: float = 1e3,
 ) -> torch.Tensor:
     if frames.ndim == 3 and frames.shape[0] > 1:
         frames = frames[0:1]
     if psfs.ndim == 4 and psfs.shape[0] > 1:
         psfs = psfs[0:1]
-    return frequency_domain_ridge_reconstruct(frames, psfs, alpha=alpha)
+    return frequency_domain_ridge_reconstruct(frames, psfs, alpha=alpha, policy=policy, cond_threshold=cond_threshold)
 
 
 def compute_recon_metrics(
