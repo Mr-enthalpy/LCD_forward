@@ -10,6 +10,9 @@ venv/
 env/
 .codex/
 
+# Binary / document files
+*.pdf
+
 # IDE
 .idea/
 .DS_Store
