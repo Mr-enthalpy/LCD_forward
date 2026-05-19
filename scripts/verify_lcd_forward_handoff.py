@@ -110,6 +110,17 @@ def verify_handoff(release_root: Path) -> list[str]:
         if missing:
             errors.append(f"thesis_evidence_summary.md missing boundary phrase(s): {missing}")
 
+    release_path = release_root / "RELEASE.json"
+    if release_path.exists():
+        with open(release_path) as f:
+            release = json.load(f)
+        outputs = release.get("lcd_forward_outputs", {})
+        if outputs.get("real_target_capture", True):
+            errors.append("RELEASE.json: real_target_capture must be False")
+        scope = release.get("scope", "").lower()
+        if "existence" not in scope:
+            errors.append("RELEASE.json scope must mention 'existence'")
+
     sums_path = release_root / "SHA256SUMS.txt"
     if sums_path.exists():
         with open(sums_path) as f:

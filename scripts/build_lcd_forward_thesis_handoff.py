@@ -337,7 +337,7 @@ def write_data_contract(handoff_root: Path):
 
 ## Identity
 
-This release contains LCD_forward derived results (Phase 3.5–3.6 first pass).
+This release contains LCD_forward derived results (Phase 3.5-3.6 first pass).
 It is NOT a hardware data release. Raw measured HDF5 remains in optic_system release.
 
 ## Input Source
@@ -354,22 +354,21 @@ It is NOT a hardware data release. Raw measured HDF5 remains in optic_system rel
 ```
 thesis/
   phase3_5_forward_validation/
-    figures/    — measured vs predicted PSF, PCA basis
-    metrics/    — psf_prediction_metrics.json
-    reports/    — forward_validation_report.md
+    figures/    - measured vs predicted PSF, PCA basis
+    metrics/    - psf_prediction_metrics.json
+    reports/    - forward_validation_report.md
   h_matrix_diagnostics/
-    figures/    — rank map, condition map, histogram, SV maps, OTF grid, CV map
-    data/       — numpy arrays (.npy, .npz)
-    metrics/    — h_matrix_diagnostics.json
-    reports/    — h_matrix_diagnostics_report.md
+    figures/    - rank map, condition map, histogram, SV maps, OTF grid, CV map
+    data/       - numpy arrays (.npy, .npz)
+    metrics/    - h_matrix_diagnostics.json
+    reports/    - h_matrix_diagnostics_report.md
   phase3_6_linear_recon_synthetic/
-    figures/    — synthetic objects, masks, frames, single/multi recon
-    metrics/    — reconstruction_metrics.json
-    reports/    — linear_recon_report.md
+    figures/    - synthetic objects, masks, frames, single/multi recon
+    metrics/    - reconstruction_metrics.json
+    reports/    - linear_recon_report.md
   phase3_6_linear_recon_cave/
-    figures/    — per-scene recon_comparison, rendered_frames
-    metrics/    — cave_recon_metrics.json, cave_recon_summary.json
-    reports/    — cave_recon_report.md
+    figures/    - per-scene recon_comparison, rendered_frames
+    metrics/    - cave_recon_metrics.json, cave_recon_summary.json
   reports/
     thesis_evidence_summary.md
     lcd_forward_phase3_5_3_6_summary.md
@@ -392,7 +391,7 @@ provenance/
 - Real target capture
 - Learned mask / GenerMask
 - Deep neural reconstruction
-- 512×512 full-resolution reconstruction
+- 512x512 full-resolution reconstruction
 - Multi-seed statistics
 
 ## Boundary
@@ -548,6 +547,8 @@ def main():
         _ensure_dir(git_descriptor)
         shutil.copy2(output_root / "RELEASE.json", git_descriptor / "RELEASE.json")
         shutil.copy2(output_root / "data_contract.md", git_descriptor / "data_contract.md")
+        shutil.copy2(output_root / "MANIFEST.json", git_descriptor / "MANIFEST.json")
+        shutil.copy2(output_root / "SHA256SUMS.txt", git_descriptor / "SHA256SUMS.txt")
         print(f"  Updated Git descriptor: {git_descriptor}")
 
     print(f"\nHandoff built: {output_root}")

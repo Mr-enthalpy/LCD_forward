@@ -217,8 +217,8 @@ def main():
     results = analyze_h_matrix(psf_fft)
     cv_map = compute_frequency_diversity_cv(psf_fft)
 
-    display_rank = _downsample_for_display(results["rank_map"])
-    display_cond = _downsample_for_display(np.log10(results["cond_map"] + 1))
+    display_rank = _downsample_for_display(results["rank_map"].astype(np.float64))
+    display_cond = _downsample_for_display(results["cond_map"])
     display_cv = _downsample_for_display(cv_map)
 
     figs_dir = out_dir / "figures"
