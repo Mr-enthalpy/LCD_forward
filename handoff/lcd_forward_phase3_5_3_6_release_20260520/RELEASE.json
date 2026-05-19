@@ -1,0 +1,26 @@
+{
+  "release_id": "lcd_forward_phase3_5_3_6_release_20260520",
+  "source_repo": "https://github.com/Mr-enthalpy/LCD_forward",
+  "source_branch": "phase3-bishe-forward-loop",
+  "source_commit": "b7e5538e2ccee99696a186e9b65f30c84d60dd47",
+  "created_at": "2026-05-20",
+  "input_optic_system_release": {
+    "release_id": "optic_system_phase3_release_20260520",
+    "canonical_path": "D:\\datasets\\optic_system\\phase3_release_20260520",
+    "psf_roi_key": "roi_512",
+    "wavelengths_nm": [
+      450.0,
+      550.0,
+      650.0
+    ],
+    "psf_dictionary_contract": "masks [N,1,1,64,64], psfs [N,1,3,512,512]"
+  },
+  "lcd_forward_outputs": {
+    "phase3_5_forward_validation": true,
+    "h_matrix_diagnostics": true,
+    "phase3_6_synthetic_reconstruction": true,
+    "phase3_6_cave_reconstruction": true,
+    "real_target_capture": false
+  },
+  "scope": "thesis existence proof, not performance-optimized model"
+}
