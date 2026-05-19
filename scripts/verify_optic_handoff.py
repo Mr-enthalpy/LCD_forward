@@ -45,6 +45,7 @@ def verify_checksums(release_root: Path) -> list[str]:
             if len(parts) < 2:
                 continue
             expected_hash, rel_path = parts[0], " ".join(parts[1:])
+            rel_path = rel_path.replace("\\", "/")
             target = release_root / rel_path
             if not target.exists():
                 errors.append(f"Missing file for checksum: {rel_path}")

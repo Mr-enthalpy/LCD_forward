@@ -394,6 +394,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Run bishe first pass Phase 3.5-3.6")
     parser.add_argument("--config", default="configs/bishe_first_pass.yaml")
     parser.add_argument("--skip-handoff-verify", action="store_true")
+    parser.add_argument("--allow-invalid-handoff", action="store_true")
     parser.add_argument("--dry-run-small", action="store_true")
     args = parser.parse_args()
 
@@ -405,9 +406,23 @@ def main() -> None:
     with open(config_path, "r", encoding="utf-8") as f:
         cfg = yaml.safe_load(f)
 
+    release_root_default = "D:/datasets/optic_system/phase3_release_20260520"
+    cave_root_default = "D:/CAVE"
+
+    release_root = os.environ.get("LCD_RELEASE_ROOT", release_root_default)
+    cave_root = os.environ.get("CAVE_ROOT", cave_root_default)
+
+    psf_dict_dir = os.path.join(release_root, "lcd_forward", "psf_dictionary")
+    cave_processed = os.path.join(cave_root, "processed")
+
     env_map = {
-        "LCD_RELEASE_ROOT": os.environ.get("LCD_RELEASE_ROOT", "D:/datasets/optic_system/phase3_release_20260520"),
-        "CAVE_ROOT": os.environ.get("CAVE_ROOT", "D:/CAVE"),
+        "LCD_RELEASE_ROOT": release_root,
+        "CAVE_ROOT": cave_root,
+        "LCD_TRAIN_H5": os.environ.get("LCD_TRAIN_H5", os.path.join(psf_dict_dir, "train.h5")),
+        "LCD_VAL_H5": os.environ.get("LCD_VAL_H5", os.path.join(psf_dict_dir, "val.h5")),
+        "LCD_TEST_H5": os.environ.get("LCD_TEST_H5", os.path.join(psf_dict_dir, "test.h5")),
+        "CAVE_PROCESSED": os.environ.get("CAVE_PROCESSED", cave_processed),
+        "CAVE_TEST_H5": os.environ.get("CAVE_TEST_H5", os.path.join(cave_processed, "test.h5")),
     }
     cfg = resolve_config(cfg, env_map)
 
@@ -447,6 +462,12 @@ def main() -> None:
             for e in errors:
                 print(f"  - {e}")
             manifest["errors"].extend(errors)
+            if not args.allow_invalid_handoff:
+                print("\nERROR: handoff verification failed. Use --allow-invalid-handoff to override, or --skip-handoff-verify to bypass.")
+                manifest_path = run_dir / "run_manifest.json"
+                with open(manifest_path, "w", encoding="utf-8") as f:
+                    json.dump(manifest, f, indent=2, ensure_ascii=False)
+                sys.exit(1)
         else:
             print("Handoff verification PASSED")
             manifest["steps_completed"].append("handoff_verification")

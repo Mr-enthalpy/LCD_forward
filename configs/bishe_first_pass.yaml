@@ -1,15 +1,19 @@
 experiment_id: bishe_first_pass_phase3_5_3_6
 run_id: auto_timestamp
 
+release:
+  root: ${LCD_RELEASE_ROOT:D:/datasets/optic_system/phase3_release_20260520}
+
 data:
-  train_h5: ${LCD_TRAIN_H5:D:/datasets/optic_system/phase3_release_20260520/lcd_forward/psf_dictionary/train.h5}
-  val_h5: ${LCD_VAL_H5:D:/datasets/optic_system/phase3_release_20260520/lcd_forward/psf_dictionary/val.h5}
-  test_h5: ${LCD_TEST_H5:D:/datasets/optic_system/phase3_release_20260520/lcd_forward/psf_dictionary/test.h5}
+  train_h5: ${LCD_TRAIN_H5}
+  val_h5: ${LCD_VAL_H5}
+  test_h5: ${LCD_TEST_H5}
 
 cave:
   enabled: true
-  processed_dir: ${CAVE_PROCESSED:D:/CAVE/processed}
-  test_h5: ${CAVE_TEST_H5:D:/CAVE/processed/test.h5}
+  root: ${CAVE_ROOT:D:/CAVE}
+  processed_dir: ${CAVE_PROCESSED}
+  test_h5: ${CAVE_TEST_H5}
 
 forward_validation:
   method: psf_pca_ridge

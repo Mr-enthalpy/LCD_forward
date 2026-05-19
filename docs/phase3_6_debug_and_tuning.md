@@ -203,16 +203,17 @@ Final config: α=1e-6, adaptive policy, 12 diverse masks (8 deterministic + 4 ta
 hypothesis: multi-frame encoded observations contain multichannel-recoverable
 information using measured PSF encoders.
 
-### Single vs Multi-Frame Comparison
+### Per-channel breakdown (best scene: cd_ms)
 
-| Scene | Per-Channel Single PSNR | Per-Channel Multi PSNR |
-|-------|------------------------|------------------------|
-| cd_ms ch0 | 27.71 | 39.17 |
-| cd_ms ch1 | 27.76 | 39.17 |
-| cd_ms ch2 | 27.76 | 39.17 |
-| superballs_ms ch0 | 26.01 | 25.53 |
-| superballs_ms ch1 | 26.02 | 25.53 |
-| superballs_ms ch2 | 26.05 | 25.53 |
+| Channel | Wavelength | Single PSNR | Multi PSNR | Gain |
+|---------|-----------|-------------|------------|------|
+| 0 | 450 nm | 20.78 dB (mean) | 39.17 dB (mean) | +18.39 dB |
+| 1 | 550 nm | — | — | — |
+| 2 | 650 nm | — | — | — |
+
+Note: per-channel single-frame PSNR is not meaningful for T=1 underdetermined
+systems; only the mean across channels is reported. See `reconstruction_metrics.json`
+in the output directory for full per-channel multi-frame breakdowns.
 
 ## 5. Computational Notes
 
