@@ -240,6 +240,18 @@ def main():
                                          data["wavelengths_nm"],
                                          figs_dir / "wavelength_transfer_comparison.png")
 
+    display_rank_shift = np.fft.fftshift(display_rank)
+    display_cond_shift = np.fft.fftshift(display_cond)
+    display_cv_shift = np.fft.fftshift(display_cv)
+    sv_shift = np.fft.fftshift(results["sv_maps"], axes=(-2, -1))
+    otf_shift = np.fft.fftshift(psf_fft, axes=(-2, -1))
+
+    plot_h_rank_map(display_rank_shift, figs_dir / "h_rank_map_fftshifted.png")
+    plot_h_condition_map(display_cond_shift, figs_dir / "h_log_condition_map_fftshifted.png")
+    plot_singular_value_maps(sv_shift, figs_dir / "h_singular_value_maps_fftshifted.png")
+    plot_otf_magnitude_grid(otf_shift, sel_ids, figs_dir / "otf_magnitude_grid_selected_masks_fftshifted.png")
+    plot_diversity_cv_map(display_cv_shift, figs_dir / "mask_frequency_diversity_cv_map_fftshifted.png")
+
     np.save(data_dir / "h_rank_map.npy", results["rank_map"])
     np.save(data_dir / "h_condition_map.npy", results["cond_map"])
     np.savez(data_dir / "h_singular_values.npz", *[results["sv_maps"][k] for k in range(results["sv_maps"].shape[0])])

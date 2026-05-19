@@ -38,19 +38,34 @@
       "size_bytes": 51543
     },
     "thesis/h_matrix_diagnostics/figures/h_log_condition_map.png": {
-      "size_bytes": 603435
+      "size_bytes": 451792
+    },
+    "thesis/h_matrix_diagnostics/figures/h_log_condition_map_fftshifted.png": {
+      "size_bytes": 450740
     },
     "thesis/h_matrix_diagnostics/figures/h_rank_map.png": {
+      "size_bytes": 26979
+    },
+    "thesis/h_matrix_diagnostics/figures/h_rank_map_fftshifted.png": {
       "size_bytes": 26979
     },
     "thesis/h_matrix_diagnostics/figures/h_singular_value_maps.png": {
       "size_bytes": 662005
     },
+    "thesis/h_matrix_diagnostics/figures/h_singular_value_maps_fftshifted.png": {
+      "size_bytes": 660687
+    },
     "thesis/h_matrix_diagnostics/figures/mask_frequency_diversity_cv_map.png": {
       "size_bytes": 583921
     },
+    "thesis/h_matrix_diagnostics/figures/mask_frequency_diversity_cv_map_fftshifted.png": {
+      "size_bytes": 582668
+    },
     "thesis/h_matrix_diagnostics/figures/otf_magnitude_grid_selected_masks.png": {
       "size_bytes": 2556134
+    },
+    "thesis/h_matrix_diagnostics/figures/otf_magnitude_grid_selected_masks_fftshifted.png": {
+      "size_bytes": 2557781
     },
     "thesis/h_matrix_diagnostics/figures/wavelength_transfer_comparison.png": {
       "size_bytes": 739025

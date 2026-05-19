@@ -543,13 +543,12 @@ def main():
     build_manifest_and_checksum(output_root, release_id)
 
     git_descriptor = ROOT / "handoff" / release_id
-    if git_descriptor.exists():
-        _ensure_dir(git_descriptor)
-        shutil.copy2(output_root / "RELEASE.json", git_descriptor / "RELEASE.json")
-        shutil.copy2(output_root / "data_contract.md", git_descriptor / "data_contract.md")
-        shutil.copy2(output_root / "MANIFEST.json", git_descriptor / "MANIFEST.json")
-        shutil.copy2(output_root / "SHA256SUMS.txt", git_descriptor / "SHA256SUMS.txt")
-        print(f"  Updated Git descriptor: {git_descriptor}")
+    _ensure_dir(git_descriptor)
+    shutil.copy2(output_root / "RELEASE.json", git_descriptor / "RELEASE.json")
+    shutil.copy2(output_root / "data_contract.md", git_descriptor / "data_contract.md")
+    shutil.copy2(output_root / "MANIFEST.json", git_descriptor / "MANIFEST.json")
+    shutil.copy2(output_root / "SHA256SUMS.txt", git_descriptor / "SHA256SUMS.txt")
+    print(f"  Updated Git descriptor: {git_descriptor}")
 
     print(f"\nHandoff built: {output_root}")
     print(f"  RELEASE.json: {(output_root / 'RELEASE.json').exists()}")
