@@ -61,6 +61,7 @@ Current state: **thesis branch initialized**. Phase 3.5/3.6 implementation start
 - Phase plan: `docs/bishe_plan.md`
 - Data contracts: `docs/data_contracts.md`
 - Project boundary: `docs/project_boundary.md`
+- Server usage: `docs/server_usage.md`
 - Agent constraints: `AGENTS.md`
 
 ## Installation
