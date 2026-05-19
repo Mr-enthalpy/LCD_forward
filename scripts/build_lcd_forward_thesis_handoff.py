@@ -543,6 +543,13 @@ def main():
     print("Computing manifest and checksums...")
     build_manifest_and_checksum(output_root, release_id)
 
+    git_descriptor = ROOT / "handoff" / release_id
+    if git_descriptor.exists():
+        _ensure_dir(git_descriptor)
+        shutil.copy2(output_root / "RELEASE.json", git_descriptor / "RELEASE.json")
+        shutil.copy2(output_root / "data_contract.md", git_descriptor / "data_contract.md")
+        print(f"  Updated Git descriptor: {git_descriptor}")
+
     print(f"\nHandoff built: {output_root}")
     print(f"  RELEASE.json: {(output_root / 'RELEASE.json').exists()}")
     print(f"  MANIFEST.json: {(output_root / 'MANIFEST.json').exists()}")

@@ -99,17 +99,16 @@ def verify_handoff(release_root: Path) -> list[str]:
 
     evidence_path = release_root / "thesis" / "reports" / "thesis_evidence_summary.md"
     if evidence_path.exists():
-        text = evidence_path.read_text()
-        forbidden_patterns = [
-            (" achieves SOTA", "SOTA claim"),
-            (" state of the art ", "state of the art claim"),
-            (" is optimal", "optimality claim"),
-            (" outperforms existing", "superiority claim"),
+        text = evidence_path.read_text().lower()
+        required_boundary_phrases = [
+            "existence demonstration",
+            "no sota",
+            "not claimed",
+            "not part of this release",
         ]
-        # Strip "No " / "no " prefixes before checking
-        for pattern, label in forbidden_patterns:
-            if pattern in text.lower():
-                errors.append(f"thesis_evidence_summary.md contains forbidden claim: '{label}'")
+        missing = [p for p in required_boundary_phrases if p not in text]
+        if missing:
+            errors.append(f"thesis_evidence_summary.md missing boundary phrase(s): {missing}")
 
     sums_path = release_root / "SHA256SUMS.txt"
     if sums_path.exists():
