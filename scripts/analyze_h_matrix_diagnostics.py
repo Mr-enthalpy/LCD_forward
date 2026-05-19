@@ -23,6 +23,16 @@ def build_h_matrix(psf_fft: np.ndarray, frequency_idx: tuple) -> np.ndarray:
     return psf_fft[:, :, i, j]
 
 
+def _downsample_for_display(arr: np.ndarray, target_max_pixels: int = 65536) -> np.ndarray:
+    H, W = arr.shape
+    if H * W <= target_max_pixels:
+        return arr
+    scale = np.sqrt(target_max_pixels / (H * W))
+    new_h, new_w = int(H * scale), int(W * scale)
+    from scipy.ndimage import zoom
+    return zoom(arr.astype(np.float64), (new_h / H, new_w / W), order=1)
+
+
 def analyze_h_matrix(psf_fft: np.ndarray, rank_threshold: float = 1e-8):
     T, L, H, W = psf_fft.shape
     rank_map = np.zeros((H, W), dtype=np.int32)
@@ -181,7 +191,6 @@ def main():
     parser.add_argument("--train-h5", required=True)
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--psf-working-size", nargs=2, type=int, default=[256, 256])
-    parser.add_argument("--analysis-size", nargs=2, type=int, default=[64, 64])
     parser.add_argument("--mask-count", type=int, default=12)
     args = parser.parse_args()
 
@@ -195,29 +204,22 @@ def main():
     _, sel_psfs, sel_ids, sel_families = select_diverse_masks(data, count=args.mask_count)
 
     sel_psfs_np = sel_psfs.numpy() if hasattr(sel_psfs, "numpy") else sel_psfs
-    if sel_psfs_np.ndim == 4:
-        pass
-    elif sel_psfs_np.ndim == 5:
+    if sel_psfs_np.ndim == 5:
         sel_psfs_np = sel_psfs_np[:, 0]
+    if sel_psfs_np.ndim != 4:
+        raise ValueError(f"Expected psfs [T, L, H, W], got {sel_psfs_np.shape}")
 
-    analysis_size = tuple(args.analysis_size)
-    if sel_psfs_np.shape[-2:] != analysis_size:
-        from scipy.ndimage import zoom
-        T, L, H_orig, W_orig = sel_psfs_np.shape
-        H_new, W_new = analysis_size
-        zh, zw = H_new / H_orig, W_new / W_orig
-        resized = np.zeros((T, L, H_new, W_new), dtype=np.complex128)
-        for t in range(T):
-            for l in range(L):
-                psf_f = np.fft.fft2(sel_psfs_np[t, l])
-                resized[t, l] = zoom(psf_f, (zh, zw), order=1)
-        psf_fft = resized
-    else:
-        psf_fft = np.fft.fft2(sel_psfs_np)
+    T, L, H_native, W_native = sel_psfs_np.shape
+    print(f"Computing FFT at native resolution {H_native}x{W_native} for {T} masks x {L} wavelengths")
+    psf_fft = np.fft.fft2(sel_psfs_np)
 
-    print(f"Analyzing {T} masks × {L} wavelengths @ {analysis_size}")
+    print(f"Analyzing H matrix at all {H_native * W_native} frequency points")
     results = analyze_h_matrix(psf_fft)
     cv_map = compute_frequency_diversity_cv(psf_fft)
+
+    display_rank = _downsample_for_display(results["rank_map"])
+    display_cond = _downsample_for_display(np.log10(results["cond_map"] + 1))
+    display_cv = _downsample_for_display(cv_map)
 
     figs_dir = out_dir / "figures"
     figs_dir.mkdir(exist_ok=True)
@@ -228,12 +230,12 @@ def main():
     reports_dir = out_dir / "reports"
     reports_dir.mkdir(exist_ok=True)
 
-    plot_h_rank_map(results["rank_map"], figs_dir / "h_rank_map.png")
-    plot_h_condition_map(results["cond_map"], figs_dir / "h_log_condition_map.png")
+    plot_h_rank_map(display_rank, figs_dir / "h_rank_map.png")
+    plot_h_condition_map(display_cond, figs_dir / "h_log_condition_map.png")
     plot_condition_histogram(results["all_conditions"], figs_dir / "h_condition_histogram.png")
     plot_singular_value_maps(results["sv_maps"], figs_dir / "h_singular_value_maps.png")
     plot_otf_magnitude_grid(psf_fft, sel_ids, figs_dir / "otf_magnitude_grid_selected_masks.png")
-    plot_diversity_cv_map(cv_map, figs_dir / "mask_frequency_diversity_cv_map.png")
+    plot_diversity_cv_map(display_cv, figs_dir / "mask_frequency_diversity_cv_map.png")
     plot_wavelength_transfer_comparison(psf_fft, sel_ids[0],
                                          data["wavelengths_nm"],
                                          figs_dir / "wavelength_transfer_comparison.png")
@@ -244,7 +246,8 @@ def main():
     np.save(data_dir / "frequency_diversity_cv_map.npy", cv_map)
 
     diagnostics_json = {
-        "analysis_size": list(analysis_size),
+        "analysis_size": list(psf_size),
+        "native_fft_size": list(psf_size),
         "n_frequency_points": results["n_total"],
         "n_full_rank_points": results["n_full_rank"],
         "rank_threshold": 1e-8,
@@ -267,7 +270,7 @@ def main():
     report = f"""# H Matrix Frequency Diagnostics Report
 
 ## Setup
-- Analysis size: {analysis_size}
+- Analysis size: {H_native}×{W_native} (native OTF from PSF FFT, no resampling)
 - Mask selection: diverse_family_first, count={args.mask_count}
 - PSF working size: {psf_size}
 - Wavelengths: {data['wavelengths_nm'].tolist()} nm
