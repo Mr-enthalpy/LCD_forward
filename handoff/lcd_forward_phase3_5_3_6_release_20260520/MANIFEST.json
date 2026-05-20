@@ -5,7 +5,7 @@
       "size_bytes": 2513
     },
     "README.md": {
-      "size_bytes": 945
+      "size_bytes": 944
     },
     "RELEASE.json": {
       "size_bytes": 979
@@ -20,7 +20,7 @@
       "size_bytes": 1112
     },
     "provenance/phase3_6_debug_and_tuning.md": {
-      "size_bytes": 10540
+      "size_bytes": 10496
     },
     "thesis/h_matrix_diagnostics/data/frequency_diversity_cv_map.npy": {
       "size_bytes": 524416
@@ -62,10 +62,10 @@
       "size_bytes": 582668
     },
     "thesis/h_matrix_diagnostics/figures/otf_magnitude_grid_selected_masks.png": {
-      "size_bytes": 2556134
+      "size_bytes": 2555935
     },
     "thesis/h_matrix_diagnostics/figures/otf_magnitude_grid_selected_masks_fftshifted.png": {
-      "size_bytes": 2557781
+      "size_bytes": 2557566
     },
     "thesis/h_matrix_diagnostics/figures/wavelength_transfer_comparison.png": {
       "size_bytes": 739025
@@ -74,7 +74,7 @@
       "size_bytes": 1279
     },
     "thesis/h_matrix_diagnostics/reports/h_matrix_diagnostics_report.md": {
-      "size_bytes": 1341
+      "size_bytes": 1343
     },
     "thesis/phase3_5_forward_validation/figures/measured_vs_predicted_examples.png": {
       "size_bytes": 666774
@@ -188,10 +188,10 @@
       "size_bytes": 4148
     },
     "thesis/reports/lcd_forward_phase3_5_3_6_summary.md": {
-      "size_bytes": 1480
+      "size_bytes": 1478
     },
     "thesis/reports/limitations.md": {
-      "size_bytes": 1446
+      "size_bytes": 1444
     },
     "thesis/reports/repro_commands.md": {
       "size_bytes": 1409

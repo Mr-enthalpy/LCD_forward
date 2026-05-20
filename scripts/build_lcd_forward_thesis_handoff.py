@@ -478,7 +478,7 @@ confirming non-degenerate frequency-domain encoding structure for three-waveleng
 """
     if cave_data.get("scenes"):
         for s in cave_data["scenes"]:
-            report += f"- {s['scene_id']}: single={s['single_psnr']:.1f} dB → multi={s['multi_psnr']:.1f} dB (gain=+{s['gain_db']:.1f} dB)\n"
+            report += f"- {s['scene_id']}: single={s['single_psnr']:.1f} dB -> multi={s['multi_psnr']:.1f} dB (gain=+{s['gain_db']:.1f} dB)\n"
         report += f"\nAll cases multi > single: {cave_data['all_cases_multi_greater_than_single']}\n"
 
     report += f"""
@@ -488,7 +488,7 @@ This result is a feasible existence demonstration using optic_system measured PS
 dictionary and public multispectral scenes. It shows:
 
 1. optic_system measured PSF dictionary has been ingested by LCD_forward
-2. Mask → PSF prediction is achievable at correlation ~0.985 (Phase 3.5)
+2. Mask -> PSF prediction is achievable at correlation ~0.985 (Phase 3.5)
 3. H matrix frequency-domain structure supports multichannel recovery
 4. Multi-frame reconstruction outperforms single-frame baseline
 5. This is public-dataset simulation driven by measured PSF kernels
@@ -514,7 +514,7 @@ def write_limitations(handoff_root: Path):
 1. **FFT circular convolution**: reconstruction uses circular boundary conditions,
    which may introduce artifacts at image edges. Noted in reports.
 
-2. **PSF working size**: PSFs are downsampled from 512×512 to 256×256 for
+2. **PSF working size**: PSFs are downsampled from 512x512 to 256x256 for
    compute efficiency. Full-resolution reconstruction may differ.
 
 3. **Sum-normalized PSFs**: all PSFs have DC = 1.0, meaning encoding diversity
@@ -545,7 +545,7 @@ def write_limitations(handoff_root: Path):
 
 
 def write_summary_report(handoff_root: Path, release_id: str, commit_sha: str):
-    text = f"""# LCD_forward Phase 3.5–3.6 First-Pass Summary
+    text = f"""# LCD_forward Phase 3.5-3.6 First-Pass Summary
 
 ## Release
 
@@ -556,7 +556,7 @@ def write_summary_report(handoff_root: Path, release_id: str, commit_sha: str):
 
 ## Contents
 
-This release packages the first-pass LCD_forward Phase 3.5–3.6 loop results
+This release packages the first-pass LCD_forward Phase 3.5-3.6 loop results
 into a thesis-consumable handoff.
 
 ### Phase 3.5: Measured PSF Forward Validation
@@ -751,7 +751,7 @@ def write_release_json(handoff_root: Path, release_id: str, optic_release_root: 
 def write_readme(handoff_root: Path, release_id: str):
     text = f"""# {release_id}
 
-LCD_forward Phase 3.5–3.6 first-pass thesis handoff.
+LCD_forward Phase 3.5-3.6 first-pass thesis handoff.
 
 ## Quick Links
 
@@ -765,7 +765,7 @@ LCD_forward Phase 3.5–3.6 first-pass thesis handoff.
 
 ## Contents
 
-1. Phase 3.5 forward validation (mask → PSF prediction)
+1. Phase 3.5 forward validation (mask -> PSF prediction)
 2. H-matrix frequency diagnostics (full-rank proof)
 3. Phase 3.6 synthetic reconstruction (smoke test)
 4. Phase 3.6 CAVE reconstruction (public dataset)
@@ -828,6 +828,7 @@ def main():
     git_descriptor = ROOT / "handoff" / release_id
     _ensure_dir(git_descriptor)
     shutil.copy2(output_root / "RELEASE.json", git_descriptor / "RELEASE.json")
+    shutil.copy2(output_root / "README.md", git_descriptor / "README.md")
     shutil.copy2(output_root / "data_contract.md", git_descriptor / "data_contract.md")
     shutil.copy2(output_root / "MANIFEST.json", git_descriptor / "MANIFEST.json")
     shutil.copy2(output_root / "SHA256SUMS.txt", git_descriptor / "SHA256SUMS.txt")

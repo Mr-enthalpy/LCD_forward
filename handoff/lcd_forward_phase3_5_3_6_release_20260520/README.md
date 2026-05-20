@@ -1,50 +1,26 @@
-# LCD_forward Phase 3.5–3.6 Thesis Handoff Descriptor
+# lcd_forward_phase3_5_3_6_release_20260520
 
-This directory contains the Git-tracked descriptor for the LCD_forward thesis handoff.
-The large payload (figures, metrics, HDF5-referencing data) lives externally.
+LCD_forward Phase 3.5-3.6 first-pass thesis handoff.
 
-## External Payload Location
+## Quick Links
 
-Canonical path (this workstation):
-```
-D:/datasets/LCD_forward/lcd_forward_phase3_5_3_6_release_20260520/
-```
+- First read: thesis/reports/thesis_evidence_summary.md
+- Result index: thesis/reports/result_index.md
+- Figure catalog: thesis/reports/figure_catalog.md
+- Reproduction commands: thesis/reports/repro_commands.md
+- Data contract: data_contract.md
+- Limitations: thesis/reports/limitations.md
+- Debug record: provenance/phase3_6_debug_and_tuning.md
 
-Server path (when deployed):
-```
-/home/data2/<user>/lcd_forward_releases/lcd_forward_phase3_5_3_6_release_20260520/
-```
+## Contents
 
-## Verification
+1. Phase 3.5 forward validation (mask -> PSF prediction)
+2. H-matrix frequency diagnostics (full-rank proof)
+3. Phase 3.6 synthetic reconstruction (smoke test)
+4. Phase 3.6 CAVE reconstruction (public dataset)
+5. Reconstruction appendix: per-band figures, pseudo-RGB figures, and `.npz` arrays
 
-```bash
-python scripts/verify_lcd_forward_handoff.py <payload_root>
-```
+## Input provenance
 
-## Structure
-
-```
-<payload_root>/
-├── RELEASE.json              # Release metadata
-├── MANIFEST.json             # File manifest with sizes
-├── SHA256SUMS.txt            # SHA-256 checksums
-├── data_contract.md          # Data format and interpretation
-├── README.md                 # This file (duplicated in payload)
-├── provenance/
-│   ├── optic_system_release_reference.json
-│   ├── lcd_forward_run_manifest.json
-│   ├── bishe_first_pass.yaml
-│   └── phase3_6_debug_and_tuning.md
-└── thesis/
-    ├── phase3_5_forward_validation/
-    ├── h_matrix_diagnostics/
-    ├── phase3_6_linear_recon_synthetic/
-    ├── phase3_6_linear_recon_cave/
-    └── reports/
-```
-
-## Git Policy
-
-- This `handoff/` directory contains only the descriptor (this README)
-- Payload files (.png, .json, .npy, .h5, etc.) live at the external path
-- Never commit payload files to Git
+- optic_system Phase 3 release: see provenance/optic_system_release_reference.json
+- CAVE public multispectral image database

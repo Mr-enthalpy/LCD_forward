@@ -1,4 +1,4 @@
-# LCD_forward — thesis modelling and reconstruction backend
+# LCD_forward - thesis modelling and reconstruction backend
 
 LCD_forward is the modelling and reconstruction backend for the mono-LCD programmable diffraction imaging thesis loop. It consumes measured HDF5 exports from `optic_system` and performs forward validation, rendering, and minimal reconstruction. Hardware control remains in `optic_system`.
 
@@ -48,7 +48,7 @@ See `docs/data_contracts.md` for the full HDF5 format specification.
 
 | Phase  | Title                                     | Owner        |
 |--------|-------------------------------------------|--------------|
-| 3.0–3.4| Hardware calibration & PSF dictionary     | optic_system |
+| 3.0-3.4| Hardware calibration & PSF dictionary     | optic_system |
 | 3.5    | Measured PSF forward validation           | LCD_forward  |
 | 3.6    | Minimal multiframe / multichannel reconstruction | LCD_forward  |
 | 3.7    | Thesis figures and report freeze          | LCD_forward  |
@@ -81,3 +81,4 @@ scripts/       Entry-point scripts
 src/           Forward models, renderer, reconstruction, datasets, utilities
 tests/         Shape and module tests
 ```
+

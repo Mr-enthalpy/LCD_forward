@@ -156,7 +156,7 @@ def plot_otf_magnitude_grid(psf_fft: np.ndarray, mask_ids: list, out_path: Path)
                 axes[l, t].set_ylabel(f"Ch {l}", fontsize=7)
             axes[l, t].axis("off")
 
-    plt.suptitle("OTF Magnitude (log10) — Selected Masks × Wavelengths", fontsize=10)
+    plt.suptitle("OTF Magnitude (log10) - Selected Masks x Wavelengths", fontsize=10)
     plt.tight_layout()
     plt.savefig(out_path, dpi=150)
     plt.close()
@@ -180,7 +180,7 @@ def plot_wavelength_transfer_comparison(psf_fft: np.ndarray, mask_id: str, wavel
         im = axes[l].imshow(np.log10(np.abs(psf_fft[0, l]) + 1e-16), cmap="hot", origin="lower")
         axes[l].set_title(f"{wavelengths_nm[l]:.0f} nm")
         plt.colorbar(im, ax=axes[l])
-    plt.suptitle(f"Wavelength Transfer Comparison — {mask_id}")
+    plt.suptitle(f"Wavelength Transfer Comparison - {mask_id}")
     plt.tight_layout()
     plt.savefig(out_path, dpi=150)
     plt.close()
@@ -282,7 +282,7 @@ def main():
     report = f"""# H Matrix Frequency Diagnostics Report
 
 ## Setup
-- Analysis size: {H_native}×{W_native} (native OTF from PSF FFT, no resampling)
+- Analysis size: {H_native}x{W_native} (native OTF from PSF FFT, no resampling)
 - Mask selection: diverse_family_first, count={args.mask_count}
 - PSF working size: {psf_size}
 - Wavelengths: {data['wavelengths_nm'].tolist()} nm
@@ -295,15 +295,15 @@ def main():
 - Max condition number: {results['max_condition']:.0f}
 
 ## Interpretation
-The multi-frame measured PSF transfer matrix H ∈ C^(T×L) is full-rank
+The multi-frame measured PSF transfer matrix H in C^(T x L) is full-rank
 at every analyzed frequency point. This confirms that the 3-channel
-system is not degenerate — the measured PSFs carry frequency-domain
+system is not degenerate - the measured PSFs carry frequency-domain
 encoding diversity sufficient for multichannel recovery.
 
 The condition number distribution has median ~{results['median_condition']:.0f}
 but a heavy tail (max ~{results['max_condition']:.0e}), indicating that
 some frequencies are nearly singular and benefit from weak ridge
-regularization (alpha ≈ 1e-6).
+regularization (alpha about 1e-6).
 
 Cross-mask frequency diversity (CV of |H|) is concentrated at mid-to-high
 spatial frequencies, not at DC (where all sum-normalized PSFs have

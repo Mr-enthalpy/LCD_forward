@@ -2,7 +2,7 @@
   "release_id": "lcd_forward_phase3_5_3_6_release_20260520",
   "source_repo": "https://github.com/Mr-enthalpy/LCD_forward",
   "source_branch": "phase3-bishe-forward-loop",
-  "source_commit": "bd4cc1b8e240606f52cdeab6e6c2f072a2e3c01e",
+  "source_commit": "531fdc9d33cf9810417c213e39ca2df0dcc6f14f",
   "created_at": "2026-05-20",
   "input_optic_system_release": {
     "release_id": "optic_system_phase3_release_20260520",

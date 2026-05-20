@@ -173,7 +173,7 @@ This fulfills the Phase 3.5 existence proof requirement.
 
 def run_linear_recon_synthetic(cfg, run_dir, env_map):
     print("\n" + "=" * 60)
-    print("Phase 3.6: Linear Reconstruction — Synthetic Smoke Test (Level 1)")
+    print("Phase 3.6: Linear Reconstruction - Synthetic Smoke Test (Level 1)")
     print("=" * 60)
 
     lr_cfg = cfg["linear_recon"]
@@ -322,7 +322,7 @@ operates correctly with measured PSF dictionary kernels.
 
 def run_linear_recon_cave(cfg, run_dir, env_map):
     print("\n" + "=" * 60)
-    print("Phase 3.6: Linear Reconstruction — CAVE (Level 2)")
+    print("Phase 3.6: Linear Reconstruction - CAVE (Level 2)")
     print("=" * 60)
 
     cave_cfg = cfg.get("cave", {})
@@ -408,7 +408,7 @@ def run_linear_recon_cave(cfg, run_dir, env_map):
             wavelengths_nm=wavelengths,
         )
         plot_rendered_frames(frames.numpy(), scene_dir / "rendered_frames.png",
-                             title=f"Rendered Frames — {scene_id}")
+                             title=f"Rendered Frames - {scene_id}")
 
         np.savez_compressed(
             scene_dir / "recon_appendix_arrays.npz",
