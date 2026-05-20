@@ -304,3 +304,71 @@ def plot_recon_comparison(
     plt.savefig(out_path, dpi=150, bbox_inches="tight")
     plt.close()
     return out_path
+
+
+def _rgb_indices(wavelengths_nm: np.ndarray | None, n_channels: int) -> list[int]:
+    if wavelengths_nm is None:
+        return [min(n_channels - 1, i) for i in (2, 1, 0)]
+    wavelengths = np.asarray(wavelengths_nm, dtype=np.float32)
+    targets = np.array([650.0, 550.0, 450.0], dtype=np.float32)
+    return [int(np.argmin(np.abs(wavelengths - target))) for target in targets]
+
+
+def _to_pseudorgb(cube: np.ndarray, wavelengths_nm: np.ndarray | None = None) -> np.ndarray:
+    if cube.ndim != 3:
+        raise ValueError(f"Expected spectral cube [L,H,W], got shape {cube.shape}")
+    indices = _rgb_indices(wavelengths_nm, cube.shape[0])
+    rgb = np.stack([cube[i] for i in indices], axis=-1).astype(np.float32)
+    lo, hi = np.percentile(rgb, [1.0, 99.0])
+    scale = hi - lo if hi > lo else 1.0
+    return np.clip((rgb - lo) / scale, 0.0, 1.0)
+
+
+def plot_recon_rgb_pseudocolor_comparison(
+    gt: np.ndarray,
+    recon_single: np.ndarray,
+    recon_multi: np.ndarray,
+    out_path: Path,
+    wavelengths_nm: np.ndarray | None = None,
+) -> Path:
+    gt_rgb = _to_pseudorgb(gt, wavelengths_nm)
+    single_rgb = _to_pseudorgb(recon_single, wavelengths_nm)
+    multi_rgb = _to_pseudorgb(recon_multi, wavelengths_nm)
+    err_single = np.mean(np.abs(gt_rgb - single_rgb), axis=-1)
+    err_multi = np.mean(np.abs(gt_rgb - multi_rgb), axis=-1)
+
+    plt.figure(figsize=(16, 8))
+    panels = [
+        (gt_rgb, "GT pseudo-RGB", None),
+        (single_rgb, "Single-frame pseudo-RGB", None),
+        (multi_rgb, "Multi-frame pseudo-RGB", None),
+        (err_single, "Single abs. RGB error", "inferno"),
+        (err_multi, "Multi abs. RGB error", "inferno"),
+    ]
+    for idx, (image, title, cmap) in enumerate(panels):
+        plt.subplot(2, 3, idx + 1)
+        plt.imshow(image, cmap=cmap)
+        plt.title(title, fontsize=10)
+        plt.axis("off")
+
+    rgb_order = _rgb_indices(wavelengths_nm, gt.shape[0])
+    if wavelengths_nm is not None:
+        rgb_text = ", ".join(f"{wavelengths_nm[i]:.0f}nm" for i in rgb_order)
+    else:
+        rgb_text = ", ".join(f"Ch{i}" for i in rgb_order)
+    plt.subplot(2, 3, 6)
+    plt.axis("off")
+    plt.text(
+        0.0,
+        0.7,
+        f"Pseudo-RGB channel order:\nR, G, B = {rgb_text}\n\n"
+        "Display normalization:\nper-panel 1st-99th percentile clipping",
+        fontsize=11,
+        va="top",
+    )
+
+    plt.suptitle("Pseudo-RGB Reconstruction Comparison", fontsize=12)
+    plt.tight_layout()
+    plt.savefig(out_path, dpi=150, bbox_inches="tight")
+    plt.close()
+    return out_path

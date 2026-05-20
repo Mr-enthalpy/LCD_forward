@@ -41,6 +41,7 @@ from src.utils.figures import (
     plot_rendered_frames,
     plot_reconstruction,
     plot_recon_comparison,
+    plot_recon_rgb_pseudocolor_comparison,
 )
 
 
@@ -244,6 +245,27 @@ def run_linear_recon_synthetic(cfg, run_dir, env_map):
                         wavelengths_nm=wavelengths, title="Multi-Frame Reconstruction")
     plot_recon_comparison(obj_np, recon_single_np, recon_multi_np,
                           recon_dir / "recon_comparison.png", wavelengths_nm=wavelengths)
+    plot_recon_comparison(obj_np, recon_single_np, recon_multi_np,
+                          recon_dir / "recon_per_band_comparison.png", wavelengths_nm=wavelengths)
+    plot_recon_rgb_pseudocolor_comparison(
+        obj_np,
+        recon_single_np,
+        recon_multi_np,
+        recon_dir / "recon_rgb_pseudocolor_comparison.png",
+        wavelengths_nm=wavelengths,
+    )
+
+    np.savez_compressed(
+        recon_dir / "recon_appendix_arrays.npz",
+        gt_object=obj_np.astype(np.float32),
+        recon_single=recon_single_np.astype(np.float32),
+        recon_multi=recon_multi_np.astype(np.float32),
+        rendered_frames=frames_np.astype(np.float32),
+        wavelengths_nm=wavelengths.astype(np.float32),
+        selected_mask_ids=np.asarray(sel_ids, dtype="U"),
+        mask_families=np.asarray(sel_families, dtype="U"),
+        source_psf_h5=np.asarray([train_h5], dtype="U"),
+    )
 
     results = {
         "object_size": list(obj_size),
@@ -286,6 +308,11 @@ def run_linear_recon_synthetic(cfg, run_dir, env_map):
 ## Conclusion
 The reconstruction pipeline (FFT convolution renderer + frequency-domain ridge solver)
 operates correctly with measured PSF dictionary kernels.
+
+## Appendix Outputs
+- `recon_per_band_comparison.png`: per-wavelength GT / single-frame / multi-frame / error comparison
+- `recon_rgb_pseudocolor_comparison.png`: pseudo-RGB comparison using nearest 650/550/450 nm channels
+- `recon_appendix_arrays.npz`: GT object, reconstructions, rendered frames, wavelengths, selected mask IDs, source HDF5
 """
     (recon_dir / "linear_recon_report.md").write_text(report, encoding="utf-8")
 
@@ -347,6 +374,7 @@ def run_linear_recon_cave(cfg, run_dir, env_map):
 
     cave_dir = _ensure_dir(run_dir / "linear_recon_cave")
     all_metrics = []
+    appendix_entries = []
 
     for scene_idx in range(n_eval):
         scene_id = cave_data["scene_id"][scene_idx]
@@ -370,8 +398,31 @@ def run_linear_recon_cave(cfg, run_dir, env_map):
 
         plot_recon_comparison(obj.numpy(), recon_single.numpy(), recon_multi.numpy(),
                               scene_dir / "recon_comparison.png", wavelengths_nm=wavelengths)
+        plot_recon_comparison(obj.numpy(), recon_single.numpy(), recon_multi.numpy(),
+                              scene_dir / "recon_per_band_comparison.png", wavelengths_nm=wavelengths)
+        plot_recon_rgb_pseudocolor_comparison(
+            obj.numpy(),
+            recon_single.numpy(),
+            recon_multi.numpy(),
+            scene_dir / "recon_rgb_pseudocolor_comparison.png",
+            wavelengths_nm=wavelengths,
+        )
         plot_rendered_frames(frames.numpy(), scene_dir / "rendered_frames.png",
                              title=f"Rendered Frames — {scene_id}")
+
+        np.savez_compressed(
+            scene_dir / "recon_appendix_arrays.npz",
+            gt_object=obj.numpy().astype(np.float32),
+            recon_single=recon_single.numpy().astype(np.float32),
+            recon_multi=recon_multi.numpy().astype(np.float32),
+            rendered_frames=frames.numpy().astype(np.float32),
+            wavelengths_nm=wavelengths.astype(np.float32),
+            selected_mask_ids=np.asarray(sel_ids, dtype="U"),
+            mask_families=np.asarray(sel_families, dtype="U"),
+            source_cave_h5=np.asarray([str(test_h5_path)], dtype="U"),
+            source_psf_h5=np.asarray([train_h5], dtype="U"),
+            scene_id=np.asarray([scene_id], dtype="U"),
+        )
 
         scene_result = {
             "scene_id": scene_id,
@@ -379,12 +430,53 @@ def run_linear_recon_cave(cfg, run_dir, env_map):
             "multi_frame_metrics": metrics_m,
         }
         all_metrics.append(scene_result)
+        appendix_entries.append({
+            "scene_id": scene_id,
+            "figures": [
+                f"scene_{scene_id}/recon_per_band_comparison.png",
+                f"scene_{scene_id}/recon_rgb_pseudocolor_comparison.png",
+                f"scene_{scene_id}/recon_comparison.png",
+                f"scene_{scene_id}/rendered_frames.png",
+            ],
+            "data": f"scene_{scene_id}/recon_appendix_arrays.npz",
+        })
 
         print(f"  Single: mse={metrics_s['mean']['mse']:.6f}, psnr={metrics_s['mean']['psnr']:.2f}")
         print(f"  Multi:  mse={metrics_m['mean']['mse']:.6f}, psnr={metrics_m['mean']['psnr']:.2f}")
 
     with open(cave_dir / "cave_recon_metrics.json", "w", encoding="utf-8") as f:
         json.dump({"n_scenes_evaluated": n_eval, "results": all_metrics}, f, indent=2)
+
+    report = """# CAVE Linear Reconstruction Report
+
+## Purpose
+This report records the public-dataset reconstruction appendix for Phase 3.6.
+Each scene includes explicit per-wavelength comparison, pseudo-RGB comparison,
+rendered measurements, and compressed arrays for traceability.
+
+## Figures and Data
+"""
+    for entry in appendix_entries:
+        report += f"\n### {entry['scene_id']}\n"
+        report += f"- Per-band comparison: `{entry['figures'][0]}`\n"
+        report += f"- Pseudo-RGB comparison: `{entry['figures'][1]}`\n"
+        report += f"- Legacy comparison alias: `{entry['figures'][2]}`\n"
+        report += f"- Rendered frames: `{entry['figures'][3]}`\n"
+        report += f"- Appendix arrays: `{entry['data']}`\n"
+
+    report += f"""
+
+## Provenance
+- CAVE HDF5: `{test_h5_path}`
+- PSF dictionary HDF5: `{train_h5}`
+- Wavelengths: {wavelengths.tolist()} nm
+- Selected masks: {sel_ids}
+- Solver: frequency_domain_ridge alpha={alpha}, policy={policy}
+
+## Boundary
+This is public-dataset simulation driven by measured PSF kernels. It is not real target capture.
+"""
+    (cave_dir / "cave_recon_report.md").write_text(report, encoding="utf-8")
 
     print(f"\nCAVE reconstruction complete. {n_eval} scenes evaluated.")
     return all_metrics
