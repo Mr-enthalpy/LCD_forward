@@ -499,7 +499,7 @@ def main() -> None:
         cfg = yaml.safe_load(f)
 
     release_root_default = "D:/datasets/optic_system/phase3_release_20260520"
-    cave_root_default = "D:/CAVE"
+    cave_root_default = "D:/datasets/CAVE"
 
     release_root = os.environ.get("LCD_RELEASE_ROOT", release_root_default)
     cave_root = os.environ.get("CAVE_ROOT", cave_root_default)

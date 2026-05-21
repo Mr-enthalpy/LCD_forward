@@ -16,3 +16,9 @@ data/optic_system/psf_dictionary/
 Expected format: see `docs/data_contracts.md`.
 
 These files are **not** committed to version control.
+
+On the thesis machine, the external copy is stored at:
+
+```
+D:/datasets/optic_system/phase3_release_20260520/lcd_forward/psf_dictionary/
+```

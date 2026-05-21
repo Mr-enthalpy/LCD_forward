@@ -11,7 +11,7 @@ data:
 
 cave:
   enabled: true
-  root: ${CAVE_ROOT:D:/CAVE}
+  root: ${CAVE_ROOT:D:/datasets/CAVE}
   processed_dir: ${CAVE_PROCESSED}
   test_h5: ${CAVE_TEST_H5}
 

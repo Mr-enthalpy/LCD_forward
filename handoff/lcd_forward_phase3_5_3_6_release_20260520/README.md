@@ -2,6 +2,12 @@
 
 LCD_forward Phase 3.5-3.6 first-pass thesis handoff.
 
+Large binary payloads for this handoff are stored locally on the thesis machine and are not synchronized through Git:
+
+```
+D:/datasets/LCD_forward/lcd_forward_phase3_5_3_6_release_20260520/
+```
+
 ## Quick Links
 
 - First read: thesis/reports/thesis_evidence_summary.md

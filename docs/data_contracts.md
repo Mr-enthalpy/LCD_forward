@@ -22,6 +22,25 @@ data/optic_system/psf_dictionary/
 
 Or configure external paths via `configs/forward_validation.yaml` and `configs/linear_recon.yaml`.
 
+Current local thesis-machine placement:
+
+```
+D:/datasets/optic_system/phase3_release_20260520/
+    lcd_forward/psf_dictionary/train.h5
+    lcd_forward/psf_dictionary/val.h5
+    lcd_forward/psf_dictionary/test.h5
+
+D:/datasets/LCD_forward/
+    lcd_forward_phase3_5_3_6_release_20260520/
+
+D:/datasets/CAVE/
+    processed/train.h5
+    processed/val.h5
+    processed/test.h5
+```
+
+The `D:/datasets/LCD_forward/` handoff payload contains large derived artifacts that are intentionally not synchronized through Git. The Git `handoff/` directory only stores the small descriptor files needed to audit identity, checksums, and provenance.
+
 ## PSF dictionary HDF5 format
 
 ### Core tensors
