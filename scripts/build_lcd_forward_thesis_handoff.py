@@ -482,6 +482,15 @@ confirming non-degenerate frequency-domain encoding structure for three-waveleng
         report += f"\nAll cases multi > single: {cave_data['all_cases_multi_greater_than_single']}\n"
 
     report += f"""
+## Solver Regularization Audit
+
+Phase 3.6 uses one global `alpha=3e-15` with `policy=adaptive` and internal complex128 solves.
+The effective regularization is frequency-scaled as `alpha * max(abs(H(f)^H H(f))) * I`,
+but alpha is not tuned per frequency, scene, or wavelength. The value comes from the
+precision-explicit CAVE alpha sweep and is recorded with the legacy complex64 sweep for
+auditability. See `thesis/reports/solver_regularization_response.md`. The alpha value is
+precision-specific: legacy complex64 used `1e-6`; current complex128 uses `3e-15`.
+
 ## Scope Boundary
 
 This result is a feasible existence demonstration using optic_system measured PSF
@@ -664,6 +673,13 @@ thesis/
     repro_commands.md
     lcd_forward_phase3_5_3_6_summary.md
     limitations.md
+    metric_audit_response.md
+    h_matrix_dc_otf_response.md
+    solver_regularization_response.md
+  alpha_sweep/
+    cave_alpha_sweep_by_scene.csv
+    cave_alpha_sweep_summary.csv
+    cave_alpha_sweep.json / md
 provenance/
   lcd_forward_run_manifest.json
   bishe_first_pass.yaml
@@ -677,7 +693,10 @@ provenance/
 - H matrix full-rank: encoding system is non-degenerate
 - cave_recon: raw PSNR reports absolute amplitude error; interpret it together with per-band correlation, SSIM/audit metrics, and reconstruction figures
 - recon_appendix_arrays.npz: GT object, single-frame recon, multi-frame recon, rendered frames, wavelengths, selected masks, and HDF5 provenance
-- metric_audit_response.md: authoritative interpretation of the visual-vs-PSNR mismatch, including the clay_ms 450 nm amplitude-bias explanation
+- metric_audit_response.md: authoritative interpretation of visual-vs-PSNR mismatch; current complex128/alpha=3e-15 rerun removes the earlier clay_ms 450 nm negative-gain anomaly
+- h_matrix_dc_otf_response.md: authoritative interpretation of OTF display subset and H-matrix DC rank behavior
+- solver_regularization_response.md: authoritative explanation of precision-specific alpha, adaptive policy, and global-vs-frequency-scaled ridge behavior
+- alpha_sweep/: CAVE alpha sweep CSV/JSON/Markdown comparing complex128 alpha values and recording failures below stable range
 
 ## Not Included
 
@@ -716,6 +735,8 @@ def build_manifest_and_checksum(handoff_root: Path, release_id: str):
         for fname in files:
             full = Path(root) / fname
             rel = full.relative_to(handoff_root).as_posix()
+            if rel in {"MANIFEST.json", "SHA256SUMS.txt"}:
+                continue
             size = full.stat().st_size
             sha = compute_sha256(full)
 
@@ -781,6 +802,7 @@ LCD_forward Phase 3.5-3.6 first-pass thesis handoff.
 - Metric audit response: thesis/reports/metric_audit_response.md
 - H-matrix DC/OTF response: thesis/reports/h_matrix_dc_otf_response.md
 - Solver regularization response: thesis/reports/solver_regularization_response.md
+- Alpha sweep appendix: thesis/alpha_sweep/cave_alpha_sweep.md
 - Data contract: data_contract.md
 - Limitations: thesis/reports/limitations.md
 - Debug record: provenance/phase3_6_debug_and_tuning.md

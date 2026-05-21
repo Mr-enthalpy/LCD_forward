@@ -244,8 +244,8 @@ All degradation parameters recorded in run_manifest.json.
 1. **mask -> PSF is modellable**: PCA + ridge achieves test correlation 0.985
    across 3 wavelengths, downsampled to 256x256
 2. **Measured PSFs encode multichannel information**: Multi-frame ridge
-   reconstruction with alpha=1e-6 achieves PSNR gains of +3.7 to +18.4 dB
-   over single-frame baseline
+   reconstruction with internal complex128 solves and alpha=3e-15 achieves
+   CAVE PSNR gains of +6.2 to +24.1 dB over the single-frame baseline
 3. **Phase 3.2b conclusions validated**: Inter-mask PSF differences (~298x noise)
    are sufficient for encoding diversity in frequency domain
 4. **CAVE public dataset**: Realistic 3-channel reconstruction at 256x256
@@ -266,5 +266,31 @@ All degradation parameters recorded in run_manifest.json.
 - Use original 512x512 PSFs with GPU
 - Investigate non-ridge solvers (conjugate gradient, ADMM)
 - Thesis figure assembly (Phase 3.7)
+
+## 7. Alpha Sweep Precision Addendum
+
+After handoff review, the alpha sweep was repeated with solver precision made
+explicit.
+
+The original `alpha=1e-6` conclusion belongs to the legacy internal `complex64`
+solver. In that regime, smaller alpha values did not provide useful
+regularization because the per-frequency normal equations were too close to the
+`complex64` numerical precision limit.
+
+The current solver promotes FFT coefficients and per-frequency linear solves to
+internal `complex128`, then returns float32 reconstruction arrays. Under this
+precision regime, the stable alpha range shifts downward:
+
+| Internal solve precision | Best tested alpha | Mean single PSNR | Mean multi PSNR | Mean gain | Notes |
+|---|---:|---:|---:|---:|---|
+| complex64 legacy | 1e-6 | ~18.05 | ~28.36 | ~+10.54 | Practical stable setting for old solver |
+| complex128 current | 3e-15 | 18.07 | 32.28 | +14.22 | Best tested CAVE value after precision upgrade |
+
+Values below `5e-16` failed in the current `complex128` sweep because the
+per-frequency systems became singular. Larger values such as `1e-4` remain
+over-regularized.
+
+Alpha is therefore a numerical solver parameter, not a physical parameter. It
+must be reported together with the internal solve precision.
 
 

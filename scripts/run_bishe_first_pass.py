@@ -479,7 +479,8 @@ rendered measurements, and compressed arrays for traceability.
 - The same alpha and policy are used for every CAVE scene, every wavelength, and both single-frame and multi-frame reconstruction.
 - `policy={policy}` means the solver uses `reg(f) = alpha * max(abs(H(f)^H H(f))) * I` at each Fourier frequency.
 - This makes the effective regularization scale frequency-dependent through `H(f)`, but it does not tune alpha per frequency, per scene, or per wavelength.
-- `alpha=1e-6` comes from the Phase 3.6 synthetic stability sweep: `1e-4` was more over-regularized, `1.0` collapsed the inverse, and direct solve was not robust at ill-conditioned frequencies.
+- The selected alpha comes from the Phase 3.6 CAVE alpha sweep. Very small alpha values below the stable range can produce singular solves, while larger values such as `1e-6` and `1e-4` increasingly over-regularize the inverse.
+- The solver uses internal double-precision complex FFT/linear solves for numerical stability, then returns float32 reconstruction arrays.
 
 ## Boundary
 This is public-dataset simulation driven by measured PSF kernels. It is not real target capture.

@@ -167,11 +167,11 @@ def frequency_domain_ridge_reconstruct(
 
     psfs = _resize_psfs_for_recon(psfs, h, w, n_lambda, n_frames, frames.device)
 
-    reconstruction = torch.zeros(n_lambda, h, w, dtype=torch.complex64, device=frames.device)
-    frames_fft = torch.fft.fft2(frames)
-    psfs_fft = torch.fft.fft2(psfs)
+    reconstruction = torch.zeros(n_lambda, h, w, dtype=torch.complex128, device=frames.device)
+    frames_fft = torch.fft.fft2(frames.double())
+    psfs_fft = torch.fft.fft2(psfs.double())
 
-    eye = torch.eye(n_lambda, dtype=torch.complex64, device=frames.device)
+    eye = torch.eye(n_lambda, dtype=torch.complex128, device=frames.device)
 
     for i in range(h):
         for j in range(w):
@@ -183,7 +183,7 @@ def frequency_domain_ridge_reconstruct(
         reconstruction[c] = torch.fft.ifft2(reconstruction[c]).real
 
     reconstruction = torch.clamp(reconstruction.real, 0.0, None)
-    return reconstruction
+    return reconstruction.float()
 
 
 def single_frame_reconstruct(

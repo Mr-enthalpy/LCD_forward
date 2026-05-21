@@ -125,7 +125,7 @@ def verify_handoff(release_root: Path) -> list[str]:
 
     evidence_path = release_root / "thesis" / "reports" / "thesis_evidence_summary.md"
     if evidence_path.exists():
-        text = evidence_path.read_text().lower()
+        text = evidence_path.read_text(encoding="utf-8-sig").lower()
         required_boundary_phrases = [
             "existence demonstration",
             "no sota",

@@ -57,9 +57,10 @@ provenance/
 - H matrix full-rank: encoding system is non-degenerate
 - cave_recon: raw PSNR reports absolute amplitude error; interpret it together with per-band correlation, SSIM/audit metrics, and reconstruction figures
 - recon_appendix_arrays.npz: GT object, single-frame recon, multi-frame recon, rendered frames, wavelengths, selected masks, and HDF5 provenance
-- metric_audit_response.md: authoritative interpretation of the visual-vs-PSNR mismatch, including the clay_ms 450 nm amplitude-bias explanation
+- metric_audit_response.md: authoritative interpretation of visual-vs-PSNR mismatch; current complex128/alpha=3e-15 rerun removes the earlier clay_ms 450 nm negative-gain anomaly
 - h_matrix_dc_otf_response.md: authoritative interpretation of OTF display subset and H-matrix DC rank behavior
-- solver_regularization_response.md: authoritative explanation of alpha=1e-6, adaptive policy, and global-vs-frequency-scaled ridge behavior
+- solver_regularization_response.md: authoritative explanation of precision-specific alpha, adaptive policy, and global-vs-frequency-scaled ridge behavior
+- alpha_sweep/: CAVE alpha sweep CSV/JSON/Markdown comparing complex128 alpha values and recording failures below stable range
 
 ## Not Included
 

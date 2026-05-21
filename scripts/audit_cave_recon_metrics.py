@@ -220,6 +220,22 @@ def build_markdown(rows: list[dict[str, Any]], release_root: Path) -> str:
             f"{row['gt_mean']:.4f} | {row['pred_mean']:.4f} | {row['fft_low_le_0p1']:.4f} |"
         )
 
+    clay450_single = next(row for row in clay450 if row["method"] == "single")
+    clay450_multi = next(row for row in clay450 if row["method"] == "multi")
+    clay450_gain = clay450_multi["raw_psnr"] - clay450_single["raw_psnr"]
+    if clay450_gain >= 0:
+        clay450_finding = (
+            f"- The updated clay_ms 450 nm multi-frame result has positive raw-PSNR gain "
+            f"({clay450_gain:+.2f} dB) and near-perfect correlation; the earlier negative-gain "
+            "case is not present for this solver precision / alpha setting."
+        )
+    else:
+        clay450_finding = (
+            f"- The clay_ms 450 nm negative raw-PSNR gain ({clay450_gain:+.2f} dB) is dominated by "
+            "absolute low-frequency / DC amplitude error, not structural mismatch: multi-frame "
+            "correlation is near 1.0."
+        )
+
     lines.extend(
         [
             "",
@@ -227,7 +243,7 @@ def build_markdown(rows: list[dict[str, Any]], release_root: Path) -> str:
             "",
             "- Stored PSNR values reproduce from the NPZ arrays; no metric recomputation mismatch was found.",
             "- Single-frame and multi-frame reconstructions have identical `[3, 256, 256]` shapes against GT, so there is no silent broadcasting in the saved metric calculation.",
-            "- The clay_ms 450 nm negative PSNR gain is dominated by absolute low-frequency / DC amplitude error, not structural mismatch: multi-frame correlation is near 1.0, but its mean intensity is far above the very dark GT band.",
+            clay450_finding,
             "- The per-band and pseudo-RGB figures use independent display autoscaling / per-panel normalization, so they can show strong structural recovery while raw PSNR remains low.",
             "- Raw PSNR is still valid as an absolute radiometric error metric, but it is insufficient as the only thesis-facing quality metric for this normalized CAVE simulation.",
             "",
@@ -235,7 +251,7 @@ def build_markdown(rows: list[dict[str, Any]], release_root: Path) -> str:
             "",
             "- Report raw PSNR together with correlation and SSIM.",
             "- Add a display-normalized or affine-calibrated metric only as a diagnostic for structural recovery, not as a replacement for raw radiometric error.",
-            "- For clay_ms, explicitly state that multi-frame reconstruction recovers spectral structure but has residual amplitude calibration error in the 450 nm and 650 nm bands.",
+            "- For clay_ms, explicitly state that multi-frame reconstruction recovers structure; remaining raw-PSNR limits should be interpreted as absolute amplitude / low-frequency calibration error rather than channel-separation failure.",
         ]
     )
     return "\n".join(lines) + "\n"
