@@ -16,7 +16,7 @@ This document defines the Phase 3.5 / 3.6 / 3.7 roadmap for `LCD_forward`. Phase
 | **3.6**     | **Minimal multiframe / multichannel reconstruction** | **LCD_forward** |
 | **3.7**     | **Thesis figures and report freeze**       | **LCD_forward** |
 
-## Phase 3.5 — Measured PSF forward validation
+## Phase 3.5 - Measured PSF forward validation
 
 ### Goal
 
@@ -32,9 +32,9 @@ data/optic_system/psf_dictionary/test.h5
 
 ### Minimum methods (by priority)
 
-1. **Baseline A**: dictionary lookup / nearest-neighbor by mask_id — sanity check
+1. **Baseline A**: dictionary lookup / nearest-neighbor by mask_id - sanity check
 2. **Baseline B**: low-dimensional PSF PCA basis + mask-to-PCA-coefficient ridge regression or small MLP
-3. **Baseline C**: existing `psf_basis` or `complex_field_basis` surrogates — only if the existing prototype code is easy to reuse
+3. **Baseline C**: existing `psf_basis` or `complex_field_basis` surrogates - only if the existing prototype code is easy to reuse
 
 Do not require complex-field model as the first step.
 
@@ -58,7 +58,7 @@ outputs/forward_validation/
 5. Typical mask predicted-vs-measured figures are thesis-ready
 6. Error is recorded honestly; no requirement to inflate performance
 
-## Phase 3.6 — Minimal multiframe / multichannel reconstruction
+## Phase 3.6 - Minimal multiframe / multichannel reconstruction
 
 ### Goal
 
@@ -111,7 +111,7 @@ outputs/linear_recon/
 4. Output figures show basic channel / structure recovery
 5. No requirement to outperform existing systems or optimize masks
 
-## Phase 3.7 — Thesis figures and report freeze
+## Phase 3.7 - Thesis figures and report freeze
 
 ### Goal
 
@@ -139,3 +139,4 @@ outputs/bishe_figures/
     reconstruction_result.png
     figure_manifest.json
 ```
+

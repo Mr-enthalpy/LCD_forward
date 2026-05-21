@@ -101,5 +101,6 @@ When `optic_system` provides real target captures for reconstruction:
 | masks       | `[N, T, 1, Hm, Wm]`       | Masks used for each frame         |
 
 Optional metadata:
-- `wavelengths`: `[L]` — wavelength values in nm
-- `spectral_response`: `[L]` — sensor spectral response per band
+- `wavelengths`: `[L]` - wavelength values in nm
+- `spectral_response`: `[L]` - sensor spectral response per band
+

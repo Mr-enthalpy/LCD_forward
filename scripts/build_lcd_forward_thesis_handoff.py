@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import hashlib
 import json
 import os
@@ -46,19 +47,37 @@ REQUIRED_SECTIONS = {
         "figures/recon_single_frame.png",
         "figures/recon_multiframe.png",
         "figures/recon_comparison.png",
+        "figures/recon_per_band_comparison.png",
+        "figures/recon_rgb_pseudocolor_comparison.png",
+        "data/recon_appendix_arrays.npz",
         "metrics/reconstruction_metrics.json",
         "reports/linear_recon_report.md",
     ],
     "cave_recon": [
         "figures/scene_cd_ms/recon_comparison.png",
+        "figures/scene_cd_ms/recon_per_band_comparison.png",
+        "figures/scene_cd_ms/recon_rgb_pseudocolor_comparison.png",
         "figures/scene_cd_ms/rendered_frames.png",
+        "data/scene_cd_ms/recon_appendix_arrays.npz",
         "figures/scene_clay_ms/recon_comparison.png",
+        "figures/scene_clay_ms/recon_per_band_comparison.png",
+        "figures/scene_clay_ms/recon_rgb_pseudocolor_comparison.png",
         "figures/scene_clay_ms/rendered_frames.png",
+        "data/scene_clay_ms/recon_appendix_arrays.npz",
         "figures/scene_superballs_ms/recon_comparison.png",
+        "figures/scene_superballs_ms/recon_per_band_comparison.png",
+        "figures/scene_superballs_ms/recon_rgb_pseudocolor_comparison.png",
         "figures/scene_superballs_ms/rendered_frames.png",
+        "data/scene_superballs_ms/recon_appendix_arrays.npz",
         "metrics/cave_recon_metrics.json",
         "metrics/cave_recon_summary.json",
         "reports/cave_recon_report.md",
+    ],
+    "summary_appendices": [
+        "thesis/reports/result_index.md",
+        "thesis/reports/figure_catalog.md",
+        "thesis/reports/repro_commands.md",
+        "thesis/phase3_6_linear_recon_cave/metrics/reconstruction_metrics_summary.csv",
     ],
 }
 
@@ -98,11 +117,21 @@ def _copy_tree(src: Path, dst: Path, flatten_cave: bool = False):
     if flatten_cave:
         for item in src.iterdir():
             if item.is_dir() and item.name.startswith("scene_"):
-                scene_dst = dst / "figures" / item.name
-                _ensure_dir(scene_dst)
+                scene_fig_dst = _ensure_dir(dst / "figures" / item.name)
+                scene_data_dst = _ensure_dir(dst / "data" / item.name)
                 for f in item.iterdir():
-                    if f.is_file():
-                        shutil.copy2(f, scene_dst / f.name)
+                    if not f.is_file():
+                        continue
+                    if f.suffix in (".png", ".jpg", ".pdf"):
+                        shutil.copy2(f, scene_fig_dst / f.name)
+                    elif f.suffix in (".npy", ".npz"):
+                        shutil.copy2(f, scene_data_dst / f.name)
+                    elif f.suffix in (".json",):
+                        _ensure_dir(dst / "metrics" / item.name)
+                        shutil.copy2(f, dst / "metrics" / item.name / f.name)
+                    elif f.suffix in (".md",):
+                        _ensure_dir(dst / "reports" / item.name)
+                        shutil.copy2(f, dst / "reports" / item.name / f.name)
             elif item.is_file():
                 if item.suffix in (".json",):
                     _ensure_dir(dst / "metrics")
@@ -124,8 +153,11 @@ def _copy_tree(src: Path, dst: Path, flatten_cave: bool = False):
                 shutil.copytree(item, sub_dst)
             elif item.suffix in (".png", ".jpg", ".pdf"):
                 shutil.copy2(item, figs_dir / item.name)
-            elif item.suffix in (".json", ".npy", ".npz"):
+            elif item.suffix in (".json",):
                 shutil.copy2(item, metrics_dir / item.name)
+            elif item.suffix in (".npy", ".npz"):
+                data_dir = _ensure_dir(dst / "data")
+                shutil.copy2(item, data_dir / item.name)
             elif item.suffix in (".md",):
                 shutil.copy2(item, reports_dir / item.name)
 
@@ -171,6 +203,238 @@ def build_cave_summary(handoff_root: Path):
         json.dump(summary, f, indent=2)
 
 
+def write_reconstruction_metrics_summary_csv(handoff_root: Path):
+    metrics_dir = handoff_root / "thesis" / "phase3_6_linear_recon_cave" / "metrics"
+    out_path = metrics_dir / "reconstruction_metrics_summary.csv"
+    syn_path = handoff_root / "thesis" / "phase3_6_linear_recon_synthetic" / "metrics" / "reconstruction_metrics.json"
+    cave_path = metrics_dir / "cave_recon_metrics.json"
+    wavelengths = [450.0, 550.0, 650.0]
+    rows = []
+
+    def add_rows(dataset: str, scene_id: str, result: dict):
+        single = result["single_frame_metrics"]
+        multi = result["multi_frame_metrics"]
+        methods = [("single_frame", single), ("multi_frame", multi)]
+
+        single_mean_psnr = single["mean"]["psnr"]
+        for method, metrics in methods:
+            mean_gain = metrics["mean"]["psnr"] - single_mean_psnr if method == "multi_frame" else 0.0
+            rows.append({
+                "dataset": dataset,
+                "scene_id": scene_id,
+                "channel": "mean",
+                "wavelength_nm": "",
+                "method": method,
+                "mse": metrics["mean"]["mse"],
+                "relative_l2": metrics["mean"]["relative_l2"],
+                "psnr": metrics["mean"]["psnr"],
+                "correlation": metrics["mean"]["correlation"],
+                "psnr_gain_vs_single_db": mean_gain,
+            })
+            for channel_str, channel_metrics in metrics["per_channel"].items():
+                channel = int(channel_str)
+                single_channel_psnr = single["per_channel"][channel_str]["psnr"]
+                gain = channel_metrics["psnr"] - single_channel_psnr if method == "multi_frame" else 0.0
+                rows.append({
+                    "dataset": dataset,
+                    "scene_id": scene_id,
+                    "channel": channel,
+                    "wavelength_nm": wavelengths[channel] if channel < len(wavelengths) else "",
+                    "method": method,
+                    "mse": channel_metrics["mse"],
+                    "relative_l2": channel_metrics["relative_l2"],
+                    "psnr": channel_metrics["psnr"],
+                    "correlation": channel_metrics["correlation"],
+                    "psnr_gain_vs_single_db": gain,
+                })
+
+    if syn_path.exists():
+        with open(syn_path) as f:
+            syn = json.load(f)
+        add_rows("synthetic", "synthetic_procedural", syn)
+
+    if cave_path.exists():
+        with open(cave_path) as f:
+            cave = json.load(f)
+        for scene in cave.get("results", []):
+            add_rows("cave", scene["scene_id"], scene)
+
+    _ensure_dir(metrics_dir)
+    fieldnames = [
+        "dataset",
+        "scene_id",
+        "channel",
+        "wavelength_nm",
+        "method",
+        "mse",
+        "relative_l2",
+        "psnr",
+        "correlation",
+        "psnr_gain_vs_single_db",
+    ]
+    with open(out_path, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        for row in rows:
+            writer.writerow(row)
+
+
+def write_result_index(handoff_root: Path):
+    cave_summary_path = handoff_root / "thesis" / "phase3_6_linear_recon_cave" / "metrics" / "cave_recon_summary.json"
+    fwd_path = handoff_root / "thesis" / "phase3_5_forward_validation" / "metrics" / "psf_prediction_metrics.json"
+    h_path = handoff_root / "thesis" / "h_matrix_diagnostics" / "metrics" / "h_matrix_diagnostics.json"
+    cave_summary = {}
+    fwd_metrics = {}
+    h_metrics = {}
+    if cave_summary_path.exists():
+        with open(cave_summary_path) as f:
+            cave_summary = json.load(f)
+    if fwd_path.exists():
+        with open(fwd_path) as f:
+            fwd_metrics = json.load(f)
+    if h_path.exists():
+        with open(h_path) as f:
+            h_metrics = json.load(f)
+
+    text = """# Result Index
+
+This page maps each thesis-closure claim to the evidence files, input provenance,
+and caveats needed to audit the handoff.
+
+| Claim | Primary evidence | Data / metrics | Provenance | Caveat |
+| --- | --- | --- | --- | --- |
+"""
+    fwd_corr = fwd_metrics.get("test_metrics", {}).get("mean", {}).get("normalized_correlation", "")
+    full_rank = h_metrics.get("full_rank_fraction", h_metrics.get("n_full_rank_points", ""))
+    text += (
+        f"| Measured mask-to-PSF relation is modelable by a simple PCA+ridge baseline | "
+        f"`thesis/phase3_5_forward_validation/figures/measured_vs_predicted_examples.png` | "
+        f"`thesis/phase3_5_forward_validation/metrics/psf_prediction_metrics.json` "
+        f"(mean corr={fwd_corr}) | `provenance/optic_system_release_reference.json` | "
+        "Low-dimensional baseline only; no physical micro-geometry claim |\n"
+    )
+    text += (
+        f"| Multi-frame transfer matrix is non-degenerate for the analyzed setup | "
+        f"`thesis/h_matrix_diagnostics/figures/h_rank_map.png` and "
+        f"`thesis/h_matrix_diagnostics/figures/h_singular_value_maps.png` | "
+        f"`thesis/h_matrix_diagnostics/metrics/h_matrix_diagnostics.json` "
+        f"(rank evidence={full_rank}) | `provenance/bishe_first_pass.yaml` | "
+        "FFT/circulant approximation at downsampled PSF size |\n"
+    )
+    text += (
+        "| Multi-frame reconstruction improves over the single-frame baseline | "
+        "`thesis/phase3_6_linear_recon_cave/figures/*/recon_per_band_comparison.png` and "
+        "`thesis/phase3_6_linear_recon_cave/figures/*/recon_rgb_pseudocolor_comparison.png` | "
+        "`thesis/phase3_6_linear_recon_cave/metrics/reconstruction_metrics_summary.csv` | "
+        "`thesis/phase3_6_linear_recon_cave/data/*/recon_appendix_arrays.npz` | "
+        "Public-dataset simulation, not real target capture |\n"
+    )
+    if cave_summary.get("scenes"):
+        text += "\n## CAVE Scene Summary\n\n"
+        text += "| Scene | Single PSNR | Multi PSNR | Gain |\n| --- | ---: | ---: | ---: |\n"
+        for scene in cave_summary["scenes"]:
+            text += (
+                f"| {scene['scene_id']} | {scene['single_psnr']:.2f} | "
+                f"{scene['multi_psnr']:.2f} | {scene['gain_db']:+.2f} |\n"
+            )
+    text += """
+
+## First Read Order
+1. `thesis/reports/thesis_evidence_summary.md`
+2. `thesis/reports/result_index.md`
+3. `thesis/reports/figure_catalog.md`
+4. `thesis/reports/repro_commands.md`
+"""
+    _ensure_dir(handoff_root / "thesis" / "reports")
+    (handoff_root / "thesis" / "reports" / "result_index.md").write_text(text, encoding="utf-8")
+
+
+def write_figure_catalog(handoff_root: Path):
+    text = """# Figure Catalog
+
+This catalog states what each thesis-facing figure is meant to show and what it does not show.
+
+| Figure | What to inspect | Supports | Limit |
+| --- | --- | --- | --- |
+| `thesis/phase3_5_forward_validation/figures/measured_vs_predicted_examples.png` | PSF shape agreement between measured and PCA+ridge-predicted kernels | Simple forward validation sanity baseline | Does not prove a first-principles optical model |
+| `thesis/phase3_5_forward_validation/figures/psf_basis_preview_wl0.png` | Low-dimensional PSF variation at 450 nm | PCA basis interpretability | Basis is wavelength-specific and empirical |
+| `thesis/phase3_5_forward_validation/figures/psf_basis_preview_wl1.png` | Low-dimensional PSF variation at 550 nm | PCA basis interpretability | Basis is wavelength-specific and empirical |
+| `thesis/phase3_5_forward_validation/figures/psf_basis_preview_wl2.png` | Low-dimensional PSF variation at 650 nm | PCA basis interpretability | Basis is wavelength-specific and empirical |
+| `thesis/h_matrix_diagnostics/figures/h_rank_map.png` | Per-frequency rank of the multi-frame transfer matrix | Non-degenerate spectral encoding evidence | Uses selected mask subset and circular convolution |
+| `thesis/h_matrix_diagnostics/figures/h_log_condition_map.png` | Spatial-frequency conditioning | Explains where inversion is stable or weak | High condition values imply noise sensitivity |
+| `thesis/h_matrix_diagnostics/figures/h_singular_value_maps.png` | Singular-value spread across frequencies | Frequency-domain separability | Downsampled PSF working size only |
+| `thesis/h_matrix_diagnostics/figures/otf_magnitude_grid_selected_masks.png` | OTF diversity for selected masks | Mask diversity sanity check | Qualitative diagnostic |
+| `thesis/phase3_6_linear_recon_synthetic/figures/recon_per_band_comparison.png` | GT, single-frame, multi-frame, and error per wavelength | Synthetic reconstruction pipeline check | Procedural target only |
+| `thesis/phase3_6_linear_recon_synthetic/figures/recon_rgb_pseudocolor_comparison.png` | Pseudo-RGB visual comparison | Human-readable synthetic reconstruction summary | Display normalization is for visualization |
+| `thesis/phase3_6_linear_recon_cave/figures/scene_cd_ms/recon_per_band_comparison.png` | Per-band CAVE reconstruction quality for `cd_ms` | Public-dataset reconstruction evidence | Simulation with measured PSFs, not captured target |
+| `thesis/phase3_6_linear_recon_cave/figures/scene_cd_ms/recon_rgb_pseudocolor_comparison.png` | Pseudo-RGB CAVE reconstruction for `cd_ms` | Visual comparison across single/multi frame | Pseudo-color is not calibrated camera RGB |
+| `thesis/phase3_6_linear_recon_cave/figures/scene_clay_ms/recon_per_band_comparison.png` | Per-band CAVE reconstruction quality for `clay_ms` | Includes weaker-case behavior | Simulation with measured PSFs, not captured target |
+| `thesis/phase3_6_linear_recon_cave/figures/scene_clay_ms/recon_rgb_pseudocolor_comparison.png` | Pseudo-RGB CAVE reconstruction for `clay_ms` | Visualizes remaining artifacts | Pseudo-color is not calibrated camera RGB |
+| `thesis/phase3_6_linear_recon_cave/figures/scene_superballs_ms/recon_per_band_comparison.png` | Per-band CAVE reconstruction quality for `superballs_ms` | Public-dataset reconstruction evidence | Simulation with measured PSFs, not captured target |
+| `thesis/phase3_6_linear_recon_cave/figures/scene_superballs_ms/recon_rgb_pseudocolor_comparison.png` | Pseudo-RGB CAVE reconstruction for `superballs_ms` | Visual comparison across single/multi frame | Pseudo-color is not calibrated camera RGB |
+
+## Array Appendices
+- `thesis/phase3_6_linear_recon_synthetic/data/recon_appendix_arrays.npz`
+- `thesis/phase3_6_linear_recon_cave/data/scene_cd_ms/recon_appendix_arrays.npz`
+- `thesis/phase3_6_linear_recon_cave/data/scene_clay_ms/recon_appendix_arrays.npz`
+- `thesis/phase3_6_linear_recon_cave/data/scene_superballs_ms/recon_appendix_arrays.npz`
+
+Each `.npz` stores GT object, single-frame reconstruction, multi-frame reconstruction,
+rendered frames, wavelengths, selected mask IDs, and source HDF5 provenance.
+"""
+    _ensure_dir(handoff_root / "thesis" / "reports")
+    (handoff_root / "thesis" / "reports" / "figure_catalog.md").write_text(text, encoding="utf-8")
+
+
+def write_repro_commands(handoff_root: Path, release_id: str):
+    text = f"""# Reproduction Commands
+
+These commands reproduce or verify the thesis handoff on this repository branch.
+They assume the external input datasets remain at the recorded provenance paths.
+
+## Environment
+```bash
+pip install -e .
+```
+
+## Run Phase 3.5/3.6 First Pass
+```bash
+python scripts/run_bishe_first_pass.py --config configs/bishe_first_pass.yaml --skip-handoff-verify
+```
+
+Expected run output root:
+```text
+outputs/bishe_first_pass/<YYYYMMDD_HHMMSS>/
+```
+
+## Build Handoff Payload
+```bash
+python scripts/build_lcd_forward_thesis_handoff.py \\
+  --run-dir outputs/bishe_first_pass/<YYYYMMDD_HHMMSS> \\
+  --optic-release-root D:/datasets/optic_system/phase3_release_20260520 \\
+  --output-root D:/datasets/LCD_forward/{release_id}
+```
+
+## Verify Handoff
+```bash
+python scripts/verify_lcd_forward_handoff.py D:/datasets/LCD_forward/{release_id}
+```
+
+## Recorded Input Paths
+- optic_system release: `D:/datasets/optic_system/phase3_release_20260520`
+- PSF HDF5: `D:/datasets/optic_system/phase3_release_20260520/lcd_forward/psf_dictionary/train.h5`
+- CAVE test HDF5: `D:/CAVE/processed/test.h5`
+- Config: `provenance/bishe_first_pass.yaml`
+
+## Reproduction Boundary
+- No hardware control is invoked.
+- No `optic_system` device services are imported.
+- Outputs are feasibility evidence, not superiority claims.
+"""
+    _ensure_dir(handoff_root / "thesis" / "reports")
+    (handoff_root / "thesis" / "reports" / "repro_commands.md").write_text(text, encoding="utf-8")
+
+
 def write_thesis_evidence_summary(handoff_root: Path):
     with open(handoff_root / "thesis" / "phase3_5_forward_validation" / "metrics" / "psf_prediction_metrics.json") as f:
         fwd_metrics = json.load(f)
@@ -208,12 +472,13 @@ confirming non-degenerate frequency-domain encoding structure for three-waveleng
 ### Synthetic (Level 1)
 - Multi-frame PSNR > single-frame PSNR
 - Pipeline verification: renderer + solver function correctly
+- Appendix includes per-band comparison, pseudo-RGB comparison, and reconstruction arrays
 
 ### CAVE Public Dataset (Level 2)
 """
     if cave_data.get("scenes"):
         for s in cave_data["scenes"]:
-            report += f"- {s['scene_id']}: single={s['single_psnr']:.1f} dB → multi={s['multi_psnr']:.1f} dB (gain=+{s['gain_db']:.1f} dB)\n"
+            report += f"- {s['scene_id']}: single={s['single_psnr']:.1f} dB -> multi={s['multi_psnr']:.1f} dB (gain=+{s['gain_db']:.1f} dB)\n"
         report += f"\nAll cases multi > single: {cave_data['all_cases_multi_greater_than_single']}\n"
 
     report += f"""
@@ -223,7 +488,7 @@ This result is a feasible existence demonstration using optic_system measured PS
 dictionary and public multispectral scenes. It shows:
 
 1. optic_system measured PSF dictionary has been ingested by LCD_forward
-2. Mask → PSF prediction is achievable at correlation ~0.985 (Phase 3.5)
+2. Mask -> PSF prediction is achievable at correlation ~0.985 (Phase 3.5)
 3. H matrix frequency-domain structure supports multichannel recovery
 4. Multi-frame reconstruction outperforms single-frame baseline
 5. This is public-dataset simulation driven by measured PSF kernels
@@ -249,7 +514,7 @@ def write_limitations(handoff_root: Path):
 1. **FFT circular convolution**: reconstruction uses circular boundary conditions,
    which may introduce artifacts at image edges. Noted in reports.
 
-2. **PSF working size**: PSFs are downsampled from 512×512 to 256×256 for
+2. **PSF working size**: PSFs are downsampled from 512x512 to 256x256 for
    compute efficiency. Full-resolution reconstruction may differ.
 
 3. **Sum-normalized PSFs**: all PSFs have DC = 1.0, meaning encoding diversity
@@ -280,7 +545,7 @@ def write_limitations(handoff_root: Path):
 
 
 def write_summary_report(handoff_root: Path, release_id: str, commit_sha: str):
-    text = f"""# LCD_forward Phase 3.5–3.6 First-Pass Summary
+    text = f"""# LCD_forward Phase 3.5-3.6 First-Pass Summary
 
 ## Release
 
@@ -291,7 +556,7 @@ def write_summary_report(handoff_root: Path, release_id: str, commit_sha: str):
 
 ## Contents
 
-This release packages the first-pass LCD_forward Phase 3.5–3.6 loop results
+This release packages the first-pass LCD_forward Phase 3.5-3.6 loop results
 into a thesis-consumable handoff.
 
 ### Phase 3.5: Measured PSF Forward Validation
@@ -309,7 +574,9 @@ into a thesis-consumable handoff.
 - Synthetic smoke test (Level 1)
 - CAVE public dataset reconstruction (Level 2)
 - Single-frame vs multi-frame comparison
-- Per-scene metrics and figures
+- Explicit per-band reconstruction comparisons
+- Pseudo-RGB reconstruction comparisons
+- Per-scene metrics, figures, and compressed array appendices
 
 ## Input Provenance
 
@@ -363,14 +630,20 @@ thesis/
     metrics/    - h_matrix_diagnostics.json
     reports/    - h_matrix_diagnostics_report.md
   phase3_6_linear_recon_synthetic/
-    figures/    - synthetic objects, masks, frames, single/multi recon
+    figures/    - synthetic objects, masks, frames, single/multi recon, per-band/RGB comparisons
+    data/       - recon_appendix_arrays.npz
     metrics/    - reconstruction_metrics.json
     reports/    - linear_recon_report.md
   phase3_6_linear_recon_cave/
-    figures/    - per-scene recon_comparison, rendered_frames
+    figures/    - per-scene per-band comparison, RGB pseudo-color comparison, rendered_frames
+    data/       - per-scene recon_appendix_arrays.npz
     metrics/    - cave_recon_metrics.json, cave_recon_summary.json
+    reports/    - cave_recon_report.md
   reports/
     thesis_evidence_summary.md
+    result_index.md
+    figure_catalog.md
+    repro_commands.md
     lcd_forward_phase3_5_3_6_summary.md
     limitations.md
 provenance/
@@ -385,6 +658,7 @@ provenance/
 - forward validation: correlation > 0.95 indicates model captures PSF structure
 - H matrix full-rank: encoding system is non-degenerate
 - cave_recon: multi PSNR > single PSNR demonstrates multi-frame gain
+- recon_appendix_arrays.npz: GT object, single-frame recon, multi-frame recon, rendered frames, wavelengths, selected masks, and HDF5 provenance
 
 ## Not Included
 
@@ -464,6 +738,7 @@ def write_release_json(handoff_root: Path, release_id: str, optic_release_root: 
             "h_matrix_diagnostics": True,
             "phase3_6_synthetic_reconstruction": True,
             "phase3_6_cave_reconstruction": True,
+            "reconstruction_appendices": True,
             "real_target_capture": False,
         },
         "scope": "thesis existence proof, not performance-optimized model",
@@ -476,21 +751,25 @@ def write_release_json(handoff_root: Path, release_id: str, optic_release_root: 
 def write_readme(handoff_root: Path, release_id: str):
     text = f"""# {release_id}
 
-LCD_forward Phase 3.5–3.6 first-pass thesis handoff.
+LCD_forward Phase 3.5-3.6 first-pass thesis handoff.
 
 ## Quick Links
 
 - First read: thesis/reports/thesis_evidence_summary.md
+- Result index: thesis/reports/result_index.md
+- Figure catalog: thesis/reports/figure_catalog.md
+- Reproduction commands: thesis/reports/repro_commands.md
 - Data contract: data_contract.md
 - Limitations: thesis/reports/limitations.md
 - Debug record: provenance/phase3_6_debug_and_tuning.md
 
 ## Contents
 
-1. Phase 3.5 forward validation (mask → PSF prediction)
+1. Phase 3.5 forward validation (mask -> PSF prediction)
 2. H-matrix frequency diagnostics (full-rank proof)
 3. Phase 3.6 synthetic reconstruction (smoke test)
 4. Phase 3.6 CAVE reconstruction (public dataset)
+5. Reconstruction appendix: per-band figures, pseudo-RGB figures, and `.npz` arrays
 
 ## Input provenance
 
@@ -527,6 +806,7 @@ def main():
 
     print("Building CAVE summary...")
     build_cave_summary(output_root)
+    write_reconstruction_metrics_summary_csv(output_root)
 
     print("Writing provenance...")
     write_optic_reference(optic_root, output_root / "provenance" / "optic_system_release_reference.json")
@@ -534,6 +814,9 @@ def main():
     print("Writing reports...")
     commit_sha = write_release_json(output_root, release_id, str(optic_root))
     write_thesis_evidence_summary(output_root)
+    write_result_index(output_root)
+    write_figure_catalog(output_root)
+    write_repro_commands(output_root, release_id)
     write_limitations(output_root)
     write_summary_report(output_root, release_id, commit_sha)
     write_data_contract(output_root)
@@ -545,6 +828,7 @@ def main():
     git_descriptor = ROOT / "handoff" / release_id
     _ensure_dir(git_descriptor)
     shutil.copy2(output_root / "RELEASE.json", git_descriptor / "RELEASE.json")
+    shutil.copy2(output_root / "README.md", git_descriptor / "README.md")
     shutil.copy2(output_root / "data_contract.md", git_descriptor / "data_contract.md")
     shutil.copy2(output_root / "MANIFEST.json", git_descriptor / "MANIFEST.json")
     shutil.copy2(output_root / "SHA256SUMS.txt", git_descriptor / "SHA256SUMS.txt")

@@ -28,14 +28,20 @@ thesis/
     metrics/    - h_matrix_diagnostics.json
     reports/    - h_matrix_diagnostics_report.md
   phase3_6_linear_recon_synthetic/
-    figures/    - synthetic objects, masks, frames, single/multi recon
+    figures/    - synthetic objects, masks, frames, single/multi recon, per-band/RGB comparisons
+    data/       - recon_appendix_arrays.npz
     metrics/    - reconstruction_metrics.json
     reports/    - linear_recon_report.md
   phase3_6_linear_recon_cave/
-    figures/    - per-scene recon_comparison, rendered_frames
+    figures/    - per-scene per-band comparison, RGB pseudo-color comparison, rendered_frames
+    data/       - per-scene recon_appendix_arrays.npz
     metrics/    - cave_recon_metrics.json, cave_recon_summary.json
+    reports/    - cave_recon_report.md
   reports/
     thesis_evidence_summary.md
+    result_index.md
+    figure_catalog.md
+    repro_commands.md
     lcd_forward_phase3_5_3_6_summary.md
     limitations.md
 provenance/
@@ -50,6 +56,7 @@ provenance/
 - forward validation: correlation > 0.95 indicates model captures PSF structure
 - H matrix full-rank: encoding system is non-degenerate
 - cave_recon: multi PSNR > single PSNR demonstrates multi-frame gain
+- recon_appendix_arrays.npz: GT object, single-frame recon, multi-frame recon, rendered frames, wavelengths, selected masks, and HDF5 provenance
 
 ## Not Included
 

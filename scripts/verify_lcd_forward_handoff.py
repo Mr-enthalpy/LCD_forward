@@ -26,10 +26,27 @@ REQUIRED_STRUCTURE = {
     "thesis/h_matrix_diagnostics/metrics/h_matrix_diagnostics.json": "file",
     "thesis/h_matrix_diagnostics/reports/h_matrix_diagnostics_report.md": "file",
     "thesis/phase3_6_linear_recon_synthetic/figures/recon_comparison.png": "file",
+    "thesis/phase3_6_linear_recon_synthetic/figures/recon_per_band_comparison.png": "file",
+    "thesis/phase3_6_linear_recon_synthetic/figures/recon_rgb_pseudocolor_comparison.png": "file",
+    "thesis/phase3_6_linear_recon_synthetic/data/recon_appendix_arrays.npz": "file",
     "thesis/phase3_6_linear_recon_synthetic/metrics/reconstruction_metrics.json": "file",
     "thesis/phase3_6_linear_recon_synthetic/reports/linear_recon_report.md": "file",
+    "thesis/phase3_6_linear_recon_cave/figures/scene_cd_ms/recon_per_band_comparison.png": "file",
+    "thesis/phase3_6_linear_recon_cave/figures/scene_cd_ms/recon_rgb_pseudocolor_comparison.png": "file",
+    "thesis/phase3_6_linear_recon_cave/data/scene_cd_ms/recon_appendix_arrays.npz": "file",
+    "thesis/phase3_6_linear_recon_cave/figures/scene_clay_ms/recon_per_band_comparison.png": "file",
+    "thesis/phase3_6_linear_recon_cave/figures/scene_clay_ms/recon_rgb_pseudocolor_comparison.png": "file",
+    "thesis/phase3_6_linear_recon_cave/data/scene_clay_ms/recon_appendix_arrays.npz": "file",
+    "thesis/phase3_6_linear_recon_cave/figures/scene_superballs_ms/recon_per_band_comparison.png": "file",
+    "thesis/phase3_6_linear_recon_cave/figures/scene_superballs_ms/recon_rgb_pseudocolor_comparison.png": "file",
+    "thesis/phase3_6_linear_recon_cave/data/scene_superballs_ms/recon_appendix_arrays.npz": "file",
     "thesis/phase3_6_linear_recon_cave/metrics/cave_recon_metrics.json": "file",
     "thesis/phase3_6_linear_recon_cave/metrics/cave_recon_summary.json": "file",
+    "thesis/phase3_6_linear_recon_cave/reports/cave_recon_report.md": "file",
+    "thesis/phase3_6_linear_recon_cave/metrics/reconstruction_metrics_summary.csv": "file",
+    "thesis/reports/result_index.md": "file",
+    "thesis/reports/figure_catalog.md": "file",
+    "thesis/reports/repro_commands.md": "file",
     "thesis/reports/thesis_evidence_summary.md": "file",
     "thesis/reports/limitations.md": "file",
     "thesis/reports/lcd_forward_phase3_5_3_6_summary.md": "file",
@@ -75,6 +92,8 @@ def verify_handoff(release_root: Path) -> list[str]:
             errors.append("RELEASE.json: phase3_6_synthetic_reconstruction not True")
         if not outputs.get("phase3_6_cave_reconstruction"):
             errors.append("RELEASE.json: phase3_6_cave_reconstruction not True")
+        if not outputs.get("reconstruction_appendices"):
+            errors.append("RELEASE.json: reconstruction_appendices not True")
         if outputs.get("real_target_capture"):
             errors.append("RELEASE.json: real_target_capture should be False")
 
@@ -96,6 +115,13 @@ def verify_handoff(release_root: Path) -> list[str]:
         for s in cs.get("scenes", []):
             if s.get("gain_db", 0) <= 0:
                 errors.append(f"CAVE summary: {s.get('scene_id')} has non-positive gain")
+
+    metrics_csv_path = release_root / "thesis" / "phase3_6_linear_recon_cave" / "metrics" / "reconstruction_metrics_summary.csv"
+    if metrics_csv_path.exists():
+        text = metrics_csv_path.read_text(encoding="utf-8")
+        for required in ["synthetic_procedural", "cd_ms", "clay_ms", "superballs_ms", "multi_frame"]:
+            if required not in text:
+                errors.append(f"reconstruction_metrics_summary.csv missing: {required}")
 
     evidence_path = release_root / "thesis" / "reports" / "thesis_evidence_summary.md"
     if evidence_path.exists():

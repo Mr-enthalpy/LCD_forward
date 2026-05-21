@@ -1,6 +1,6 @@
 # Phase 3.6 Debug & Tuning Record
 
-> Generated from the first-pass Phase 3.5–3.6 implementation loop.
+> Generated from the first-pass Phase 3.5-3.6 implementation loop.
 > Records all bugs found, root-cause analysis, strategy sweeps,
 > and final results. Source: May 20, 2026 development session.
 
@@ -8,7 +8,7 @@
 
 ### Bug 1: Missing IFFT in frequency-domain reconstructor
 
-**Symptom**: Phase 3.6 reconstruction PSNR ≈ –28 to –32 dB.
+**Symptom**: Phase 3.6 reconstruction PSNR ~ -28 to -32 dB.
 Multi-frame results indistinguishable from random noise.
 
 **Root cause**: `frequency_domain_ridge_reconstruct` solved per-frequency
@@ -29,25 +29,25 @@ for c in range(n_lambda):
 
 | Run | Single PSNR | Multi PSNR |
 |-----|------------|------------|
-| Before IFFT fix | –28.8 dB | –31.6 dB |
-| After IFFT fix (α=1.0) | 15.0 dB | 15.1 dB |
+| Before IFFT fix | -28.8 dB | -31.6 dB |
+| After IFFT fix (alpha=1.0) | 15.0 dB | 15.1 dB |
 
-### Bug 2: Regularization dominating signal (HᵀH eigenvalues drowned)
+### Bug 2: Regularization dominating signal (HTH eigenvalues drowned)
 
 **Symptom**: After IFFT fix, PSNR improved to ~15 dB, but multi-frame (T=9)
 showed **zero gain** over single-frame (T=1): 15.0 vs 15.1 dB.
 
-**Root cause**: Ridge α=1.0, combined with per-frequency adaptive scaling
-`reg = α × |HᵀH|max × I`, caused regularization to overwhelm the smaller
-singular values of HᵀH at most frequencies.
+**Root cause**: Ridge alpha=1.0, combined with per-frequency adaptive scaling
+`reg = alpha x |HTH|max x I`, caused regularization to overwhelm the smaller
+singular values of HTH at most frequencies.
 
-At median condition-number frequencies (cond ≈ 15):
-- HᵀH max ≈ 1.0, HᵀH min ≈ 0.07
-- `reg = 1.0 × 1.0 × I` adds 1.0 to diagonal
-- Effective condition number: (1+1) / (0.07+1) ≈ 1.9
-- Regularization dominates the solution — T=1 and T=9 produce same result
+At median condition-number frequencies (cond ~ 15):
+- HTH max ~ 1.0, HTH min ~ 0.07
+- `reg = 1.0 x 1.0 x I` adds 1.0 to diagonal
+- Effective condition number: (1+1) / (0.07+1) ~ 1.9
+- Regularization dominates the solution - T=1 and T=9 produce same result
 
-**Fix**: Reduce α to 1e-6, add `"none"` and `"threshold"` policies:
+**Fix**: Reduce alpha to 1e-6, add `"none"` and `"threshold"` policies:
 
 ```python
 # AFTER (fixed):
@@ -69,7 +69,7 @@ def _solve_per_frequency(H, y, alpha, policy, eye, cond_threshold):
 ### H matrix rank and conditioning
 
 For T frames and L wavelengths, each frequency point (i,j) defines a
-[T × L] complex transfer matrix H. Analysis on train set PSFs at 64×64:
+[T x L] complex transfer matrix H. Analysis on train set PSFs at 64x64:
 
 | Metric | Value |
 |--------|-------|
@@ -105,14 +105,14 @@ Frequency-domain coefficient-of-variation of |H| across masks:
 **Interpretation**: PSFs are nearly identical at DC (all sum-normalized to 1.0),
 but diverge at mid-to-high spatial frequencies where diffraction differences appear.
 The per-wavelength differences are even larger: at low frequency (16,16),
-`|H|` at 450 nm = 5.4e-2 vs 550 nm = 7.6e-3 — a 7× channel separation.
+`|H|` at 450 nm = 5.4e-2 vs 550 nm = 7.6e-3 - a 7x channel separation.
 
 This validates Phase 3.2b: mask-induced PSF differences are real and measurable
 in frequency domain, concentrated at non-DC frequencies.
 
 ## 3. Strategy Sweep Results
 
-All sweeps run on synthetic 3-channel target at 128×128 for speed.
+All sweeps run on synthetic 3-channel target at 128x128 for speed.
 Device: CPU.
 
 ### Mask selection strategies tested
@@ -126,14 +126,14 @@ Device: CPU.
 
 ### Regularization strategies tested
 
-| Policy | α | Description |
+| Policy | alpha | Description |
 |--------|---|-------------|
-| none | 0 | Direct solve — fails (singular at some frequencies) |
+| none | 0 | Direct solve - fails (singular at some frequencies) |
 | alpha_1e-6 | 1e-6 | Adaptive ridge |
 | alpha_1e-4 | 1e-4 | Adaptive ridge |
 | thresh_1e-6 | 1e-6 | Threshold-based (ridge only if cond > 10³) |
 
-### Full sweep results (synthetic target, 128×128)
+### Full sweep results (synthetic target, 128x128)
 
 | Strategy | Policy | T | Single PSNR | **Multi PSNR** | **Gain** |
 |----------|--------|---|-------------|----------------|----------|
@@ -150,20 +150,20 @@ Device: CPU.
 **Key findings**:
 
 1. **More diverse masks = higher multi-frame PSNR**: det+task_12 (29.2 dB) > det_8 (25.9 dB) > diverse_9 (25.6 dB)
-2. **α=1e-6 >> α=1e-4**: At 128×128, α=1e-6 gives +14.4 dB gain vs α=1e-4 gives +6.4 dB
+2. **alpha=1e-6 >> alpha=1e-4**: At 128x128, alpha=1e-6 gives +14.4 dB gain vs alpha=1e-4 gives +6.4 dB
 3. **18 frames worse than 12**: The additional t frames from similar families add correlated noise, reducing SNR
-4. **Single-frame consistently ~14.8 dB**: Underdetermined (T=1, L=3) — serves as a stable baseline
-5. **Direct solve (α=0) fails**: Some frequencies are too ill-conditioned for unregularized inversion
+4. **Single-frame consistently ~14.8 dB**: Underdetermined (T=1, L=3) - serves as a stable baseline
+5. **Direct solve (alpha=0) fails**: Some frequencies are too ill-conditioned for unregularized inversion
 
 ### Best configuration
 
 ```
 Mask selection: diverse_family_first (deterministic + task_related), count=12
-Regularization: α = 1e-6, policy = adaptive
-PSF working size: 256×256
+Regularization: alpha = 1e-6, policy = adaptive
+PSF working size: 256x256
 ```
 
-## 4. Final Results (256×256)
+## 4. Final Results (256x256)
 
 ### Phase 3.5: Forward Validation
 
@@ -174,13 +174,13 @@ PSF working size: 256×256
 | 650 nm | 4.9e-10 | 0.184 | 0.985 |
 | **Mean** | **5.0e-10** | **0.184** | **0.985** |
 
-- PCA 24 components, ridge α=1.0
+- PCA 24 components, ridge alpha=1.0
 - Per-wavelength ridge R² > 0.999 (train PCA coefficient fit)
-- PSF working size: 256×256
+- PSF working size: 256x256
 
 ### Phase 3.6: Linear Reconstruction
 
-Final config: α=1e-6, adaptive policy, 12 diverse masks (8 deterministic + 4 task_related), 256×256.
+Final config: alpha=1e-6, adaptive policy, 12 diverse masks (8 deterministic + 4 task_related), 256x256.
 
 | Level | Scene | Single PSNR | **Multi PSNR** | **Multi Gain** |
 |-------|-------|-------------|----------------|----------------|
@@ -194,7 +194,7 @@ Final config: α=1e-6, adaptive policy, 12 diverse masks (8 deterministic + 4 ta
 - **cd_ms (39.2 dB)**: Near-perfect 3-channel reconstruction. The CD scene has
   simple, smooth structures well-posed for the ridge solver.
 - **superballs_ms (25.5 dB)**: Good recovery with +6.5 dB multi-frame gain.
-- **clay_ms (18.0 dB)**: Hardest scene — high spatial frequency content.
+- **clay_ms (18.0 dB)**: Hardest scene - high spatial frequency content.
   The similar PSF transfer functions cannot resolve fine textures equally well
   across all wavelengths.
 - **Synthetic (24.4 dB)**: Consistent +9 dB gain, verifies the pipeline.
@@ -208,8 +208,8 @@ information using measured PSF encoders.
 | Channel | Wavelength | Single PSNR | Multi PSNR | Gain |
 |---------|-----------|-------------|------------|------|
 | 0 | 450 nm | 20.78 dB (mean) | 39.17 dB (mean) | +18.39 dB |
-| 1 | 550 nm | — | — | — |
-| 2 | 650 nm | — | — | — |
+| 1 | 550 nm | - | - | - |
+| 2 | 650 nm | - | - | - |
 
 Note: per-channel single-frame PSNR is not meaningful for T=1 underdetermined
 systems; only the mean across channels is reported. See `reconstruction_metrics.json`
@@ -219,33 +219,33 @@ in the output directory for full per-channel multi-frame breakdowns.
 
 ### Memory scaling
 
-| Size | Memory per T×L FFT | Per-frequency solve | Total |
+| Size | Memory per TxL FFT | Per-frequency solve | Total |
 |------|-------------------|---------------------|-------|
-| 128×128 | 16K × 12 × 3 × 8B = 4.6 MB | 16K iterations | ~10s CPU |
-| 256×256 | 65K × 12 × 3 × 8B = 18.4 MB | 65K iterations | ~2 min CPU |
-| 512×512 | 262K × 12 × 3 × 8B = 73.7 MB | 262K iterations | ~8 min CPU |
+| 128x128 | 16K x 12 x 3 x 8B = 4.6 MB | 16K iterations | ~10s CPU |
+| 256x256 | 65K x 12 x 3 x 8B = 18.4 MB | 65K iterations | ~2 min CPU |
+| 512x512 | 262K x 12 x 3 x 8B = 73.7 MB | 262K iterations | ~8 min CPU |
 
 ### Degradation path
 
-If 512×512 is too large:
-1. psf_working_size = 256×256 (used in first pass)
-2. pca_components = 16 → 12 → 8
-3. selected_masks count = 12 → 9 → 6
+If 512x512 is too large:
+1. psf_working_size = 256x256 (used in first pass)
+2. pca_components = 16 -> 12 -> 8
+3. selected_masks count = 12 -> 9 -> 6
 
 All degradation parameters recorded in run_manifest.json.
 
 ## 6. Conclusions
 
-### Thesis evidence chain (Phase 3.5 → 3.6)
+### Thesis evidence chain (Phase 3.5 -> 3.6)
 
-1. **mask → PSF is modellable**: PCA + ridge achieves test correlation 0.985
-   across 3 wavelengths, downsampled to 256×256
+1. **mask -> PSF is modellable**: PCA + ridge achieves test correlation 0.985
+   across 3 wavelengths, downsampled to 256x256
 2. **Measured PSFs encode multichannel information**: Multi-frame ridge
-   reconstruction with α=1e-6 achieves PSNR gains of +3.7 to +18.4 dB
+   reconstruction with alpha=1e-6 achieves PSNR gains of +3.7 to +18.4 dB
    over single-frame baseline
-3. **Phase 3.2b conclusions validated**: Inter-mask PSF differences (~298× noise)
+3. **Phase 3.2b conclusions validated**: Inter-mask PSF differences (~298x noise)
    are sufficient for encoding diversity in frequency domain
-4. **CAVE public dataset**: Realistic 3-channel reconstruction at 256×256
+4. **CAVE public dataset**: Realistic 3-channel reconstruction at 256x256
    with measured PSF kernels demonstrates the loop
 
 ### Known limitations
@@ -254,12 +254,14 @@ All degradation parameters recorded in run_manifest.json.
 - All PSFs are sum-normalized, producing identically-1 DC component,
   forcing all encoding diversity into mid/high frequencies
 - Ridge solver assumes linear, shift-invariant, circulant system
-- No learned masks, no deep reconstruction — these are intentional
+- No learned masks, no deep reconstruction - these are intentional
   thesis-scope boundaries
 
 ### Next steps (beyond first pass)
 
 - Phase 3.6b: real target capture from optic_system (optional)
-- Use original 512×512 PSFs with GPU
+- Use original 512x512 PSFs with GPU
 - Investigate non-ridge solvers (conjugate gradient, ADMM)
 - Thesis figure assembly (Phase 3.7)
+
+
