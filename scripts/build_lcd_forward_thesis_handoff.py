@@ -556,6 +556,12 @@ def write_h_matrix_dc_otf_response(handoff_root: Path):
     shutil.copy2(src, dst)
 
 
+def write_solver_regularization_response(handoff_root: Path):
+    src = ROOT / "docs" / "phase3_6_solver_regularization_response.md"
+    dst = _ensure_dir(handoff_root / "thesis" / "reports") / "solver_regularization_response.md"
+    shutil.copy2(src, dst)
+
+
 def write_summary_report(handoff_root: Path, release_id: str, commit_sha: str):
     text = f"""# LCD_forward Phase 3.5-3.6 First-Pass Summary
 
@@ -774,6 +780,7 @@ LCD_forward Phase 3.5-3.6 first-pass thesis handoff.
 - Reproduction commands: thesis/reports/repro_commands.md
 - Metric audit response: thesis/reports/metric_audit_response.md
 - H-matrix DC/OTF response: thesis/reports/h_matrix_dc_otf_response.md
+- Solver regularization response: thesis/reports/solver_regularization_response.md
 - Data contract: data_contract.md
 - Limitations: thesis/reports/limitations.md
 - Debug record: provenance/phase3_6_debug_and_tuning.md
@@ -835,6 +842,7 @@ def main():
     write_limitations(output_root)
     write_metric_audit_response(output_root)
     write_h_matrix_dc_otf_response(output_root)
+    write_solver_regularization_response(output_root)
     write_summary_report(output_root, release_id, commit_sha)
     write_data_contract(output_root)
     write_readme(output_root, release_id)

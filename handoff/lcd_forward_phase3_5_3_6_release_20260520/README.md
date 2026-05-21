@@ -12,6 +12,7 @@ Large binary payloads for this handoff are stored locally at `D:/datasets/LCD_fo
 - Reproduction commands: thesis/reports/repro_commands.md
 - Metric audit response: thesis/reports/metric_audit_response.md
 - H-matrix DC/OTF response: thesis/reports/h_matrix_dc_otf_response.md
+- Solver regularization response: thesis/reports/solver_regularization_response.md
 - Data contract: data_contract.md
 - Limitations: thesis/reports/limitations.md
 - Debug record: provenance/phase3_6_debug_and_tuning.md

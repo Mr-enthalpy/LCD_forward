@@ -23,8 +23,9 @@
     "reconstruction_appendices": true,
     "real_target_capture": false,
     "phase3_6_metric_audit_response": true,
-    "phase3_6_h_matrix_dc_otf_response": true
+    "phase3_6_h_matrix_dc_otf_response": true,
+    "phase3_6_solver_regularization_response": true
   },
   "scope": "thesis existence proof, not performance-optimized model",
-  "post_release_note": "Metric audit and H-matrix DC/OTF responses added locally after review; binary payload remains local."
+  "post_release_note": "Metric audit, H-matrix DC/OTF, and solver regularization responses added locally after review; binary payload remains local."
 }

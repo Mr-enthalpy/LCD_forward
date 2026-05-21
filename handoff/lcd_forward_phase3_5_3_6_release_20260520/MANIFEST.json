@@ -2,8 +2,8 @@
   "release_id": "lcd_forward_phase3_5_3_6_release_20260520",
   "files": {
     "data_contract.md": {
-      "size_bytes": 2856,
-      "sha256": "e113b96fb54486123d91973f9579430af7780218310f86f72aa3f0e1aa31711b"
+      "size_bytes": 2998,
+      "sha256": "9659ccef629c701b6d44db01cc7364e0809a497ed6858c471b791b422e40ef3a"
     },
     "provenance/bishe_first_pass.yaml": {
       "size_bytes": 1145,
@@ -22,12 +22,12 @@
       "sha256": "5959124c459a026b16ebfbf8ee1ffdbc38fd51c36692ca5d54638adb8ae0a02c"
     },
     "README.md": {
-      "size_bytes": 1279,
-      "sha256": "bb1d5d5c3202dd49c150b097823a3e0d5db43b33b46f85edd72c0c737adc710c"
+      "size_bytes": 1363,
+      "sha256": "76708af4771aa9b538258add76e9eb52234557c00cf8ccf50701521b981e73cf"
     },
     "RELEASE.json": {
-      "size_bytes": 1202,
-      "sha256": "20202d4b26fe4c13f5fa933a2d8a5f824a51b6c5c314b539a792dc665b771822"
+      "size_bytes": 1280,
+      "sha256": "9716c5d36ad4791db3aa90c5764b129e5a7b96755a0b6fd1bccf8c2f8dcac25e"
     },
     "thesis/h_matrix_diagnostics/data/frequency_diversity_cv_map.npy": {
       "size_bytes": 524416,
@@ -198,8 +198,8 @@
       "sha256": "4fbd0eb5f98c6cfd28cb3d2316a141f938c22af730fd5ddc824b710836d153e7"
     },
     "thesis/phase3_6_linear_recon_cave/reports/cave_recon_report.md": {
-      "size_bytes": 2030,
-      "sha256": "4223625f9b71e387d20e218124084188ceffa6cbf0dbd2fc3567d8a3053bdb25"
+      "size_bytes": 2793,
+      "sha256": "be82d4a0a2a4b0526717d55257bfbcf46f23abae27abad0d74c64fb4bc7e2155"
     },
     "thesis/phase3_6_linear_recon_synthetic/data/recon_appendix_arrays.npz": {
       "size_bytes": 4228255,
@@ -270,12 +270,16 @@
       "sha256": "9a1bd6aed099f992519ea2bd7302a97ce474dea9c71659d36c4a73a34b536f95"
     },
     "thesis/reports/result_index.md": {
-      "size_bytes": 2276,
-      "sha256": "e2b3cae71c91efe0b7a18ecd6fad2fc70408df4bd41b92091ec0b3ceb07934e4"
+      "size_bytes": 2472,
+      "sha256": "3eb774bf317584b5b00db6f85ab0e637a782b0a1389ccd98053d304d815d24eb"
+    },
+    "thesis/reports/solver_regularization_response.md": {
+      "size_bytes": 4215,
+      "sha256": "ed85d4ed866d35e7f698831eabbe7676c53963c447dc6090de8993edd701cb8f"
     },
     "thesis/reports/thesis_evidence_summary.md": {
-      "size_bytes": 2475,
-      "sha256": "c4e1b4a4829fdb83162f141fab4775a87fa2911b97175fe77181101cbd98880f"
+      "size_bytes": 2856,
+      "sha256": "c33cb09f05b87103a65a9a4dfacc770e132e477789197f48fa88c9401c269c2d"
     }
   }
 }
