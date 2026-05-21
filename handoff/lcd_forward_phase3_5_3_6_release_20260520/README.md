@@ -14,6 +14,8 @@ Large binary payloads for this handoff are stored locally at `D:/datasets/LCD_fo
 - H-matrix DC/OTF response: thesis/reports/h_matrix_dc_otf_response.md
 - Solver regularization response: thesis/reports/solver_regularization_response.md
 - Alpha sweep appendix: thesis/alpha_sweep/cave_alpha_sweep.md
+- Alpha sweep figures: thesis/alpha_sweep/alpha_psnr.png, alpha_ssim.png, alpha_display_ssim.png
+- Alpha interpretability: thesis/reports/alpha_interpretability.md
 - Data contract: data_contract.md
 - Limitations: thesis/reports/limitations.md
 - Debug record: provenance/phase3_6_debug_and_tuning.md
@@ -25,6 +27,7 @@ Large binary payloads for this handoff are stored locally at `D:/datasets/LCD_fo
 3. Phase 3.6 synthetic reconstruction (smoke test)
 4. Phase 3.6 CAVE reconstruction (public dataset)
 5. Reconstruction appendix: per-band figures, pseudo-RGB figures, and `.npz` arrays
+6. Alpha sweep & interpretability: 27-alpha range (1e-18 to 1e+0), SSIM raw/display, correlation, PSNR gain analysis
 
 ## Input provenance
 

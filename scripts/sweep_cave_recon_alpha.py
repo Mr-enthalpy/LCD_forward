@@ -16,13 +16,13 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from src.datasets.optic_handoff import load_psf_dictionary
+from src.utils.metrics import ssim_box11, minmax_normalize
 
 
 DEFAULT_RELEASE_ROOT = Path("D:/datasets/LCD_forward/lcd_forward_phase3_5_3_6_release_20260520")
 DEFAULT_TRAIN_H5 = Path("D:/datasets/optic_system/phase3_release_20260520/lcd_forward/psf_dictionary/train.h5")
 DEFAULT_ALPHAS = [
-    1e-16,
-    2e-16,
+    1e-18,
     3e-16,
     5e-16,
     7e-16,
@@ -36,9 +36,19 @@ DEFAULT_ALPHAS = [
     7e-15,
     1e-14,
     1e-13,
+    1e-12,
+    1e-11,
+    1e-10,
+    1e-9,
     1e-8,
+    1e-7,
     1e-6,
+    1e-5,
     1e-4,
+    1e-3,
+    1e-2,
+    1e-1,
+    1e+0,
 ]
 
 
@@ -105,28 +115,45 @@ def batched_frequency_ridge(
 
 
 def compute_metrics(gt: torch.Tensor, pred: torch.Tensor) -> dict[str, Any]:
+    gt_np = gt.cpu().numpy()
+    pred_np = pred.cpu().numpy()
     rows = {}
-    psnrs = []
-    mses = []
-    corrs = []
-    rel_l2s = []
-    for channel in range(gt.shape[0]):
-        gt_flat = gt[channel].flatten().float()
-        pred_flat = pred[channel].flatten().float()
-        mse = float(torch.mean((gt_flat - pred_flat) ** 2))
-        psnr = float(10.0 * math.log10(1.0 / max(mse, 1e-12)))
-        rel_l2 = float(torch.linalg.norm(gt_flat - pred_flat) / (torch.linalg.norm(gt_flat) + 1e-8))
+    psnrs, mses, corrs, ssims_raw, ssims_display, rel_l2s = [], [], [], [], [], []
+    for channel in range(gt_np.shape[0]):
+        gt_ch = gt_np[channel]
+        pred_ch = pred_np[channel]
+        mse = float(np.mean((gt_ch - pred_ch) ** 2))
+        psnr_val = float(10.0 * math.log10(1.0 / max(mse, 1e-12)))
+        rel_l2 = float(
+            np.linalg.norm(gt_ch - pred_ch) / (np.linalg.norm(gt_ch) + 1e-8)
+        )
+        gt_flat = gt_ch.ravel()
+        pred_flat = pred_ch.ravel()
         gt_centered = gt_flat - gt_flat.mean()
         pred_centered = pred_flat - pred_flat.mean()
         corr = float(
-            torch.sum(gt_centered * pred_centered)
-            / (torch.sqrt(torch.sum(gt_centered**2) * torch.sum(pred_centered**2)) + 1e-8)
+            np.sum(gt_centered * pred_centered)
+            / (np.sqrt(np.sum(gt_centered ** 2) * np.sum(pred_centered ** 2)) + 1e-8)
         )
-        rows[str(channel)] = {"mse": mse, "psnr": psnr, "relative_l2": rel_l2, "correlation": corr}
+        ssim_raw = ssim_box11(gt_ch, pred_ch)
+        gt_display = minmax_normalize(gt_ch)
+        pred_display = minmax_normalize(pred_ch)
+        ssim_disp = ssim_box11(gt_display, pred_display)
+
+        rows[str(channel)] = {
+            "mse": mse,
+            "psnr": psnr_val,
+            "relative_l2": rel_l2,
+            "correlation": corr,
+            "ssim_raw": ssim_raw,
+            "ssim_display": ssim_disp,
+        }
         mses.append(mse)
-        psnrs.append(psnr)
+        psnrs.append(psnr_val)
         rel_l2s.append(rel_l2)
         corrs.append(corr)
+        ssims_raw.append(ssim_raw)
+        ssims_display.append(ssim_disp)
     return {
         "per_channel": rows,
         "mean": {
@@ -134,6 +161,8 @@ def compute_metrics(gt: torch.Tensor, pred: torch.Tensor) -> dict[str, Any]:
             "psnr": float(np.mean(psnrs)),
             "relative_l2": float(np.mean(rel_l2s)),
             "correlation": float(np.mean(corrs)),
+            "ssim_raw": float(np.mean(ssims_raw)),
+            "ssim_display": float(np.mean(ssims_display)),
         },
     }
 
@@ -202,6 +231,10 @@ def run_sweep(args: argparse.Namespace) -> dict[str, Any]:
                         "multi_corr": multi_metrics["mean"]["correlation"],
                         "single_mse": single_metrics["mean"]["mse"],
                         "multi_mse": multi_metrics["mean"]["mse"],
+                        "single_ssim_raw": single_metrics["mean"]["ssim_raw"],
+                        "multi_ssim_raw": multi_metrics["mean"]["ssim_raw"],
+                        "single_ssim_display": single_metrics["mean"]["ssim_display"],
+                        "multi_ssim_display": multi_metrics["mean"]["ssim_display"],
                     }
                 )
                 print(
@@ -209,7 +242,8 @@ def run_sweep(args: argparse.Namespace) -> dict[str, Any]:
                     f"single={single_metrics['mean']['psnr']:.2f} "
                     f"multi={multi_metrics['mean']['psnr']:.2f} "
                     f"gain={multi_metrics['mean']['psnr'] - single_metrics['mean']['psnr']:+.2f} "
-                    f"corr={multi_metrics['mean']['correlation']:.4f}"
+                    f"corr={multi_metrics['mean']['correlation']:.4f} "
+                    f"ssim={multi_metrics['mean']['ssim_raw']:.4f}"
                 )
             except RuntimeError as exc:
                 rows.append(
@@ -227,6 +261,10 @@ def run_sweep(args: argparse.Namespace) -> dict[str, Any]:
                         "multi_corr": np.nan,
                         "single_mse": np.nan,
                         "multi_mse": np.nan,
+                        "single_ssim_raw": np.nan,
+                        "multi_ssim_raw": np.nan,
+                        "single_ssim_display": np.nan,
+                        "multi_ssim_display": np.nan,
                     }
                 )
                 print(f"  alpha={format_alpha(alpha):>5s} FAILED: {exc}")
@@ -249,6 +287,8 @@ def run_sweep(args: argparse.Namespace) -> dict[str, Any]:
                     "mean_single_corr": np.nan,
                     "mean_multi_corr": np.nan,
                     "mean_multi_mse": np.nan,
+                    "mean_multi_ssim_raw": np.nan,
+                    "mean_multi_ssim_display": np.nan,
                 }
             )
             continue
@@ -265,6 +305,8 @@ def run_sweep(args: argparse.Namespace) -> dict[str, Any]:
                 "mean_single_corr": float(np.mean([row["single_corr"] for row in selected])),
                 "mean_multi_corr": float(np.mean([row["multi_corr"] for row in selected])),
                 "mean_multi_mse": float(np.mean([row["multi_mse"] for row in selected])),
+                "mean_multi_ssim_raw": float(np.mean([row["multi_ssim_raw"] for row in selected])),
+                "mean_multi_ssim_display": float(np.mean([row["multi_ssim_display"] for row in selected])),
             }
         )
 
@@ -310,16 +352,21 @@ def write_outputs(result: dict[str, Any], output_dir: Path) -> None:
         f"- Best by mean multi-frame raw PSNR: `{result['best_by_mean_multi_psnr']['alpha_label']}`",
         f"- Best by mean PSNR gain: `{result['best_by_mean_gain_psnr']['alpha_label']}`",
         "",
-        "| Alpha | Mean single PSNR | Mean multi PSNR | Mean gain | Mean multi corr |",
-        "|---:|---:|---:|---:|---:|",
+        "| Alpha | Mean multi PSNR | Mean gain | Mean multi corr | Mean multi SSIM raw | Mean multi SSIM display |",
+        "|---:|---:|---:|---:|---:|---:|",
     ]
     for row in summary:
         if row["n_scenes_failed"]:
-            lines.append(f"| {row['alpha_label']} | failed | failed | failed | failed |")
+            lines.append(f"| {row['alpha_label']} | failed | failed | failed | failed | failed |")
         else:
+            ssim_raw = row.get("mean_multi_ssim_raw", np.nan)
+            ssim_disp = row.get("mean_multi_ssim_display", np.nan)
+            ssim_raw_str = f"{ssim_raw:.4f}" if not np.isnan(ssim_raw) else "N/A"
+            ssim_disp_str = f"{ssim_disp:.4f}" if not np.isnan(ssim_disp) else "N/A"
             lines.append(
-                f"| {row['alpha_label']} | {row['mean_single_psnr']:.2f} | "
-                f"{row['mean_multi_psnr']:.2f} | {row['mean_gain_psnr']:+.2f} | {row['mean_multi_corr']:.4f} |"
+                f"| {row['alpha_label']} | {row['mean_multi_psnr']:.2f} | "
+                f"{row['mean_gain_psnr']:+.2f} | {row['mean_multi_corr']:.4f} | "
+                f"{ssim_raw_str} | {ssim_disp_str} |"
             )
     lines.extend(
         [
@@ -327,7 +374,15 @@ def write_outputs(result: dict[str, Any], output_dir: Path) -> None:
             "## Interpretation",
             "",
             "The primary selection metric is mean multi-frame raw PSNR across the three saved CAVE scenes.",
-            "Correlation is reported as a structural companion metric, not as the alpha-selection objective.",
+            "SSIM (raw) measures structural similarity on the original value range.",
+            "SSIM (display) measures structural similarity after per-channel min-max normalization —",
+            "this separates structural recovery from amplitude/DC offset errors.",
+            "Correlation is reported as a structural companion metric.",
+            "",
+            "The optimal alpha is the smallest value that numerically stabilizes the per-frequency",
+            "linear solves (avoiding singular-value collapse at DC) without meaningfully attenuating",
+            "the mid-frequency encoding that carries channel-separation information.",
+            "See docs/alpha_interpretability.md for the full physical explanation.",
         ]
     )
     (output_dir / "cave_alpha_sweep.md").write_text("\n".join(lines) + "\n", encoding="utf-8")

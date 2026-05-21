@@ -44,6 +44,17 @@ thesis/
     repro_commands.md
     lcd_forward_phase3_5_3_6_summary.md
     limitations.md
+    metric_audit_response.md
+    h_matrix_dc_otf_response.md
+    solver_regularization_response.md
+    alpha_interpretability.md
+  alpha_sweep/
+    cave_alpha_sweep_by_scene.csv
+    cave_alpha_sweep_summary.csv
+    cave_alpha_sweep.json / md
+    alpha_psnr.png / pdf
+    alpha_ssim.png / pdf
+    alpha_display_ssim.png / pdf
 provenance/
   lcd_forward_run_manifest.json
   bishe_first_pass.yaml
@@ -60,7 +71,8 @@ provenance/
 - metric_audit_response.md: authoritative interpretation of visual-vs-PSNR mismatch; current complex128/alpha=3e-15 rerun removes the earlier clay_ms 450 nm negative-gain anomaly
 - h_matrix_dc_otf_response.md: authoritative interpretation of OTF display subset and H-matrix DC rank behavior
 - solver_regularization_response.md: authoritative explanation of precision-specific alpha, adaptive policy, and global-vs-frequency-scaled ridge behavior
-- alpha_sweep/: CAVE alpha sweep CSV/JSON/Markdown comparing complex128 alpha values and recording failures below stable range
+- alpha_sweep/: 27-alpha sweep (1e-18 to 1e+0) with PSNR, raw SSIM, display-normalized SSIM, correlation, and PSNR gain per scene. Figures: alpha_psnr.png, alpha_ssim.png, alpha_display_ssim.png
+- alpha_interpretability.md: authoritative explanation of mid-frequency encoding physics and DC singular-value collapse (condition ~3.3e7); explains why optimal alpha is 12 orders of magnitude smaller than typical Tikhonov regularizers
 
 ## Not Included
 

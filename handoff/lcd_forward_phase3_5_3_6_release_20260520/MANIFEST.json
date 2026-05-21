@@ -2,13 +2,13 @@
   "release_id": "lcd_forward_phase3_5_3_6_release_20260520",
   "files": {
     "README.md": {
-      "size_bytes": 1427
+      "size_bytes": 1699
     },
     "RELEASE.json": {
       "size_bytes": 1347
     },
     "data_contract.md": {
-      "size_bytes": 3174
+      "size_bytes": 3815
     },
     "provenance/bishe_first_pass.yaml": {
       "size_bytes": 1145
@@ -22,17 +22,35 @@
     "provenance/phase3_6_debug_and_tuning.md": {
       "size_bytes": 10496
     },
+    "thesis/alpha_sweep/alpha_display_ssim.pdf": {
+      "size_bytes": 41289
+    },
+    "thesis/alpha_sweep/alpha_display_ssim.png": {
+      "size_bytes": 157058
+    },
+    "thesis/alpha_sweep/alpha_psnr.pdf": {
+      "size_bytes": 40701
+    },
+    "thesis/alpha_sweep/alpha_psnr.png": {
+      "size_bytes": 154207
+    },
+    "thesis/alpha_sweep/alpha_ssim.pdf": {
+      "size_bytes": 40162
+    },
+    "thesis/alpha_sweep/alpha_ssim.png": {
+      "size_bytes": 148172
+    },
     "thesis/alpha_sweep/cave_alpha_sweep.json": {
-      "size_bytes": 139937
+      "size_bytes": 277124
     },
     "thesis/alpha_sweep/cave_alpha_sweep.md": {
-      "size_bytes": 1377
+      "size_bytes": 2494
     },
     "thesis/alpha_sweep/cave_alpha_sweep_by_scene.csv": {
-      "size_bytes": 10315
+      "size_bytes": 19784
     },
     "thesis/alpha_sweep/cave_alpha_sweep_summary.csv": {
-      "size_bytes": 2697
+      "size_bytes": 4761
     },
     "thesis/h_matrix_diagnostics/data/frequency_diversity_cv_map.npy": {
       "size_bytes": 524416
@@ -196,11 +214,14 @@
     "thesis/phase3_6_linear_recon_synthetic/reports/linear_recon_report.md": {
       "size_bytes": 1047
     },
+    "thesis/reports/alpha_interpretability.md": {
+      "size_bytes": 11169
+    },
     "thesis/reports/cave_metrics_audit.md": {
       "size_bytes": 2592
     },
     "thesis/reports/figure_catalog.md": {
-      "size_bytes": 4445
+      "size_bytes": 5455
     },
     "thesis/reports/h_matrix_dc_otf_response.md": {
       "size_bytes": 3053
@@ -214,17 +235,26 @@
     "thesis/reports/metric_audit_response.md": {
       "size_bytes": 3780
     },
+    "thesis/reports/phase3_6_cave_metrics_response.md": {
+      "size_bytes": 3780
+    },
+    "thesis/reports/phase3_6_h_matrix_dc_otf_response.md": {
+      "size_bytes": 3053
+    },
+    "thesis/reports/phase3_6_solver_regularization_response.md": {
+      "size_bytes": 5960
+    },
     "thesis/reports/repro_commands.md": {
       "size_bytes": 1409
     },
     "thesis/reports/result_index.md": {
-      "size_bytes": 2552
+      "size_bytes": 2806
     },
     "thesis/reports/solver_regularization_response.md": {
       "size_bytes": 5960
     },
     "thesis/reports/thesis_evidence_summary.md": {
-      "size_bytes": 3038
+      "size_bytes": 4446
     }
   }
 }

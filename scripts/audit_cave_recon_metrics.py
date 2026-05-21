@@ -10,31 +10,10 @@ from typing import Any
 
 import numpy as np
 
+from src.utils.metrics import correlation, minmax_normalize, psnr, ssim_box11
+
 
 DEFAULT_RELEASE_ROOT = Path("D:/datasets/LCD_forward/lcd_forward_phase3_5_3_6_release_20260520")
-
-
-def psnr(gt: np.ndarray, pred: np.ndarray) -> tuple[float, float]:
-    mse = float(np.mean((gt - pred) ** 2))
-    return float(10.0 * math.log10(1.0 / max(mse, 1e-12))), mse
-
-
-def correlation(gt: np.ndarray, pred: np.ndarray) -> float:
-    gt_vec = gt.ravel().astype(np.float64)
-    pred_vec = pred.ravel().astype(np.float64)
-    gt_vec = gt_vec - gt_vec.mean()
-    pred_vec = pred_vec - pred_vec.mean()
-    denom = np.sqrt(np.sum(gt_vec**2) * np.sum(pred_vec**2)) + 1e-12
-    return float(np.sum(gt_vec * pred_vec) / denom)
-
-
-def minmax_normalize(x: np.ndarray) -> np.ndarray:
-    x = x.astype(np.float64)
-    x_min = float(x.min())
-    x_max = float(x.max())
-    if x_max <= x_min:
-        return np.zeros_like(x, dtype=np.float64)
-    return (x - x_min) / (x_max - x_min)
 
 
 def affine_calibrated_psnr(gt: np.ndarray, pred: np.ndarray) -> tuple[float, float, float, float]:
@@ -45,30 +24,6 @@ def affine_calibrated_psnr(gt: np.ndarray, pred: np.ndarray) -> tuple[float, flo
     calibrated = scale * pred.astype(np.float64) + offset
     value, mse = psnr(gt.astype(np.float64), calibrated)
     return value, mse, float(scale), float(offset)
-
-
-def box_mean(image: np.ndarray, window: int = 11) -> np.ndarray:
-    pad = window // 2
-    padded = np.pad(image.astype(np.float64), pad, mode="reflect")
-    windows = np.lib.stride_tricks.sliding_window_view(padded, (window, window))
-    return windows.mean(axis=(-1, -2))
-
-
-def ssim_box11(gt: np.ndarray, pred: np.ndarray, data_range: float = 1.0) -> float:
-    c1 = (0.01 * data_range) ** 2
-    c2 = (0.03 * data_range) ** 2
-    mu_gt = box_mean(gt)
-    mu_pred = box_mean(pred)
-    mu_gt2 = mu_gt * mu_gt
-    mu_pred2 = mu_pred * mu_pred
-    mu_cross = mu_gt * mu_pred
-    sigma_gt = box_mean(gt * gt) - mu_gt2
-    sigma_pred = box_mean(pred * pred) - mu_pred2
-    sigma_cross = box_mean(gt * pred) - mu_cross
-    score = ((2 * mu_cross + c1) * (2 * sigma_cross + c2)) / (
-        (mu_gt2 + mu_pred2 + c1) * (sigma_gt + sigma_pred + c2) + 1e-12
-    )
-    return float(np.mean(score))
 
 
 def gradient_magnitude(image: np.ndarray) -> np.ndarray:

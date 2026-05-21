@@ -381,6 +381,11 @@ This catalog states what each thesis-facing figure is meant to show and what it 
 
 Each `.npz` stores GT object, single-frame reconstruction, multi-frame reconstruction,
 rendered frames, wavelengths, selected mask IDs, and source HDF5 provenance.
+
+## Alpha Sweep Appendices
+- `thesis/alpha_sweep/cave_alpha_sweep.json` (full per-scene per-alpha results with per-channel detail)
+- `thesis/alpha_sweep/cave_alpha_sweep_summary.csv` (aggregated by alpha: scene success counts, PSNR, correlation, MSE, raw SSIM, and display-normalized SSIM columns)
+- `thesis/alpha_sweep/cave_alpha_sweep_by_scene.csv` (per-scene per-alpha detail)
 """
     _ensure_dir(handoff_root / "thesis" / "reports")
     (handoff_root / "thesis" / "reports" / "figure_catalog.md").write_text(text, encoding="utf-8")
@@ -676,10 +681,14 @@ thesis/
     metric_audit_response.md
     h_matrix_dc_otf_response.md
     solver_regularization_response.md
+    alpha_interpretability.md
   alpha_sweep/
     cave_alpha_sweep_by_scene.csv
     cave_alpha_sweep_summary.csv
     cave_alpha_sweep.json / md
+    alpha_psnr.png / pdf
+    alpha_ssim.png / pdf
+    alpha_display_ssim.png / pdf
 provenance/
   lcd_forward_run_manifest.json
   bishe_first_pass.yaml
@@ -696,7 +705,8 @@ provenance/
 - metric_audit_response.md: authoritative interpretation of visual-vs-PSNR mismatch; current complex128/alpha=3e-15 rerun removes the earlier clay_ms 450 nm negative-gain anomaly
 - h_matrix_dc_otf_response.md: authoritative interpretation of OTF display subset and H-matrix DC rank behavior
 - solver_regularization_response.md: authoritative explanation of precision-specific alpha, adaptive policy, and global-vs-frequency-scaled ridge behavior
-- alpha_sweep/: CAVE alpha sweep CSV/JSON/Markdown comparing complex128 alpha values and recording failures below stable range
+- alpha_sweep/: CAVE alpha sweep CSV/JSON/Markdown and figures comparing complex128 alpha values, SSIM variants, correlation, PSNR gain, and failures below stable range
+- alpha_interpretability.md: explanation of mid-frequency encoding suppression, DC singular-value collapse, and why the selected alpha is precision-specific
 
 ## Not Included
 
