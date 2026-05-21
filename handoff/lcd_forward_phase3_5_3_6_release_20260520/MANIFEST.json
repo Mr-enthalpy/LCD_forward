@@ -2,8 +2,8 @@
   "release_id": "lcd_forward_phase3_5_3_6_release_20260520",
   "files": {
     "data_contract.md": {
-      "size_bytes": 2743,
-      "sha256": "7714b278ff737ca0a355c501683ed406224bb5e83f87702bad6f916a8575ccff"
+      "size_bytes": 2856,
+      "sha256": "e113b96fb54486123d91973f9579430af7780218310f86f72aa3f0e1aa31711b"
     },
     "provenance/bishe_first_pass.yaml": {
       "size_bytes": 1145,
@@ -22,20 +22,20 @@
       "sha256": "5959124c459a026b16ebfbf8ee1ffdbc38fd51c36692ca5d54638adb8ae0a02c"
     },
     "README.md": {
-      "size_bytes": 1207,
-      "sha256": "07892535903d5e3776296ed45b39f13fc784dc56e1364a6225ffa2fdb4e81a75"
+      "size_bytes": 1279,
+      "sha256": "bb1d5d5c3202dd49c150b097823a3e0d5db43b33b46f85edd72c0c737adc710c"
     },
     "RELEASE.json": {
-      "size_bytes": 1148,
-      "sha256": "c72f42c8b8b37f583302b3e68dedec708dc672568be82b48be9dd3e3acccdbea"
+      "size_bytes": 1202,
+      "sha256": "20202d4b26fe4c13f5fa933a2d8a5f824a51b6c5c314b539a792dc665b771822"
     },
     "thesis/h_matrix_diagnostics/data/frequency_diversity_cv_map.npy": {
       "size_bytes": 524416,
-      "sha256": "b6d6ad28c776f8e7a6a737fb09c6f881b35cf4ec6ada0c27ac93fb4cf48a883c"
+      "sha256": "d2901a13fe9c02d179d8e4e11b39ce82738cfeb2c972388821b4bd37686c93c8"
     },
     "thesis/h_matrix_diagnostics/data/h_condition_map.npy": {
       "size_bytes": 524416,
-      "sha256": "0380591b4cc26b97685f93285f030ebb31f3396aafe7ecc1cb3e479a90d47583"
+      "sha256": "8413a222a0bc6c0964950ced3fb200840480da742cc03e38caf9db878cb0532f"
     },
     "thesis/h_matrix_diagnostics/data/h_rank_map.npy": {
       "size_bytes": 262272,
@@ -43,63 +43,63 @@
     },
     "thesis/h_matrix_diagnostics/data/h_singular_values.npz": {
       "size_bytes": 1573612,
-      "sha256": "6e4fc254e46e3e8974a7fe9dbc4383870f6b722fd03ecbddde159bc1d2f740b3"
+      "sha256": "0631815899d050a45a7fbf30ee06d52f19b99f0a8b10b7f6620e37cc2584c626"
     },
     "thesis/h_matrix_diagnostics/figures/h_condition_histogram.png": {
-      "size_bytes": 51543,
-      "sha256": "d46f9c25a4546a077594d657494ac85afa32bc823082c7ded2e4a96b93e0d2a6"
+      "size_bytes": 58179,
+      "sha256": "e4bdfd4103bc5812bf94561fd48289b96c6ff6c3d2d6d273058337f3c2448543"
     },
     "thesis/h_matrix_diagnostics/figures/h_log_condition_map.png": {
-      "size_bytes": 451792,
-      "sha256": "c7b790e34cb03c8eb515edd606087aa15898fd4a28c7e3e775cbb0bd83290aef"
+      "size_bytes": 386489,
+      "sha256": "eba3660e6aa07a473ffbf36780661764b07c57bfcd3f5c8eff6bba4a3463ac95"
     },
     "thesis/h_matrix_diagnostics/figures/h_log_condition_map_fftshifted.png": {
-      "size_bytes": 450740,
-      "sha256": "52f736cb6b50b68e5c7884cb71611e6eb8a24f04a1fc15039430300d6dabed92"
+      "size_bytes": 385625,
+      "sha256": "f96ffe6f1f1f7cdd0fa675454cbec77b205a14931fb48295d8226433d661ed12"
     },
     "thesis/h_matrix_diagnostics/figures/h_rank_map.png": {
-      "size_bytes": 26979,
-      "sha256": "18379be0bc33235ce08f94d50b71dafc0108abba1ba88af924537651d1bddb95"
+      "size_bytes": 29777,
+      "sha256": "9065115111f69510070884c72dc14aa927154f9885d2c25e571af898ebe420c8"
     },
     "thesis/h_matrix_diagnostics/figures/h_rank_map_fftshifted.png": {
-      "size_bytes": 26979,
-      "sha256": "18379be0bc33235ce08f94d50b71dafc0108abba1ba88af924537651d1bddb95"
+      "size_bytes": 29777,
+      "sha256": "9065115111f69510070884c72dc14aa927154f9885d2c25e571af898ebe420c8"
     },
     "thesis/h_matrix_diagnostics/figures/h_singular_value_maps.png": {
-      "size_bytes": 662005,
-      "sha256": "7ed2d40d408ae9e12ed1a939af3600562e3a07d48b2907db5fcea935aeef8db5"
+      "size_bytes": 628704,
+      "sha256": "4f761f28ff870ca0ad47f735ba2353e97873acf41e8285703b31566d5df18cf6"
     },
     "thesis/h_matrix_diagnostics/figures/h_singular_value_maps_fftshifted.png": {
-      "size_bytes": 660687,
-      "sha256": "d083f2330b04e1d36c1c6818b039f372ddca980c39fd2dfb8aeebeb87cb20389"
+      "size_bytes": 627868,
+      "sha256": "cdf706103f757c40111f44c3262d114146579395faa2357b9f59ba90f91479c9"
     },
     "thesis/h_matrix_diagnostics/figures/mask_frequency_diversity_cv_map.png": {
-      "size_bytes": 583921,
-      "sha256": "0f7464beab612a0ce839166c4d8934ca784db1e757535741793a78655c33a354"
+      "size_bytes": 558706,
+      "sha256": "c0e4ff16fb75f98afa8b4248c100c69b38dce3a86036b5a643a2b8b9c0d792e3"
     },
     "thesis/h_matrix_diagnostics/figures/mask_frequency_diversity_cv_map_fftshifted.png": {
-      "size_bytes": 582668,
-      "sha256": "8c0cba15d077f188cf58bcd28cf702feeced4ed4b096985f25652b689a070bf8"
+      "size_bytes": 557898,
+      "sha256": "71a634c15293f1c447e8e0436756f8bdb96564b247ec60a7fbaef17fdebd450b"
     },
     "thesis/h_matrix_diagnostics/figures/otf_magnitude_grid_selected_masks.png": {
-      "size_bytes": 2555935,
-      "sha256": "bd4a1521b0f3e126f111ef5cd73eb1c181128fe4fc4d185f01044afa8306f259"
+      "size_bytes": 1894634,
+      "sha256": "c5fa7c5a1f7775b306a8d3e4f32eeacff2a05cba00aabb4cf04c283cde616a18"
     },
     "thesis/h_matrix_diagnostics/figures/otf_magnitude_grid_selected_masks_fftshifted.png": {
-      "size_bytes": 2557566,
-      "sha256": "5f9ef7809d251304d9291bd07dca3c62eaa377c481e09f6cb4bc6a456a3feb55"
+      "size_bytes": 1889014,
+      "sha256": "1af3f51f36ee8d3fc0ffc5bcb8f95b101e338d5e0f45bd305702f03c877c68a7"
     },
     "thesis/h_matrix_diagnostics/figures/wavelength_transfer_comparison.png": {
-      "size_bytes": 739025,
-      "sha256": "f45d606c6506e39a0e6c4f2ed775f859bfc44448dee1984ed2d73a54a3518660"
+      "size_bytes": 616577,
+      "sha256": "f10f86cdcc606dab8260aafb9ace31049a4b83c01536cc9199b45da0d22d86f8"
     },
     "thesis/h_matrix_diagnostics/metrics/h_matrix_diagnostics.json": {
-      "size_bytes": 1279,
-      "sha256": "860c7234a9eccde84f9e90af147a1652d51862220419220fb2f28404097c232a"
+      "size_bytes": 1930,
+      "sha256": "7d1fb8a3d0d7d58306b714585b2c92412ab7130828be1368199a90cdc1bd2efb"
     },
     "thesis/h_matrix_diagnostics/reports/h_matrix_diagnostics_report.md": {
-      "size_bytes": 1343,
-      "sha256": "3b6bed63210a7ab37e0575e17d94b3d2d829e4a199503fcb2b07b3305e29e47d"
+      "size_bytes": 2021,
+      "sha256": "7b66ab5936e48c9e34ecb39dae83ccd2d091c7582187270b54a7bec5f20f24d1"
     },
     "thesis/phase3_5_forward_validation/figures/measured_vs_predicted_examples.png": {
       "size_bytes": 666774,
@@ -246,8 +246,12 @@
       "sha256": "e23450b4ebe67d47cdb07a98c0787983c2030fd30b55cf411ffc71162a34f92f"
     },
     "thesis/reports/figure_catalog.md": {
-      "size_bytes": 4148,
-      "sha256": "8f25111a13f09c598c9b36a1e4284cceaf31b52127036505508438ae08256dd1"
+      "size_bytes": 4445,
+      "sha256": "c80ac7bf5b51ca3fd6a9120eab75fd6aa44dd8ac7c01a588d224f57108eb234f"
+    },
+    "thesis/reports/h_matrix_dc_otf_response.md": {
+      "size_bytes": 3053,
+      "sha256": "d6801e59be4de13c1789b4518b27a2b61a9756d2dedfac41e9449e124feffb67"
     },
     "thesis/reports/lcd_forward_phase3_5_3_6_summary.md": {
       "size_bytes": 1478,
@@ -266,12 +270,12 @@
       "sha256": "9a1bd6aed099f992519ea2bd7302a97ce474dea9c71659d36c4a73a34b536f95"
     },
     "thesis/reports/result_index.md": {
-      "size_bytes": 2093,
-      "sha256": "bea52c47bad90c33a3bb7a3928f6a62fb0fb5c176ab89cc035070757ed3c16a1"
+      "size_bytes": 2276,
+      "sha256": "e2b3cae71c91efe0b7a18ecd6fad2fc70408df4bd41b92091ec0b3ceb07934e4"
     },
     "thesis/reports/thesis_evidence_summary.md": {
-      "size_bytes": 2246,
-      "sha256": "ff41bc669f66c8b34d15d691ebad3ee30bc95cf60e3b8c9e5f62abf1ff0d9ebd"
+      "size_bytes": 2475,
+      "sha256": "c4e1b4a4829fdb83162f141fab4775a87fa2911b97175fe77181101cbd98880f"
     }
   }
 }

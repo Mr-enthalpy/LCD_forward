@@ -136,12 +136,22 @@ def plot_singular_value_maps(sv_maps: np.ndarray, out_path: Path):
     plt.close()
 
 
-def plot_otf_magnitude_grid(psf_fft: np.ndarray, mask_ids: list, out_path: Path):
+def plot_otf_magnitude_grid(
+    psf_fft: np.ndarray,
+    mask_ids: list,
+    out_path: Path,
+    max_masks: int = 4,
+):
     T, L, H, W = psf_fft.shape
-    display_T = min(T, 8)
+    display_T = min(T, max_masks)
     display_L = min(L, 3)
 
-    fig, axes = plt.subplots(display_L, display_T, figsize=(display_T * 2, display_L * 2))
+    fig, axes = plt.subplots(
+        display_L,
+        display_T,
+        figsize=(display_T * 3.0, display_L * 2.6),
+        constrained_layout=True,
+    )
     if display_L == 1:
         axes = axes[np.newaxis, :]
     if display_T == 1:
@@ -151,13 +161,12 @@ def plot_otf_magnitude_grid(psf_fft: np.ndarray, mask_ids: list, out_path: Path)
         for t in range(display_T):
             axes[l, t].imshow(np.log10(np.abs(psf_fft[t, l]) + 1e-16), cmap="hot", origin="lower")
             if l == 0:
-                axes[l, t].set_title(mask_ids[t][:20], fontsize=6)
+                axes[l, t].set_title(mask_ids[t][:24], fontsize=8, pad=6)
             if t == 0:
-                axes[l, t].set_ylabel(f"Ch {l}", fontsize=7)
+                axes[l, t].set_ylabel(f"Ch {l}", fontsize=8)
             axes[l, t].axis("off")
 
-    plt.suptitle("OTF Magnitude (log10) - Selected Masks x Wavelengths", fontsize=10)
-    plt.tight_layout()
+    fig.suptitle("OTF Magnitude (log10) - Representative Masks x Wavelengths", fontsize=11)
     plt.savefig(out_path, dpi=150)
     plt.close()
 
@@ -192,6 +201,7 @@ def main():
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--psf-working-size", nargs=2, type=int, default=[256, 256])
     parser.add_argument("--mask-count", type=int, default=12)
+    parser.add_argument("--otf-display-mask-count", type=int, default=4)
     args = parser.parse_args()
 
     out_dir = Path(args.output_dir)
@@ -216,6 +226,17 @@ def main():
     print(f"Analyzing H matrix at all {H_native * W_native} frequency points")
     results = analyze_h_matrix(psf_fft)
     cv_map = compute_frequency_diversity_cv(psf_fft)
+    dc_unshifted = (0, 0)
+    dc_fftshifted = (H_native // 2, W_native // 2)
+    dc_singular_values = results["sv_maps"][:, dc_unshifted[0], dc_unshifted[1]]
+    dc_rank_by_threshold = {
+        str(threshold): int(np.sum(dc_singular_values > threshold * dc_singular_values[0]))
+        for threshold in [1e-6, 1e-8, 1e-10, 1e-12]
+    }
+    dc_excluded_mask = np.ones_like(results["rank_map"], dtype=bool)
+    dc_excluded_mask[dc_unshifted] = False
+    n_full_rank_excluding_dc = int(np.sum(results["rank_map"][dc_excluded_mask] == L))
+    n_points_excluding_dc = int(np.sum(dc_excluded_mask))
 
     display_rank = _downsample_for_display(results["rank_map"].astype(np.float64))
     display_cond = _downsample_for_display(results["cond_map"])
@@ -234,7 +255,12 @@ def main():
     plot_h_condition_map(display_cond, figs_dir / "h_log_condition_map.png")
     plot_condition_histogram(results["all_conditions"], figs_dir / "h_condition_histogram.png")
     plot_singular_value_maps(results["sv_maps"], figs_dir / "h_singular_value_maps.png")
-    plot_otf_magnitude_grid(psf_fft, sel_ids, figs_dir / "otf_magnitude_grid_selected_masks.png")
+    plot_otf_magnitude_grid(
+        psf_fft,
+        sel_ids,
+        figs_dir / "otf_magnitude_grid_selected_masks.png",
+        max_masks=args.otf_display_mask_count,
+    )
     plot_diversity_cv_map(display_cv, figs_dir / "mask_frequency_diversity_cv_map.png")
     plot_wavelength_transfer_comparison(psf_fft, sel_ids[0],
                                          data["wavelengths_nm"],
@@ -249,7 +275,12 @@ def main():
     plot_h_rank_map(display_rank_shift, figs_dir / "h_rank_map_fftshifted.png")
     plot_h_condition_map(display_cond_shift, figs_dir / "h_log_condition_map_fftshifted.png")
     plot_singular_value_maps(sv_shift, figs_dir / "h_singular_value_maps_fftshifted.png")
-    plot_otf_magnitude_grid(otf_shift, sel_ids, figs_dir / "otf_magnitude_grid_selected_masks_fftshifted.png")
+    plot_otf_magnitude_grid(
+        otf_shift,
+        sel_ids,
+        figs_dir / "otf_magnitude_grid_selected_masks_fftshifted.png",
+        max_masks=args.otf_display_mask_count,
+    )
     plot_diversity_cv_map(display_cv_shift, figs_dir / "mask_frequency_diversity_cv_map_fftshifted.png")
 
     np.save(data_dir / "h_rank_map.npy", results["rank_map"])
@@ -262,7 +293,16 @@ def main():
         "native_fft_size": list(psf_size),
         "n_frequency_points": results["n_total"],
         "n_full_rank_points": results["n_full_rank"],
+        "n_frequency_points_excluding_dc": n_points_excluding_dc,
+        "n_full_rank_points_excluding_dc": n_full_rank_excluding_dc,
+        "full_rank_percent_excluding_dc": 100.0 * n_full_rank_excluding_dc / n_points_excluding_dc,
         "rank_threshold": 1e-8,
+        "dc_unshifted_pixel_coordinate": list(dc_unshifted),
+        "dc_fftshifted_pixel_coordinate": list(dc_fftshifted),
+        "dc_singular_values": dc_singular_values.tolist(),
+        "dc_condition_number": float(results["cond_map"][dc_unshifted]),
+        "dc_rank_at_rank_threshold": int(results["rank_map"][dc_unshifted]),
+        "dc_rank_by_relative_threshold": dc_rank_by_threshold,
         "median_condition_number": results["median_condition"],
         "mean_condition_number": results["mean_condition"],
         "max_condition_number": results["max_condition"],
@@ -272,8 +312,9 @@ def main():
         "wavelengths_nm": data["wavelengths_nm"].tolist(),
         "psf_working_size": list(psf_size),
         "interpretation": (
-            "multi-frame measured PSF transfer matrix is full-rank at all "
-            "analyzed frequencies; ill-conditioned tail motivates weak ridge regularization"
+            "multi-frame measured PSF transfer matrix is numerically full-rank at all "
+            "analyzed frequencies under threshold 1e-8; DC is a special near-rank-1, "
+            "very ill-conditioned point, and non-DC frequencies remain 100% full-rank"
         ),
     }
     with open(metrics_dir / "h_matrix_diagnostics.json", "w") as f:
@@ -290,6 +331,11 @@ def main():
 ## Results
 - Frequency points: {results['n_total']}
 - Full-rank points: {results['n_full_rank']} ({100*results['n_full_rank']/results['n_total']:.1f}%)
+- DC point in FFT-shifted figures: pixel {dc_fftshifted}
+- DC singular values: {dc_singular_values.tolist()}
+- DC rank at threshold 1e-8: {int(results['rank_map'][dc_unshifted])}
+- DC rank by threshold: {dc_rank_by_threshold}
+- Full-rank points excluding DC: {n_full_rank_excluding_dc}/{n_points_excluding_dc} ({100*n_full_rank_excluding_dc/n_points_excluding_dc:.4f}%)
 - Median condition number: {results['median_condition']:.1f}
 - Mean condition number: {results['mean_condition']:.1f}
 - Max condition number: {results['max_condition']:.0f}
@@ -308,6 +354,12 @@ regularization (alpha about 1e-6).
 Cross-mask frequency diversity (CV of |H|) is concentrated at mid-to-high
 spatial frequencies, not at DC (where all sum-normalized PSFs have
 identical transfer = 1.0). This validates Phase 3.2b conclusions.
+
+The FFT-shifted figures place the DC point at pixel {dc_fftshifted}. The
+stored rank map reports this point as rank 3 under the relative threshold
+1e-8 because the second and third singular values are small but above that
+threshold. Under a looser effective threshold of 1e-6, the same DC point is
+rank 1, matching the expected near-DC behavior of sum-normalized PSFs.
 
 ## Boundary
 This analysis supports the thesis claim that multi-frame measured-PSF
