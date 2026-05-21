@@ -182,6 +182,8 @@ PSF working size: 256x256
 
 Final config: alpha=1e-6, adaptive policy, 12 diverse masks (8 deterministic + 4 task_related), 256x256.
 
+Metric audit note: raw PSNR measures absolute amplitude agreement after CAVE per-scene normalization. It should be interpreted together with per-band correlation, SSIM/audit diagnostics, and figures; see `docs/phase3_6_cave_metrics_audit.md`.
+
 | Level | Scene | Single PSNR | **Multi PSNR** | **Multi Gain** |
 |-------|-------|-------------|----------------|----------------|
 | L1 Synthetic | bars/circles/blocks | 15.35 dB | **24.35 dB** | **+9.00 dB** |
@@ -199,9 +201,10 @@ Final config: alpha=1e-6, adaptive policy, 12 diverse masks (8 deterministic + 4
   across all wavelengths.
 - **Synthetic (24.4 dB)**: Consistent +9 dB gain, verifies the pipeline.
 
-**All cases show multi-frame > single-frame**, confirming the core thesis
-hypothesis: multi-frame encoded observations contain multichannel-recoverable
-information using measured PSF encoders.
+**All cases show multi-frame > single-frame in mean raw PSNR**, but the metric
+audit shows that raw PSNR alone can understate structural recovery when residual
+amplitude / DC error remains. The thesis claim should use raw PSNR together with
+correlation, SSIM/audit diagnostics, and figures.
 
 ### Per-channel breakdown (best scene: cd_ms)
 

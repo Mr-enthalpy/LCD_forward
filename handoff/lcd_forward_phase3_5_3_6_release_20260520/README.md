@@ -17,6 +17,7 @@ D:/datasets/LCD_forward/lcd_forward_phase3_5_3_6_release_20260520/
 - Data contract: data_contract.md
 - Limitations: thesis/reports/limitations.md
 - Debug record: provenance/phase3_6_debug_and_tuning.md
+- Local metric audit: docs/phase3_6_cave_metrics_audit.md
 
 ## Contents
 

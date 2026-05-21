@@ -470,7 +470,7 @@ confirming non-degenerate frequency-domain encoding structure for three-waveleng
 ## Phase 3.6: Linear Reconstruction
 
 ### Synthetic (Level 1)
-- Multi-frame PSNR > single-frame PSNR
+- Multi-frame reconstruction improves the measured structural metrics and figures; raw PSNR is an absolute amplitude metric and should not be interpreted alone.
 - Pipeline verification: renderer + solver function correctly
 - Appendix includes per-band comparison, pseudo-RGB comparison, and reconstruction arrays
 
@@ -657,7 +657,7 @@ provenance/
 
 - forward validation: correlation > 0.95 indicates model captures PSF structure
 - H matrix full-rank: encoding system is non-degenerate
-- cave_recon: multi PSNR > single PSNR demonstrates multi-frame gain
+- cave_recon: raw PSNR reports absolute amplitude error; interpret it together with per-band correlation, SSIM/audit metrics, and reconstruction figures
 - recon_appendix_arrays.npz: GT object, single-frame recon, multi-frame recon, rendered frames, wavelengths, selected masks, and HDF5 provenance
 
 ## Not Included

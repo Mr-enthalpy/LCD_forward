@@ -55,7 +55,7 @@ provenance/
 
 - forward validation: correlation > 0.95 indicates model captures PSF structure
 - H matrix full-rank: encoding system is non-degenerate
-- cave_recon: multi PSNR > single PSNR demonstrates multi-frame gain
+- cave_recon: raw PSNR reports absolute amplitude error; interpret it together with per-band correlation, SSIM/audit metrics, and reconstruction figures
 - recon_appendix_arrays.npz: GT object, single-frame recon, multi-frame recon, rendered frames, wavelengths, selected masks, and HDF5 provenance
 
 ## Not Included

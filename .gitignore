@@ -29,6 +29,7 @@ outputs/**/*.png
 outputs/**/*.pdf
 outputs/**/*.json
 outputs/**/*.md
+outputs/**/*.csv
 
 # Keep README files
 !data/**/README.md
