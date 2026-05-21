@@ -57,6 +57,7 @@ provenance/
 - H matrix full-rank: encoding system is non-degenerate
 - cave_recon: raw PSNR reports absolute amplitude error; interpret it together with per-band correlation, SSIM/audit metrics, and reconstruction figures
 - recon_appendix_arrays.npz: GT object, single-frame recon, multi-frame recon, rendered frames, wavelengths, selected masks, and HDF5 provenance
+- metric_audit_response.md: authoritative interpretation of the visual-vs-PSNR mismatch, including the clay_ms 450 nm amplitude-bias explanation
 
 ## Not Included
 

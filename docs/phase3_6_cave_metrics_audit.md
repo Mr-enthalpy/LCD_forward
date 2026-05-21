@@ -2,6 +2,8 @@
 
 This note audits the apparent mismatch between CAVE visual reconstruction quality and PSNR in the Phase 3.6 handoff.
 
+For the thesis-facing interpretation and required wording, see `docs/phase3_6_cave_metrics_response.md`.
+
 ## Inputs
 
 - Release root: `D:/datasets/LCD_forward/lcd_forward_phase3_5_3_6_release_20260520`

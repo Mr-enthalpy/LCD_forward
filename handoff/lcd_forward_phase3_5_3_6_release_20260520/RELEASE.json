@@ -21,7 +21,9 @@
     "phase3_6_synthetic_reconstruction": true,
     "phase3_6_cave_reconstruction": true,
     "reconstruction_appendices": true,
-    "real_target_capture": false
+    "real_target_capture": false,
+    "phase3_6_metric_audit_response": true
   },
-  "scope": "thesis existence proof, not performance-optimized model"
+  "scope": "thesis existence proof, not performance-optimized model",
+  "post_release_note": "Metric audit response added locally after visual-vs-PSNR review; binary payload remains local."
 }

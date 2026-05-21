@@ -2,11 +2,7 @@
 
 LCD_forward Phase 3.5-3.6 first-pass thesis handoff.
 
-Large binary payloads for this handoff are stored locally on the thesis machine and are not synchronized through Git:
-
-```
-D:/datasets/LCD_forward/lcd_forward_phase3_5_3_6_release_20260520/
-```
+Large binary payloads for this handoff are stored locally at `D:/datasets/LCD_forward/lcd_forward_phase3_5_3_6_release_20260520/`; Git stores only descriptors, reports, and provenance pointers.
 
 ## Quick Links
 
@@ -14,10 +10,10 @@ D:/datasets/LCD_forward/lcd_forward_phase3_5_3_6_release_20260520/
 - Result index: thesis/reports/result_index.md
 - Figure catalog: thesis/reports/figure_catalog.md
 - Reproduction commands: thesis/reports/repro_commands.md
+- Metric audit response: thesis/reports/metric_audit_response.md
 - Data contract: data_contract.md
 - Limitations: thesis/reports/limitations.md
 - Debug record: provenance/phase3_6_debug_and_tuning.md
-- Local metric audit: docs/phase3_6_cave_metrics_audit.md
 
 ## Contents
 

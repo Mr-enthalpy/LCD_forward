@@ -2,205 +2,276 @@
   "release_id": "lcd_forward_phase3_5_3_6_release_20260520",
   "files": {
     "data_contract.md": {
-      "size_bytes": 2513
-    },
-    "README.md": {
-      "size_bytes": 944
-    },
-    "RELEASE.json": {
-      "size_bytes": 979
+      "size_bytes": 2743,
+      "sha256": "7714b278ff737ca0a355c501683ed406224bb5e83f87702bad6f916a8575ccff"
     },
     "provenance/bishe_first_pass.yaml": {
-      "size_bytes": 1145
+      "size_bytes": 1145,
+      "sha256": "4d915b897d7e07dba9526e6c2ccb28cd0574df4b7d02c62c37763e6b1a7261df"
     },
     "provenance/lcd_forward_run_manifest.json": {
-      "size_bytes": 774
+      "size_bytes": 774,
+      "sha256": "1ab4be21aa137dd0bcad989b7f51ee36c932c400b22aaa70d69d0b49bebc119d"
     },
     "provenance/optic_system_release_reference.json": {
-      "size_bytes": 1112
+      "size_bytes": 1112,
+      "sha256": "473df044feab06c3dced9fb75b52ca89a95c22f734bb969afb11b337e1d1d449"
     },
     "provenance/phase3_6_debug_and_tuning.md": {
-      "size_bytes": 10496
+      "size_bytes": 10496,
+      "sha256": "5959124c459a026b16ebfbf8ee1ffdbc38fd51c36692ca5d54638adb8ae0a02c"
+    },
+    "README.md": {
+      "size_bytes": 1207,
+      "sha256": "07892535903d5e3776296ed45b39f13fc784dc56e1364a6225ffa2fdb4e81a75"
+    },
+    "RELEASE.json": {
+      "size_bytes": 1148,
+      "sha256": "c72f42c8b8b37f583302b3e68dedec708dc672568be82b48be9dd3e3acccdbea"
     },
     "thesis/h_matrix_diagnostics/data/frequency_diversity_cv_map.npy": {
-      "size_bytes": 524416
+      "size_bytes": 524416,
+      "sha256": "b6d6ad28c776f8e7a6a737fb09c6f881b35cf4ec6ada0c27ac93fb4cf48a883c"
     },
     "thesis/h_matrix_diagnostics/data/h_condition_map.npy": {
-      "size_bytes": 524416
+      "size_bytes": 524416,
+      "sha256": "0380591b4cc26b97685f93285f030ebb31f3396aafe7ecc1cb3e479a90d47583"
     },
     "thesis/h_matrix_diagnostics/data/h_rank_map.npy": {
-      "size_bytes": 262272
+      "size_bytes": 262272,
+      "sha256": "e3bf2ac08939c8b5f3d0b4ae864684f000613b422cb13425583bfeeba3d694f1"
     },
     "thesis/h_matrix_diagnostics/data/h_singular_values.npz": {
-      "size_bytes": 1573612
+      "size_bytes": 1573612,
+      "sha256": "6e4fc254e46e3e8974a7fe9dbc4383870f6b722fd03ecbddde159bc1d2f740b3"
     },
     "thesis/h_matrix_diagnostics/figures/h_condition_histogram.png": {
-      "size_bytes": 51543
+      "size_bytes": 51543,
+      "sha256": "d46f9c25a4546a077594d657494ac85afa32bc823082c7ded2e4a96b93e0d2a6"
     },
     "thesis/h_matrix_diagnostics/figures/h_log_condition_map.png": {
-      "size_bytes": 451792
+      "size_bytes": 451792,
+      "sha256": "c7b790e34cb03c8eb515edd606087aa15898fd4a28c7e3e775cbb0bd83290aef"
     },
     "thesis/h_matrix_diagnostics/figures/h_log_condition_map_fftshifted.png": {
-      "size_bytes": 450740
+      "size_bytes": 450740,
+      "sha256": "52f736cb6b50b68e5c7884cb71611e6eb8a24f04a1fc15039430300d6dabed92"
     },
     "thesis/h_matrix_diagnostics/figures/h_rank_map.png": {
-      "size_bytes": 26979
+      "size_bytes": 26979,
+      "sha256": "18379be0bc33235ce08f94d50b71dafc0108abba1ba88af924537651d1bddb95"
     },
     "thesis/h_matrix_diagnostics/figures/h_rank_map_fftshifted.png": {
-      "size_bytes": 26979
+      "size_bytes": 26979,
+      "sha256": "18379be0bc33235ce08f94d50b71dafc0108abba1ba88af924537651d1bddb95"
     },
     "thesis/h_matrix_diagnostics/figures/h_singular_value_maps.png": {
-      "size_bytes": 662005
+      "size_bytes": 662005,
+      "sha256": "7ed2d40d408ae9e12ed1a939af3600562e3a07d48b2907db5fcea935aeef8db5"
     },
     "thesis/h_matrix_diagnostics/figures/h_singular_value_maps_fftshifted.png": {
-      "size_bytes": 660687
+      "size_bytes": 660687,
+      "sha256": "d083f2330b04e1d36c1c6818b039f372ddca980c39fd2dfb8aeebeb87cb20389"
     },
     "thesis/h_matrix_diagnostics/figures/mask_frequency_diversity_cv_map.png": {
-      "size_bytes": 583921
+      "size_bytes": 583921,
+      "sha256": "0f7464beab612a0ce839166c4d8934ca784db1e757535741793a78655c33a354"
     },
     "thesis/h_matrix_diagnostics/figures/mask_frequency_diversity_cv_map_fftshifted.png": {
-      "size_bytes": 582668
+      "size_bytes": 582668,
+      "sha256": "8c0cba15d077f188cf58bcd28cf702feeced4ed4b096985f25652b689a070bf8"
     },
     "thesis/h_matrix_diagnostics/figures/otf_magnitude_grid_selected_masks.png": {
-      "size_bytes": 2555935
+      "size_bytes": 2555935,
+      "sha256": "bd4a1521b0f3e126f111ef5cd73eb1c181128fe4fc4d185f01044afa8306f259"
     },
     "thesis/h_matrix_diagnostics/figures/otf_magnitude_grid_selected_masks_fftshifted.png": {
-      "size_bytes": 2557566
+      "size_bytes": 2557566,
+      "sha256": "5f9ef7809d251304d9291bd07dca3c62eaa377c481e09f6cb4bc6a456a3feb55"
     },
     "thesis/h_matrix_diagnostics/figures/wavelength_transfer_comparison.png": {
-      "size_bytes": 739025
+      "size_bytes": 739025,
+      "sha256": "f45d606c6506e39a0e6c4f2ed775f859bfc44448dee1984ed2d73a54a3518660"
     },
     "thesis/h_matrix_diagnostics/metrics/h_matrix_diagnostics.json": {
-      "size_bytes": 1279
+      "size_bytes": 1279,
+      "sha256": "860c7234a9eccde84f9e90af147a1652d51862220419220fb2f28404097c232a"
     },
     "thesis/h_matrix_diagnostics/reports/h_matrix_diagnostics_report.md": {
-      "size_bytes": 1343
+      "size_bytes": 1343,
+      "sha256": "3b6bed63210a7ab37e0575e17d94b3d2d829e4a199503fcb2b07b3305e29e47d"
     },
     "thesis/phase3_5_forward_validation/figures/measured_vs_predicted_examples.png": {
-      "size_bytes": 666774
+      "size_bytes": 666774,
+      "sha256": "fd8a262f5f8b4bf52e470f92136894f07c5ce757f2d7f77079bd955770714677"
     },
     "thesis/phase3_5_forward_validation/figures/psf_basis_preview_wl0.png": {
-      "size_bytes": 149241
+      "size_bytes": 149241,
+      "sha256": "e152725a8a33e63b76c708c155a54dfbb6bb2fc089f165c492bdd91703ea252f"
     },
     "thesis/phase3_5_forward_validation/figures/psf_basis_preview_wl1.png": {
-      "size_bytes": 156054
+      "size_bytes": 156054,
+      "sha256": "c8b89f3546a675d309fef3473c358a9d028923e7224a65f810897c02c893c9cc"
     },
     "thesis/phase3_5_forward_validation/figures/psf_basis_preview_wl2.png": {
-      "size_bytes": 139800
+      "size_bytes": 139800,
+      "sha256": "b7e216114ed81436ef2b4a1f548dfaf602ba1724b9b20db165899ff74b57906f"
     },
     "thesis/phase3_5_forward_validation/metrics/psf_prediction_metrics.json": {
-      "size_bytes": 3423
+      "size_bytes": 3423,
+      "sha256": "2985ecd4057be2935dfbcdde142282a7973389bfb407c70ad8367ff92dbeb811"
     },
     "thesis/phase3_5_forward_validation/reports/forward_validation_report.md": {
-      "size_bytes": 717
+      "size_bytes": 717,
+      "sha256": "69b0aec028e137f60c8ad2abc8e97996f49404386130089fcfc429cc853591db"
     },
     "thesis/phase3_6_linear_recon_cave/data/scene_cd_ms/recon_appendix_arrays.npz": {
-      "size_bytes": 4608637
+      "size_bytes": 4608637,
+      "sha256": "73fa84fe5bfbdfb219a501b903a0829cd462aef1bf1429a9afd22aaeb6ddab2b"
     },
     "thesis/phase3_6_linear_recon_cave/data/scene_clay_ms/recon_appendix_arrays.npz": {
-      "size_bytes": 4456986
+      "size_bytes": 4456986,
+      "sha256": "5b16045e56715fd9accd6dbf58b5915452735138be7e40e0d1e298ffa414daee"
     },
     "thesis/phase3_6_linear_recon_cave/data/scene_superballs_ms/recon_appendix_arrays.npz": {
-      "size_bytes": 4469678
+      "size_bytes": 4469678,
+      "sha256": "6d4491e9f24c69454c7f6918411d0135e226f2332a6fa89842703d006c5b7334"
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_cd_ms/recon_comparison.png": {
-      "size_bytes": 1480712
+      "size_bytes": 1480712,
+      "sha256": "51551350911fdf4cc25c186ca362818f2fa1c661c3c2291e71a5db6ae998ef6d"
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_cd_ms/recon_per_band_comparison.png": {
-      "size_bytes": 1480712
+      "size_bytes": 1480712,
+      "sha256": "51551350911fdf4cc25c186ca362818f2fa1c661c3c2291e71a5db6ae998ef6d"
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_cd_ms/recon_rgb_pseudocolor_comparison.png": {
-      "size_bytes": 1298761
+      "size_bytes": 1298761,
+      "sha256": "86020b7c9846c5d74fe40c459730486788e5eda2f4957673cc6797852b933136"
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_cd_ms/rendered_frames.png": {
-      "size_bytes": 315093
+      "size_bytes": 315093,
+      "sha256": "c54f1ad5cb70aa6e079156ea042057f1eb851f5f36dcad4d6bae86148d691e89"
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_clay_ms/recon_comparison.png": {
-      "size_bytes": 1438469
+      "size_bytes": 1438469,
+      "sha256": "943150f67766ae1b492e9e334f919b77e6c3ef9443e3fa4d2e812b3fde089592"
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_clay_ms/recon_per_band_comparison.png": {
-      "size_bytes": 1438469
+      "size_bytes": 1438469,
+      "sha256": "943150f67766ae1b492e9e334f919b77e6c3ef9443e3fa4d2e812b3fde089592"
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_clay_ms/recon_rgb_pseudocolor_comparison.png": {
-      "size_bytes": 1290179
+      "size_bytes": 1290179,
+      "sha256": "a018f21f777da694991d69d96c7d6d8e8109ced332690d316535c6df2d45b235"
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_clay_ms/rendered_frames.png": {
-      "size_bytes": 324782
+      "size_bytes": 324782,
+      "sha256": "a72ff0be7aeadd71568ca5328da6b700d387350f6a37a6895069106006956ac7"
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_superballs_ms/recon_comparison.png": {
-      "size_bytes": 1567633
+      "size_bytes": 1567633,
+      "sha256": "2d35939b1c056b58b06d41ba03d780266fb896cf5cbff4be144ea4531155f121"
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_superballs_ms/recon_per_band_comparison.png": {
-      "size_bytes": 1567633
+      "size_bytes": 1567633,
+      "sha256": "2d35939b1c056b58b06d41ba03d780266fb896cf5cbff4be144ea4531155f121"
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_superballs_ms/recon_rgb_pseudocolor_comparison.png": {
-      "size_bytes": 1560692
+      "size_bytes": 1560692,
+      "sha256": "acf691c30314b566cc8297ea0f2e7cfc4f942c9b2124562990406287411a0866"
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_superballs_ms/rendered_frames.png": {
-      "size_bytes": 376542
+      "size_bytes": 376542,
+      "sha256": "fff3bbcfc8abe40aebd025ed479f06792589bdd3fc1a3f99f546f5aa2385bb7e"
     },
     "thesis/phase3_6_linear_recon_cave/metrics/cave_recon_metrics.json": {
-      "size_bytes": 5642
+      "size_bytes": 5642,
+      "sha256": "87cecb9c688df42adffafbe85b3e1003303b1139e89d1a1635fb08770f7bb04a"
     },
     "thesis/phase3_6_linear_recon_cave/metrics/cave_recon_summary.json": {
-      "size_bytes": 641
+      "size_bytes": 641,
+      "sha256": "0a5330e82e37a45f50f49ff74d732c6c3f8f60ba77eb980243c2b9d75d152738"
     },
     "thesis/phase3_6_linear_recon_cave/metrics/reconstruction_metrics_summary.csv": {
-      "size_bytes": 4214
+      "size_bytes": 4214,
+      "sha256": "4fbd0eb5f98c6cfd28cb3d2316a141f938c22af730fd5ddc824b710836d153e7"
     },
     "thesis/phase3_6_linear_recon_cave/reports/cave_recon_report.md": {
-      "size_bytes": 2030
+      "size_bytes": 2030,
+      "sha256": "4223625f9b71e387d20e218124084188ceffa6cbf0dbd2fc3567d8a3053bdb25"
     },
     "thesis/phase3_6_linear_recon_synthetic/data/recon_appendix_arrays.npz": {
-      "size_bytes": 4228255
+      "size_bytes": 4228255,
+      "sha256": "0796cae04e6558b6583fb67975170e91e29864927149ec53b7592453e2ccaf2b"
     },
     "thesis/phase3_6_linear_recon_synthetic/figures/recon_comparison.png": {
-      "size_bytes": 1731810
+      "size_bytes": 1731810,
+      "sha256": "33ae87fce84b3872705c87942e758be54f375e0f033ede9d6eb4eaec8d405635"
     },
     "thesis/phase3_6_linear_recon_synthetic/figures/recon_multiframe.png": {
-      "size_bytes": 702116
+      "size_bytes": 702116,
+      "sha256": "0270043e607f847708edcc6b6b21747aef5492457a7e23078a7887b40e9d1dc5"
     },
     "thesis/phase3_6_linear_recon_synthetic/figures/recon_per_band_comparison.png": {
-      "size_bytes": 1731810
+      "size_bytes": 1731810,
+      "sha256": "33ae87fce84b3872705c87942e758be54f375e0f033ede9d6eb4eaec8d405635"
     },
     "thesis/phase3_6_linear_recon_synthetic/figures/recon_rgb_pseudocolor_comparison.png": {
-      "size_bytes": 1646685
+      "size_bytes": 1646685,
+      "sha256": "1ff3fc8826db171e5be0f7bfcb55c0daba8fb34d210a56b186a0533c994da341"
     },
     "thesis/phase3_6_linear_recon_synthetic/figures/recon_single_frame.png": {
-      "size_bytes": 1327750
+      "size_bytes": 1327750,
+      "sha256": "5dec109113aa25192a4a6619e86826632776d7c855d0ff0764ce03501db4682f"
     },
     "thesis/phase3_6_linear_recon_synthetic/figures/rendered_frames.png": {
-      "size_bytes": 351154
+      "size_bytes": 351154,
+      "sha256": "6211536031b590f4f2c1ddb91ee1c014c3a56eb9308d25596945121498e65c75"
     },
     "thesis/phase3_6_linear_recon_synthetic/figures/selected_masks.png": {
-      "size_bytes": 28209
+      "size_bytes": 28209,
+      "sha256": "397f10807bd3557f7ae7c3b6c26a6c399f7bff66060127681cbe715491563371"
     },
     "thesis/phase3_6_linear_recon_synthetic/figures/synthetic_objects.png": {
-      "size_bytes": 231084
+      "size_bytes": 231084,
+      "sha256": "78d5e7cc8f19868c5fd831ca9187f00b246bca68e43f02a928dc9f5275f91b10"
     },
     "thesis/phase3_6_linear_recon_synthetic/metrics/reconstruction_metrics.json": {
-      "size_bytes": 2310
+      "size_bytes": 2310,
+      "sha256": "447266a185bdd327837d4cf77af261a9b3a628e7a7ef2822828a60299f7ec558"
     },
     "thesis/phase3_6_linear_recon_synthetic/reports/linear_recon_report.md": {
-      "size_bytes": 1047
+      "size_bytes": 1047,
+      "sha256": "e23450b4ebe67d47cdb07a98c0787983c2030fd30b55cf411ffc71162a34f92f"
     },
     "thesis/reports/figure_catalog.md": {
-      "size_bytes": 4148
+      "size_bytes": 4148,
+      "sha256": "8f25111a13f09c598c9b36a1e4284cceaf31b52127036505508438ae08256dd1"
     },
     "thesis/reports/lcd_forward_phase3_5_3_6_summary.md": {
-      "size_bytes": 1478
+      "size_bytes": 1478,
+      "sha256": "4cff4fb3764e1a4f68a1e0e30104004579377f2bb350ee33dd89c314cb4f8b82"
     },
     "thesis/reports/limitations.md": {
-      "size_bytes": 1444
+      "size_bytes": 1444,
+      "sha256": "a245cc7be0434725e7d8d326d2c046a2191297e81c049295ce3911582c426d6c"
+    },
+    "thesis/reports/metric_audit_response.md": {
+      "size_bytes": 6241,
+      "sha256": "268c76bf7b24a39b426c5c3114b2f41841c5776f9e9fbac33904747c068ba868"
     },
     "thesis/reports/repro_commands.md": {
-      "size_bytes": 1409
+      "size_bytes": 1409,
+      "sha256": "9a1bd6aed099f992519ea2bd7302a97ce474dea9c71659d36c4a73a34b536f95"
     },
     "thesis/reports/result_index.md": {
-      "size_bytes": 1855
+      "size_bytes": 2093,
+      "sha256": "bea52c47bad90c33a3bb7a3928f6a62fb0fb5c176ab89cc035070757ed3c16a1"
     },
     "thesis/reports/thesis_evidence_summary.md": {
-      "size_bytes": 1837
+      "size_bytes": 2246,
+      "sha256": "ff41bc669f66c8b34d15d691ebad3ee30bc95cf60e3b8c9e5f62abf1ff0d9ebd"
     }
   }
 }
