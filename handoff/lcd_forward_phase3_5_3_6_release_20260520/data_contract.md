@@ -48,6 +48,7 @@ thesis/
     h_matrix_dc_otf_response.md
     solver_regularization_response.md
     alpha_interpretability.md
+    downstream_thesis_figure_guide.md
   alpha_sweep/
     cave_alpha_sweep_by_scene.csv
     cave_alpha_sweep_summary.csv
@@ -55,6 +56,11 @@ thesis/
     alpha_psnr.png / pdf
     alpha_ssim.png / pdf
     alpha_display_ssim.png / pdf
+  thesis_figures/
+    fig4_pca_basis_subset.pdf / png
+    fig4_forward_prediction_subset.pdf / png
+    fig4_forward_prediction_subset_metrics.csv
+    thesis_figures_manifest.json
 provenance/
   lcd_forward_run_manifest.json
   bishe_first_pass.yaml
@@ -73,6 +79,8 @@ provenance/
 - solver_regularization_response.md: authoritative explanation of precision-specific alpha, adaptive policy, and global-vs-frequency-scaled ridge behavior
 - alpha_sweep/: 27-alpha sweep (1e-18 to 1e+0) with PSNR, raw SSIM, display-normalized SSIM, correlation, and PSNR gain per scene. Figures: alpha_psnr.png, alpha_ssim.png, alpha_display_ssim.png
 - alpha_interpretability.md: authoritative explanation of mid-frequency encoding physics and DC singular-value collapse (condition ~3.3e7); explains why optimal alpha is 12 orders of magnitude smaller than typical Tikhonov regularizers
+- thesis_figures/: Chapter 4 thesis-ready forward-model figures, metrics CSV, and manifest. PDFs are intended for direct thesis inclusion; PNGs are preview/raster fallbacks.
+- downstream_thesis_figure_guide.md: instructions for downstream thesis repo on which PDFs to copy, which CSV/manifest fields to read, and which claims not to change.
 
 ## Not Included
 

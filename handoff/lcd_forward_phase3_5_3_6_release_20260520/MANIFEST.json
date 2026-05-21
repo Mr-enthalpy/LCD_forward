@@ -2,13 +2,13 @@
   "release_id": "lcd_forward_phase3_5_3_6_release_20260520",
   "files": {
     "README.md": {
-      "size_bytes": 1699
+      "size_bytes": 1958
     },
     "RELEASE.json": {
-      "size_bytes": 1347
+      "size_bytes": 1568
     },
     "data_contract.md": {
-      "size_bytes": 3815
+      "size_bytes": 4381
     },
     "provenance/bishe_first_pass.yaml": {
       "size_bytes": 1145
@@ -220,8 +220,11 @@
     "thesis/reports/cave_metrics_audit.md": {
       "size_bytes": 2592
     },
+    "thesis/reports/downstream_thesis_figure_guide.md": {
+      "size_bytes": 5703
+    },
     "thesis/reports/figure_catalog.md": {
-      "size_bytes": 5455
+      "size_bytes": 6456
     },
     "thesis/reports/h_matrix_dc_otf_response.md": {
       "size_bytes": 3053
@@ -248,13 +251,31 @@
       "size_bytes": 1409
     },
     "thesis/reports/result_index.md": {
-      "size_bytes": 2806
+      "size_bytes": 3404
     },
     "thesis/reports/solver_regularization_response.md": {
       "size_bytes": 5960
     },
     "thesis/reports/thesis_evidence_summary.md": {
       "size_bytes": 4446
+    },
+    "thesis/thesis_figures/fig4_forward_prediction_subset.pdf": {
+      "size_bytes": 294450
+    },
+    "thesis/thesis_figures/fig4_forward_prediction_subset.png": {
+      "size_bytes": 3762302
+    },
+    "thesis/thesis_figures/fig4_forward_prediction_subset_metrics.csv": {
+      "size_bytes": 3130
+    },
+    "thesis/thesis_figures/fig4_pca_basis_subset.pdf": {
+      "size_bytes": 217861
+    },
+    "thesis/thesis_figures/fig4_pca_basis_subset.png": {
+      "size_bytes": 2341699
+    },
+    "thesis/thesis_figures/thesis_figures_manifest.json": {
+      "size_bytes": 5228
     }
   }
 }
