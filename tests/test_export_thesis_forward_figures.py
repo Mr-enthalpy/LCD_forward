@@ -82,6 +82,8 @@ def test_export_thesis_forward_figures_smoke(tmp_path: Path) -> None:
         out_dir / "fig4_pca_basis_subset.png",
         out_dir / "fig4_forward_prediction_subset.pdf",
         out_dir / "fig4_forward_prediction_subset.png",
+        out_dir / "fig4_forward_prediction_residuals.pdf",
+        out_dir / "fig4_forward_prediction_residuals.png",
         out_dir / "fig4_forward_prediction_subset_metrics.csv",
         out_dir / "thesis_figures_manifest.json",
     ]
@@ -100,3 +102,4 @@ def test_export_thesis_forward_figures_smoke(tmp_path: Path) -> None:
     assert manifest["pca_recomputed"] is True
     assert len(manifest["prediction_subset"]["sample_ids"]) == 4
     assert manifest["prediction_subset"]["mean_norm_corr"] > 0.0
+    assert manifest["outputs"]["residual_pdf"].endswith("fig4_forward_prediction_residuals.pdf")

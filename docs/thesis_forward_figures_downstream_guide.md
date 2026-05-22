@@ -4,6 +4,8 @@
 
 This handoff publishes thesis-ready replacements for Chapter 4 forward-model figures from `LCD_forward` Phase 3.5 artifacts. It is a figure/data handoff only: do not change thesis claims, do not reinterpret optical assumptions, and do not retrain or regenerate figures downstream unless the source handoff is replaced.
 
+Update note, 2026-05-22: the measured-vs-predicted PSF subset figure was reorganized for thesis readability. The main figure now keeps sample metadata, mask, measured PSF, and predicted PSF in a wider layout with larger text, while residuals were moved into a separate companion figure so the residual structure is visible at publication scale. The underlying selected samples and numeric metrics are unchanged; only the presentation layout and published figure set were updated.
+
 ## Published Root
 
 Use this local release root:
@@ -20,13 +22,15 @@ thesis/thesis_figures/
 - fig4_pca_basis_subset.png
 - fig4_forward_prediction_subset.pdf
 - fig4_forward_prediction_subset.png
+- fig4_forward_prediction_residuals.pdf
+- fig4_forward_prediction_residuals.png
 - fig4_forward_prediction_subset_metrics.csv
 - thesis_figures_manifest.json
 ```
 
 ## Files To Copy Into Thesis Repo
 
-Copy only these two PDFs into the thesis figure asset directory:
+Copy these PDFs into the thesis figure asset directory:
 
 ```text
 source: D:/datasets/LCD_forward/lcd_forward_phase3_5_3_6_release_20260520/thesis/thesis_figures/fig4_pca_basis_subset.pdf
@@ -34,6 +38,9 @@ target: ../thesis_mono_lcd_nju/assets/figures/fig4_pca_basis_subset.pdf
 
 source: D:/datasets/LCD_forward/lcd_forward_phase3_5_3_6_release_20260520/thesis/thesis_figures/fig4_forward_prediction_subset.pdf
 target: ../thesis_mono_lcd_nju/assets/figures/fig4_forward_prediction_subset.pdf
+
+source: D:/datasets/LCD_forward/lcd_forward_phase3_5_3_6_release_20260520/thesis/thesis_figures/fig4_forward_prediction_residuals.pdf
+target: ../thesis_mono_lcd_nju/assets/figures/fig4_forward_prediction_residuals.pdf
 ```
 
 Do not overwrite unrelated thesis figures. If the thesis repo is somewhere else, keep the same filenames and copy them to that repo's `assets/figures/` directory.
@@ -45,6 +52,7 @@ Use the PDFs directly:
 ```latex
 \includegraphics[width=0.92\textwidth]{fig4_pca_basis_subset.pdf}
 \includegraphics[width=0.92\textwidth]{fig4_forward_prediction_subset.pdf}
+\includegraphics[width=0.92\textwidth]{fig4_forward_prediction_residuals.pdf}
 ```
 
 The PNG files are preview/raster fallbacks only; the thesis should prefer PDF for vector text.
@@ -89,7 +97,19 @@ thesis/thesis_figures/fig4_forward_prediction_subset.pdf
 This replaces the dense measured-vs-predicted prediction montage. It shows four representative held-out test masks with:
 
 ```text
-Mask | Measured pseudo-RGB PSF | Predicted pseudo-RGB PSF | Residual pseudo-RGB
+Sample metadata | Mask | Measured pseudo-RGB PSF | Predicted pseudo-RGB PSF
+```
+
+Use this companion figure when discussing residual structure:
+
+```text
+thesis/thesis_figures/fig4_forward_prediction_residuals.pdf
+```
+
+It shows:
+
+```text
+Sample metadata | Mask | Residual pseudo-RGB
 ```
 
 Pseudo-RGB mapping:
@@ -139,8 +159,9 @@ Recommended downstream rule:
 
 1. Use rows where `wavelength_nm` is `450.0`, `550.0`, or `650.0` for per-wavelength NC.
 2. Use rows where `wavelength_nm` is `mean` for one mean NC per selected sample.
-3. Do not estimate metrics from figure pixels.
-4. Do not mix these representative-sample metrics with the full-test aggregate unless the text explicitly says which is which.
+3. Use `fig4_forward_prediction_residuals.pdf` for residual visibility; do not rely on the main prediction figure for residual inspection.
+4. Do not estimate metrics from figure pixels.
+5. Do not mix these representative-sample metrics with the full-test aggregate unless the text explicitly says which is which.
 
 Full-test aggregate remains the Phase 3.5 metric in:
 

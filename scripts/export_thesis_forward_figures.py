@@ -514,8 +514,14 @@ def export_forward_prediction_figure(
     wavelengths_nm = test_data["wavelengths_nm"]
     test_psfs = test_data["psfs"]
     n_rows = len(selected_indices)
-    fig, axes = plt.subplots(n_rows, 4, figsize=(8.8, 2.1 * n_rows), squeeze=False)
-    column_titles = ["Mask", "Measured", "Predicted", "Residual"]
+    fig, axes = plt.subplots(
+        n_rows,
+        4,
+        figsize=(10.8, 2.15 * n_rows),
+        squeeze=False,
+        gridspec_kw={"width_ratios": [1.45, 1.0, 1.15, 1.15]},
+    )
+    column_titles = ["Sample", "Mask", "Measured", "Predicted"]
 
     for col_idx, title in enumerate(column_titles):
         axes[0, col_idx].set_title(title, fontsize=10, fontweight="bold")
@@ -524,37 +530,78 @@ def export_forward_prediction_figure(
         mask = _mask_thumbnail(test_data["masks"][sample_idx])
         measured = test_psfs[sample_idx, 0]
         predicted = pred_psfs[sample_idx, 0]
-        residual = np.abs(measured - predicted)
         shared_scale = float(np.percentile(np.concatenate([measured.ravel(), predicted.ravel()]), 99.8))
-        residual_scale = float(np.percentile(residual, 99.8))
-
-        axes[row_idx, 0].imshow(mask, cmap="gray", vmin=0, vmax=1)
-        axes[row_idx, 1].imshow(_psf_pseudo_rgb(measured, wavelengths_nm, shared_scale))
-        axes[row_idx, 2].imshow(_psf_pseudo_rgb(predicted, wavelengths_nm, shared_scale))
-        axes[row_idx, 3].imshow(_psf_pseudo_rgb(residual, wavelengths_nm, residual_scale))
 
         corr_text = " / ".join(f"{corr_matrix[sample_idx, wl_idx]:.3f}" for wl_idx in range(corr_matrix.shape[1]))
-        label = (
+        sample_text = (
             f"{test_data['mask_id'][sample_idx]}\n"
             f"{test_data['mask_family'][sample_idx]}\n"
             f"mean NC={mean_corr[sample_idx]:.3f}\n"
             f"NC 450/550/650={corr_text}"
         )
-        axes[row_idx, 0].set_ylabel(label, fontsize=7.5, rotation=0, ha="right", va="center", labelpad=58)
+        axes[row_idx, 0].text(0.0, 0.5, sample_text, ha="left", va="center", fontsize=9.2, linespacing=1.35)
+        axes[row_idx, 0].set_axis_off()
+        axes[row_idx, 1].imshow(mask, cmap="gray", vmin=0, vmax=1)
+        axes[row_idx, 2].imshow(_psf_pseudo_rgb(measured, wavelengths_nm, shared_scale))
+        axes[row_idx, 3].imshow(_psf_pseudo_rgb(predicted, wavelengths_nm, shared_scale))
 
         for col_idx in range(4):
             axes[row_idx, col_idx].set_xticks([])
             axes[row_idx, col_idx].set_yticks([])
 
     fig.suptitle("Measured vs Predicted PSF Subset", fontsize=12, fontweight="bold")
-    fig.tight_layout(pad=0.8)
-    return _save_figure(fig, out_dir / "fig4_forward_prediction_subset", formats, dpi)
+    fig.tight_layout(pad=0.85)
+    outputs = {f"main_{key}": value for key, value in _save_figure(fig, out_dir / "fig4_forward_prediction_subset", formats, dpi).items()}
+
+    residual_fig, residual_axes = plt.subplots(
+        n_rows,
+        3,
+        figsize=(9.0, 2.35 * n_rows),
+        squeeze=False,
+        gridspec_kw={"width_ratios": [1.35, 1.0, 1.45]},
+    )
+    residual_titles = ["Sample", "Mask", "Residual"]
+    for col_idx, title in enumerate(residual_titles):
+        residual_axes[0, col_idx].set_title(title, fontsize=10, fontweight="bold")
+
+    for row_idx, sample_idx in enumerate(selected_indices):
+        mask = _mask_thumbnail(test_data["masks"][sample_idx])
+        measured = test_psfs[sample_idx, 0]
+        predicted = pred_psfs[sample_idx, 0]
+        residual = np.abs(measured - predicted)
+        residual_scale = float(np.percentile(residual, 99.8))
+        corr_text = " / ".join(f"{corr_matrix[sample_idx, wl_idx]:.3f}" for wl_idx in range(corr_matrix.shape[1]))
+        sample_text = (
+            f"{test_data['mask_id'][sample_idx]}\n"
+            f"{test_data['mask_family'][sample_idx]}\n"
+            f"mean NC={mean_corr[sample_idx]:.3f}\n"
+            f"NC 450/550/650={corr_text}"
+        )
+
+        residual_axes[row_idx, 0].text(0.0, 0.5, sample_text, ha="left", va="center", fontsize=9.2, linespacing=1.35)
+        residual_axes[row_idx, 0].set_axis_off()
+        residual_axes[row_idx, 1].imshow(mask, cmap="gray", vmin=0, vmax=1)
+        residual_axes[row_idx, 2].imshow(_psf_pseudo_rgb(residual, wavelengths_nm, residual_scale))
+        for col_idx in range(3):
+            residual_axes[row_idx, col_idx].set_xticks([])
+            residual_axes[row_idx, col_idx].set_yticks([])
+
+    residual_fig.suptitle("Measured vs Predicted PSF Residuals", fontsize=12, fontweight="bold")
+    residual_fig.tight_layout(pad=0.85)
+    outputs.update(
+        {f"residual_{key}": value for key, value in _save_figure(residual_fig, out_dir / "fig4_forward_prediction_residuals", formats, dpi).items()}
+    )
+    plt.close(fig)
+    plt.close(residual_fig)
+    return outputs
 
 
 def _copy_to_thesis_assets(outputs: dict[str, str], copy_to: Path) -> list[str]:
     copy_to.mkdir(parents=True, exist_ok=True)
     copied = []
-    for key in ("pca_pdf", "forward_pdf"):
+    for key in ("pca_pdf", "forward_pdf", "residual_pdf"):
+        if key not in outputs:
+            continue
         src = Path(outputs[key])
         dst = copy_to / src.name
         shutil.copy2(src, dst)
@@ -608,8 +655,10 @@ def export_figures(args: argparse.Namespace) -> dict[str, Any]:
     outputs = {
         "pca_pdf": str(args.out_dir / "fig4_pca_basis_subset.pdf"),
         "pca_png": str(args.out_dir / "fig4_pca_basis_subset.png"),
-        "forward_pdf": str(args.out_dir / "fig4_forward_prediction_subset.pdf"),
-        "forward_png": str(args.out_dir / "fig4_forward_prediction_subset.png"),
+        "forward_pdf": forward_outputs.get("main_pdf", str(args.out_dir / "fig4_forward_prediction_subset.pdf")),
+        "forward_png": forward_outputs.get("main_png", str(args.out_dir / "fig4_forward_prediction_subset.png")),
+        "residual_pdf": forward_outputs.get("residual_pdf", str(args.out_dir / "fig4_forward_prediction_residuals.pdf")),
+        "residual_png": forward_outputs.get("residual_png", str(args.out_dir / "fig4_forward_prediction_residuals.png")),
         "metrics_csv": str(metrics_csv),
     }
 
@@ -625,7 +674,10 @@ def export_figures(args: argparse.Namespace) -> dict[str, Any]:
         "dataset": data_provenance,
         "wavelengths_nm": [float(x) for x in test_data["wavelengths_nm"]],
         "psf_shape": list(test_data["psf_shape"]),
-        "display_shape": "native PSF shape; log pseudo-RGB for measured/predicted and separate log scale for residual",
+        "display_shape": (
+            "native PSF shape; main figure shows mask/measured/predicted with shared measured/predicted "
+            "log scale per sample; companion residual figure uses a separate residual log scale"
+        ),
         "pca_recomputed": pca_recomputed,
         "pca_basis": {
             "figure": "fig4_pca_basis_subset",
@@ -661,6 +713,7 @@ def export_figures(args: argparse.Namespace) -> dict[str, Any]:
     manifest_path.write_text(json.dumps(manifest, indent=2, default=_json_default) + "\n", encoding="utf-8")
     print(f"Wrote {outputs['pca_pdf']}")
     print(f"Wrote {outputs['forward_pdf']}")
+    print(f"Wrote {outputs['residual_pdf']}")
     print(f"Wrote {metrics_csv}")
     print(f"Wrote {manifest_path}")
     for path in copied:
