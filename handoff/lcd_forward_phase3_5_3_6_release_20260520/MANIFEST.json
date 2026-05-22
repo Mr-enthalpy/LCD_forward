@@ -8,7 +8,7 @@
       "size_bytes": 2052
     },
     "RELEASE.json": {
-      "size_bytes": 1793
+      "size_bytes": 1914
     },
     "provenance/bishe_first_pass.yaml": {
       "size_bytes": 1202
@@ -263,28 +263,28 @@
       "size_bytes": 2532
     },
     "thesis/thesis_figures/fig4_forward_prediction_residuals.pdf": {
-      "size_bytes": 290237
+      "size_bytes": 345836
     },
     "thesis/thesis_figures/fig4_forward_prediction_residuals.png": {
-      "size_bytes": 3544115
+      "size_bytes": 4225534
     },
     "thesis/thesis_figures/fig4_forward_prediction_subset.pdf": {
-      "size_bytes": 265464
+      "size_bytes": 308535
     },
     "thesis/thesis_figures/fig4_forward_prediction_subset.png": {
-      "size_bytes": 3267982
+      "size_bytes": 3799063
     },
     "thesis/thesis_figures/fig4_forward_prediction_subset_metrics.csv": {
       "size_bytes": 3129
     },
     "thesis/thesis_figures/fig4_pca_basis_subset.pdf": {
-      "size_bytes": 217861
+      "size_bytes": 90875
     },
     "thesis/thesis_figures/fig4_pca_basis_subset.png": {
-      "size_bytes": 2341699
+      "size_bytes": 1867334
     },
     "thesis/thesis_figures/thesis_figures_manifest.json": {
-      "size_bytes": 5484
+      "size_bytes": 6108
     }
   }
 }

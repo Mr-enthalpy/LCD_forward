@@ -27,6 +27,8 @@ DEFAULT_DATASET = Path("D:/datasets/optic_system/phase3_release_20260520/lcd_for
 DEFAULT_FORWARD_ARTIFACTS = Path("outputs/bishe_first_pass/20260521_224543/forward_validation")
 DEFAULT_OUT_DIR = Path("outputs/thesis_figures")
 WAVELENGTH_RGB_ORDER = [650.0, 550.0, 450.0]
+FORWARD_SAMPLE_TEXT_FONTSIZE = 13.8
+FORWARD_COLUMN_TITLE_FONTSIZE = 12.0
 
 
 class NumpyPCARidge:
@@ -517,14 +519,14 @@ def export_forward_prediction_figure(
     fig, axes = plt.subplots(
         n_rows,
         4,
-        figsize=(10.8, 2.15 * n_rows),
+        figsize=(12.2, 2.45 * n_rows),
         squeeze=False,
-        gridspec_kw={"width_ratios": [1.45, 1.0, 1.15, 1.15]},
+        gridspec_kw={"width_ratios": [1.72, 1.0, 1.15, 1.15]},
     )
     column_titles = ["Sample", "Mask", "Measured", "Predicted"]
 
     for col_idx, title in enumerate(column_titles):
-        axes[0, col_idx].set_title(title, fontsize=10, fontweight="bold")
+        axes[0, col_idx].set_title(title, fontsize=FORWARD_COLUMN_TITLE_FONTSIZE, fontweight="bold")
 
     for row_idx, sample_idx in enumerate(selected_indices):
         mask = _mask_thumbnail(test_data["masks"][sample_idx])
@@ -539,7 +541,15 @@ def export_forward_prediction_figure(
             f"mean NC={mean_corr[sample_idx]:.3f}\n"
             f"NC 450/550/650={corr_text}"
         )
-        axes[row_idx, 0].text(0.0, 0.5, sample_text, ha="left", va="center", fontsize=9.2, linespacing=1.35)
+        axes[row_idx, 0].text(
+            0.0,
+            0.5,
+            sample_text,
+            ha="left",
+            va="center",
+            fontsize=FORWARD_SAMPLE_TEXT_FONTSIZE,
+            linespacing=1.28,
+        )
         axes[row_idx, 0].set_axis_off()
         axes[row_idx, 1].imshow(mask, cmap="gray", vmin=0, vmax=1)
         axes[row_idx, 2].imshow(_psf_pseudo_rgb(measured, wavelengths_nm, shared_scale))
@@ -549,20 +559,20 @@ def export_forward_prediction_figure(
             axes[row_idx, col_idx].set_xticks([])
             axes[row_idx, col_idx].set_yticks([])
 
-    fig.suptitle("Measured vs Predicted PSF Subset", fontsize=12, fontweight="bold")
+    fig.suptitle("Measured vs Predicted PSF Subset", fontsize=14, fontweight="bold")
     fig.tight_layout(pad=0.85)
     outputs = {f"main_{key}": value for key, value in _save_figure(fig, out_dir / "fig4_forward_prediction_subset", formats, dpi).items()}
 
     residual_fig, residual_axes = plt.subplots(
         n_rows,
         3,
-        figsize=(9.0, 2.35 * n_rows),
+        figsize=(10.6, 2.55 * n_rows),
         squeeze=False,
-        gridspec_kw={"width_ratios": [1.35, 1.0, 1.45]},
+        gridspec_kw={"width_ratios": [1.7, 1.0, 1.45]},
     )
     residual_titles = ["Sample", "Mask", "Residual"]
     for col_idx, title in enumerate(residual_titles):
-        residual_axes[0, col_idx].set_title(title, fontsize=10, fontweight="bold")
+        residual_axes[0, col_idx].set_title(title, fontsize=FORWARD_COLUMN_TITLE_FONTSIZE, fontweight="bold")
 
     for row_idx, sample_idx in enumerate(selected_indices):
         mask = _mask_thumbnail(test_data["masks"][sample_idx])
@@ -578,7 +588,15 @@ def export_forward_prediction_figure(
             f"NC 450/550/650={corr_text}"
         )
 
-        residual_axes[row_idx, 0].text(0.0, 0.5, sample_text, ha="left", va="center", fontsize=9.2, linespacing=1.35)
+        residual_axes[row_idx, 0].text(
+            0.0,
+            0.5,
+            sample_text,
+            ha="left",
+            va="center",
+            fontsize=FORWARD_SAMPLE_TEXT_FONTSIZE,
+            linespacing=1.28,
+        )
         residual_axes[row_idx, 0].set_axis_off()
         residual_axes[row_idx, 1].imshow(mask, cmap="gray", vmin=0, vmax=1)
         residual_axes[row_idx, 2].imshow(_psf_pseudo_rgb(residual, wavelengths_nm, residual_scale))
@@ -586,7 +604,7 @@ def export_forward_prediction_figure(
             residual_axes[row_idx, col_idx].set_xticks([])
             residual_axes[row_idx, col_idx].set_yticks([])
 
-    residual_fig.suptitle("Measured vs Predicted PSF Residuals", fontsize=12, fontweight="bold")
+    residual_fig.suptitle("Measured vs Predicted PSF Residuals", fontsize=14, fontweight="bold")
     residual_fig.tight_layout(pad=0.85)
     outputs.update(
         {f"residual_{key}": value for key, value in _save_figure(residual_fig, out_dir / "fig4_forward_prediction_residuals", formats, dpi).items()}

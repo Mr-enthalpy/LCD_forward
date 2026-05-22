@@ -33,6 +33,7 @@
   "scope": "thesis existence proof, not performance-optimized model",
   "post_release_note": "Metric audit, H-matrix DC/OTF, solver regularization, and precision-specific alpha sweep responses added locally after review; binary payload remains local. Chapter 4 thesis-ready forward figures and downstream reading guide are published under thesis/thesis_figures and thesis/reports.",
   "post_release_notes": [
-    "2026-05-22: regenerated Chapter 5 reconstruction figures with larger semantic labels and added reconstruction_figure_caption_guide.md."
+    "2026-05-22: regenerated Chapter 5 reconstruction figures with larger semantic labels and added reconstruction_figure_caption_guide.md.",
+    "2026-05-23: regenerated Chapter 4 forward prediction and residual figures with enlarged sample/family/NC labels."
   ]
 }
