@@ -8,7 +8,7 @@
       "size_bytes": 2052
     },
     "RELEASE.json": {
-      "size_bytes": 1914
+      "size_bytes": 2074
     },
     "provenance/bishe_first_pass.yaml": {
       "size_bytes": 1202
@@ -137,10 +137,10 @@
       "size_bytes": 1278211
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_cd_ms/recon_per_band_comparison.png": {
-      "size_bytes": 1266022
+      "size_bytes": 1279522
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_cd_ms/recon_rgb_pseudocolor_comparison.png": {
-      "size_bytes": 1050731
+      "size_bytes": 1124547
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_cd_ms/rendered_frames.png": {
       "size_bytes": 314282
@@ -149,10 +149,10 @@
       "size_bytes": 1251572
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_clay_ms/recon_per_band_comparison.png": {
-      "size_bytes": 1235414
+      "size_bytes": 1249888
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_clay_ms/recon_rgb_pseudocolor_comparison.png": {
-      "size_bytes": 1051950
+      "size_bytes": 1129798
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_clay_ms/rendered_frames.png": {
       "size_bytes": 345529
@@ -161,10 +161,10 @@
       "size_bytes": 1379062
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_superballs_ms/recon_per_band_comparison.png": {
-      "size_bytes": 1344905
+      "size_bytes": 1354374
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_superballs_ms/recon_rgb_pseudocolor_comparison.png": {
-      "size_bytes": 1234331
+      "size_bytes": 1334093
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_superballs_ms/rendered_frames.png": {
       "size_bytes": 404585
@@ -191,10 +191,10 @@
       "size_bytes": 1029874
     },
     "thesis/phase3_6_linear_recon_synthetic/figures/recon_per_band_comparison.png": {
-      "size_bytes": 1561669
+      "size_bytes": 1587490
     },
     "thesis/phase3_6_linear_recon_synthetic/figures/recon_rgb_pseudocolor_comparison.png": {
-      "size_bytes": 1291086
+      "size_bytes": 1412771
     },
     "thesis/phase3_6_linear_recon_synthetic/figures/recon_single_frame.png": {
       "size_bytes": 1329204
@@ -248,7 +248,7 @@
       "size_bytes": 6087
     },
     "thesis/reports/reconstruction_figure_caption_guide.md": {
-      "size_bytes": 2813
+      "size_bytes": 2932
     },
     "thesis/reports/repro_commands.md": {
       "size_bytes": 1409

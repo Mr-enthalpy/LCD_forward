@@ -14,6 +14,9 @@ The figures are generated from the corresponding `recon_appendix_arrays.npz` fil
 store `gt_object`, `recon_single`, `recon_multi`, `wavelengths_nm`, selected masks, rendered
 frames, and HDF5 provenance.
 
+Long explanatory notes are intentionally kept in this document and in thesis captions, not
+embedded below the images.
+
 ## Per-band Reconstruction Figures
 
 Applies to every `recon_per_band_comparison.png`.

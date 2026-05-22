@@ -313,17 +313,7 @@ def plot_recon_comparison(
         )
 
     fig.suptitle("Per-band Reconstruction Comparison", fontsize=16, fontweight="bold")
-    fig.tight_layout(rect=[0.06, 0.05, 1.0, 0.96])
-    fig.text(
-        0.5,
-        0.012,
-        "Rows show ground truth, single-frame reconstruction, multi-frame reconstruction, and absolute error. "
-        "In the error row, left/right halves are single-frame/multi-frame errors.",
-        ha="center",
-        va="bottom",
-        fontsize=11,
-        color="#333333",
-    )
+    fig.tight_layout(rect=[0.06, 0.02, 1.0, 0.96])
     fig.savefig(out_path, dpi=150, bbox_inches="tight")
     plt.close(fig)
     return out_path
@@ -403,21 +393,8 @@ def plot_recon_rgb_pseudocolor_comparison(
         clip_on=False,
     )
 
-    rgb_order = _rgb_indices(wavelengths_nm, gt.shape[0])
-    if wavelengths_nm is not None:
-        rgb_text = ", ".join(f"{wavelengths_nm[i]:.0f}nm" for i in rgb_order)
-    else:
-        rgb_text = ", ".join(f"Ch{i}" for i in rgb_order)
-
     fig.suptitle("Pseudo-RGB Reconstruction Comparison", fontsize=16, fontweight="bold")
-    fig.tight_layout(rect=[0.06, 0.08, 1.0, 0.95])
-    fig.text(
-        0.5, 0.005,
-        f"Pseudo-RGB uses R,G,B = {rgb_text}. Residual panels show mean absolute pseudo-RGB error. "
-        "RGB panels use per-panel 1st\u201399th percentile clipping; residual panels share one color scale.",
-        ha="center", va="bottom",
-        fontsize=11, color="#333333",
-    )
+    fig.tight_layout(rect=[0.06, 0.02, 1.0, 0.95])
     fig.savefig(out_path, dpi=150, bbox_inches="tight")
     plt.close(fig)
     return out_path
