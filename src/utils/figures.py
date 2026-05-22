@@ -356,19 +356,16 @@ def plot_recon_rgb_pseudocolor_comparison(
         rgb_text = ", ".join(f"{wavelengths_nm[i]:.0f}nm" for i in rgb_order)
     else:
         rgb_text = ", ".join(f"Ch{i}" for i in rgb_order)
-    plt.subplot(2, 3, 6)
-    plt.axis("off")
-    plt.text(
-        0.0,
-        0.7,
-        f"Pseudo-RGB channel order:\nR, G, B = {rgb_text}\n\n"
-        "Display normalization:\nper-panel 1st-99th percentile clipping",
-        fontsize=11,
-        va="top",
-    )
 
     plt.suptitle("Pseudo-RGB Reconstruction Comparison", fontsize=12)
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.08)
+    plt.gcf().text(
+        0.5, 0.005,
+        f"Pseudo-RGB: R,G,B = {rgb_text}  |  Display: per-panel 1st\u201399th percentile clipping",
+        ha="center", va="bottom",
+        fontsize=8, fontstyle="italic", color="#333333",
+    )
     plt.savefig(out_path, dpi=150, bbox_inches="tight")
     plt.close()
     return out_path

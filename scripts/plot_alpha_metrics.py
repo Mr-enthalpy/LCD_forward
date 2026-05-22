@@ -191,7 +191,7 @@ def _add_mid_frequency_label_below_legend(fig, ax, legend):
 
 def _add_best_alpha_vline(ax, best_alpha, best_val, y_min, y_max, color, annotate_x=None, annotate_y=None):
     x = math.log10(best_alpha)
-    ax.axvline(x=x, color=color, linestyle="--", linewidth=1.0, alpha=0.7)
+    ax.axvline(x=x, color=color, linestyle="--", linewidth=1.6, alpha=0.85, zorder=4)
     if annotate_x is not None and annotate_y is not None:
         tx, ty = annotate_x, annotate_y
     else:
@@ -201,7 +201,7 @@ def _add_best_alpha_vline(ax, best_alpha, best_val, y_min, y_max, color, annotat
         xy=(x, best_val),
         xytext=(tx, ty),
         fontsize=7.5,
-        arrowprops=dict(arrowstyle="->", color=color, lw=0.7),
+        arrowprops=dict(arrowstyle="->", color=color, lw=1.0),
         color=color,
         fontweight="bold",
     )
@@ -251,16 +251,17 @@ def plot_psnr(curves: dict[str, Any], output_dir: Path):
 
     _add_zone_shading(ax, x_min, x_max, y_min, y_max, collapse_right, high_reg_left)
     _add_zone_labels(ax, y_min, y_max, [alpha_log10.min(), alpha_log10.max()])
-    _add_per_scene_lines(ax, per_scene, "psnr", SCENE_COLORS, label_scenes=True)
+    _add_per_scene_lines(ax, per_scene, "psnr", SCENE_COLORS, alpha=0.18, lw=0.35, ms=1.5, label_scenes=True)
     _add_best_alpha_vline(ax, best_alpha, best_psnr, y_min, y_max, MEAN_PSNR_COLOR, annotate_x=-12, annotate_y=55)
 
-    ax.plot(a_log10, m_psnr, "s-", color=MEAN_PSNR_COLOR, linewidth=2.2,
-            markersize=5.5, label="Mean multi-frame PSNR", zorder=5)
+    ax.plot(a_log10, m_psnr, "s-", color=MEAN_PSNR_COLOR, linewidth=2.8,
+            markersize=7, label="Mean multi-frame PSNR", zorder=6)
 
     legend = ax.legend(loc="upper right", fontsize=7, framealpha=0.85, ncol=2)
 
-    ax.set_ylabel("PSNR (dB)", fontsize=12, color=MEAN_PSNR_COLOR)
-    ax.tick_params(axis="y", labelcolor=MEAN_PSNR_COLOR)
+    ax.set_ylabel("PSNR (dB)", fontsize=13, fontweight="bold", color=MEAN_PSNR_COLOR)
+    ax.tick_params(axis="y", labelcolor=MEAN_PSNR_COLOR, labelsize=10)
+    ax.tick_params(axis="x", labelsize=9.5)
     ax.set_ylim(y_min, y_max)
     _setup_xaxis(ax, alpha_log10, list(range(-18, 2, 2)) + [0])
 
@@ -268,6 +269,8 @@ def plot_psnr(curves: dict[str, Any], output_dir: Path):
 
     fig.tight_layout(pad=1.2)
     _add_mid_frequency_label_below_legend(fig, ax, legend)
+    for label in ax.get_yticklabels():
+        label.set_fontweight("bold")
     for fmt in ("png", "pdf"):
         path = output_dir / f"alpha_psnr.{fmt}"
         fig.savefig(path, dpi=200, bbox_inches="tight")
@@ -297,14 +300,15 @@ def plot_ssim_raw(curves: dict[str, Any], output_dir: Path):
     fig, ax = plt.subplots(figsize=(11, 5.5))
     _add_zone_shading(ax, x_min, x_max, y_min, y_max, collapse_right, high_reg_left)
     _add_zone_labels(ax, y_min, y_max, [alpha_log10.min(), alpha_log10.max()])
-    _add_per_scene_lines(ax, per_scene, "ssim_raw", SCENE_COLORS, alpha=0.25, lw=0.5, label_scenes=True)
+    _add_per_scene_lines(ax, per_scene, "ssim_raw", SCENE_COLORS, alpha=0.18, lw=0.35, ms=1.5, label_scenes=True)
     _add_best_alpha_vline(ax, best_alpha, best_ssim_raw, y_min, y_max, MEAN_SSIM_RAW_COLOR, annotate_x=-12, annotate_y=0.85)
 
-    ax.plot(a_log10, m_raw, "D-", color=MEAN_SSIM_RAW_COLOR, linewidth=2.0,
-            markersize=5, label="Mean SSIM (raw)", zorder=5)
+    ax.plot(a_log10, m_raw, "D-", color=MEAN_SSIM_RAW_COLOR, linewidth=2.8,
+            markersize=7, label="Mean SSIM (raw)", zorder=6)
 
-    ax.set_ylabel("SSIM", fontsize=12, color=MEAN_SSIM_RAW_COLOR)
-    ax.tick_params(axis="y", labelcolor=MEAN_SSIM_RAW_COLOR)
+    ax.set_ylabel("SSIM", fontsize=13, fontweight="bold", color=MEAN_SSIM_RAW_COLOR)
+    ax.tick_params(axis="y", labelcolor=MEAN_SSIM_RAW_COLOR, labelsize=10)
+    ax.tick_params(axis="x", labelsize=9.5)
     ax.set_ylim(y_min, y_max)
     _setup_xaxis(ax, alpha_log10, list(range(-18, 2, 2)) + [0])
 
@@ -313,6 +317,8 @@ def plot_ssim_raw(curves: dict[str, Any], output_dir: Path):
 
     fig.tight_layout(pad=1.2)
     _add_mid_frequency_label_below_legend(fig, ax, legend)
+    for label in ax.get_yticklabels():
+        label.set_fontweight("bold")
     for fmt in ("png", "pdf"):
         path = output_dir / f"alpha_ssim.{fmt}"
         fig.savefig(path, dpi=200, bbox_inches="tight")
@@ -342,14 +348,15 @@ def plot_ssim_display(curves: dict[str, Any], output_dir: Path):
     fig, ax = plt.subplots(figsize=(11, 5.5))
     _add_zone_shading(ax, x_min, x_max, y_min, y_max, collapse_right, high_reg_left)
     _add_zone_labels(ax, y_min, y_max, [alpha_log10.min(), alpha_log10.max()])
-    _add_per_scene_lines(ax, per_scene, "ssim_display", SCENE_COLORS, alpha=0.25, lw=0.5, label_scenes=True)
+    _add_per_scene_lines(ax, per_scene, "ssim_display", SCENE_COLORS, alpha=0.18, lw=0.35, ms=1.5, label_scenes=True)
     _add_best_alpha_vline(ax, best_alpha, best_ssim_disp, y_min, y_max, MEAN_SSIM_DISPLAY_COLOR, annotate_x=-12, annotate_y=0.80)
 
-    ax.plot(a_log10, m_disp, "^--", color=MEAN_SSIM_DISPLAY_COLOR, linewidth=2.0,
-            markersize=5, label="Mean SSIM (display)", zorder=5)
+    ax.plot(a_log10, m_disp, "^--", color=MEAN_SSIM_DISPLAY_COLOR, linewidth=2.8,
+            markersize=7, label="Mean SSIM (display)", zorder=6)
 
-    ax.set_ylabel("SSIM", fontsize=12, color=MEAN_SSIM_DISPLAY_COLOR)
-    ax.tick_params(axis="y", labelcolor=MEAN_SSIM_DISPLAY_COLOR)
+    ax.set_ylabel("SSIM", fontsize=13, fontweight="bold", color=MEAN_SSIM_DISPLAY_COLOR)
+    ax.tick_params(axis="y", labelcolor=MEAN_SSIM_DISPLAY_COLOR, labelsize=10)
+    ax.tick_params(axis="x", labelsize=9.5)
     ax.set_ylim(y_min, y_max)
     _setup_xaxis(ax, alpha_log10, list(range(-18, 2, 2)) + [0])
 
@@ -358,6 +365,8 @@ def plot_ssim_display(curves: dict[str, Any], output_dir: Path):
 
     fig.tight_layout(pad=1.2)
     _add_mid_frequency_label_below_legend(fig, ax, legend)
+    for label in ax.get_yticklabels():
+        label.set_fontweight("bold")
     for fmt in ("png", "pdf"):
         path = output_dir / f"alpha_display_ssim.{fmt}"
         fig.savefig(path, dpi=200, bbox_inches="tight")

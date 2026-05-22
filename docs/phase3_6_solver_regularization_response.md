@@ -5,7 +5,7 @@
 The Phase 3.6 reconstruction solver uses one global configured ridge scalar and one global policy:
 
 ```yaml
-ridge_alpha: 3.0e-15
+ridge_alpha: 5.0e-15
 ridge_policy: adaptive
 ```
 
@@ -61,7 +61,7 @@ Extended CAVE alpha sweep under the current `complex128` solver:
 | `1e-6` | ok | 18.05 | 28.59 | +10.54 | 0.9979 |
 | `1e-4` | ok | 18.05 | 22.29 | +4.24 | 0.8941 |
 
-Conclusion for `complex128`: `alpha=3e-15` is the best tested value by mean multi-frame raw PSNR and mean PSNR gain across the three CAVE scenes.
+Conclusion for `complex128`: `alpha=5e-15` is the best tested value by mean multi-frame raw PSNR and mean PSNR gain across the three CAVE scenes.
 
 ## Why Precision Changes the Preferred Alpha
 
@@ -84,7 +84,7 @@ The scalar `alpha` is dimensionless, but it is applied inside a numerically ill-
 - `complex128` has roughly `1e-16` relative precision. Much smaller ridge terms can still affect the solve before numerical singularity appears.
 - Below the stable range, both regimes can fail or show erratic scene behavior because some frequency-domain normal equations are effectively singular.
 
-Therefore, `alpha=1e-6` and `alpha=3e-15` are not directly comparable as physical regularization strengths. They are precision-specific numerical solver settings.
+Therefore, `alpha=1e-6` and `alpha=5e-15` are not directly comparable as physical regularization strengths. They are precision-specific numerical solver settings.
 
 ## What policy = adaptive Means
 
@@ -106,7 +106,7 @@ The current handoff uses:
 
 ```yaml
 linear_recon:
-  ridge_alpha: 3.0e-15
+  ridge_alpha: 5.0e-15
   ridge_policy: adaptive
 ```
 
@@ -122,6 +122,6 @@ There is no per-scene alpha, no per-wavelength alpha, and no post-hoc alpha sele
 
 Use this wording:
 
-> Phase 3.6 now reports the alpha sweep as precision-specific. Under the earlier `complex64` internal solver, `alpha=1e-6` was the practical stable setting. After promoting the Fourier-domain solve to internal `complex128`, the stable alpha range shifted downward and the best tested CAVE value became `alpha=3e-15`. This is a numerical precision effect, not a change in the physical forward model. In both regimes alpha is a single global scalar; `adaptive` only scales that scalar by the local per-frequency `H(f)^H H(f)` magnitude.
+> Phase 3.6 now reports the alpha sweep as precision-specific. Under the earlier `complex64` internal solver, `alpha=1e-6` was the practical stable setting. After promoting the Fourier-domain solve to internal `complex128`, the stable alpha range shifted downward and the best tested CAVE value became `alpha=5e-15`. This is a numerical precision effect, not a change in the physical forward model. In both regimes alpha is a single global scalar; `adaptive` only scales that scalar by the local per-frequency `H(f)^H H(f)` magnitude.
 
 This remains a thesis feasibility baseline, not a claim of globally optimal regularization.

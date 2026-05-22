@@ -81,11 +81,23 @@ def compute_frequency_diversity_cv(psf_fft: np.ndarray) -> np.ndarray:
     return cv_map
 
 
-def plot_h_rank_map(rank_map: np.ndarray, out_path: Path):
+def plot_h_rank_map(rank_map: np.ndarray, out_path: Path, dc_pixel: tuple | None = None):
     plt.figure(figsize=(6, 5))
     plt.imshow(rank_map, cmap="viridis", origin="lower")
     plt.colorbar(label="Rank")
     plt.title("H Matrix Rank per Frequency Point")
+    if dc_pixel is not None:
+        y_dc, x_dc = dc_pixel
+        plt.plot(x_dc, y_dc, "ro", markersize=8, markeredgewidth=2)
+        plt.annotate(
+            "DC",
+            xy=(x_dc, y_dc),
+            xytext=(x_dc + 12, y_dc + 12),
+            fontsize=9,
+            color="red",
+            fontweight="bold",
+            arrowprops=dict(arrowstyle="->", color="red", lw=1.2),
+        )
     plt.tight_layout()
     plt.savefig(out_path, dpi=150)
     plt.close()
@@ -251,10 +263,10 @@ def main():
     reports_dir = out_dir / "reports"
     reports_dir.mkdir(exist_ok=True)
 
-    plot_h_rank_map(display_rank, figs_dir / "h_rank_map.png")
     plot_h_condition_map(display_cond, figs_dir / "h_log_condition_map.png")
     plot_condition_histogram(results["all_conditions"], figs_dir / "h_condition_histogram.png")
     plot_singular_value_maps(results["sv_maps"], figs_dir / "h_singular_value_maps.png")
+    plot_h_rank_map(display_rank, figs_dir / "h_rank_map.png", dc_pixel=dc_unshifted)
     plot_otf_magnitude_grid(
         psf_fft,
         sel_ids,
@@ -272,9 +284,9 @@ def main():
     sv_shift = np.fft.fftshift(results["sv_maps"], axes=(-2, -1))
     otf_shift = np.fft.fftshift(psf_fft, axes=(-2, -1))
 
-    plot_h_rank_map(display_rank_shift, figs_dir / "h_rank_map_fftshifted.png")
     plot_h_condition_map(display_cond_shift, figs_dir / "h_log_condition_map_fftshifted.png")
     plot_singular_value_maps(sv_shift, figs_dir / "h_singular_value_maps_fftshifted.png")
+    plot_h_rank_map(display_rank_shift, figs_dir / "h_rank_map_fftshifted.png", dc_pixel=dc_fftshifted)
     plot_otf_magnitude_grid(
         otf_shift,
         sel_ids,
@@ -360,6 +372,10 @@ stored rank map reports this point as rank 3 under the relative threshold
 1e-8 because the second and third singular values are small but above that
 threshold. Under a looser effective threshold of 1e-6, the same DC point is
 rank 1, matching the expected near-DC behavior of sum-normalized PSFs.
+
+The rank map is a qualitative auxiliary view — the condition map,
+histogram, and singular value maps carry the primary quantitative
+diagnostics.
 
 ## Boundary
 This analysis supports the thesis claim that multi-frame measured-PSF

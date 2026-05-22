@@ -612,6 +612,7 @@ def export_figures(args: argparse.Namespace) -> dict[str, Any]:
         "forward_png": str(args.out_dir / "fig4_forward_prediction_subset.png"),
         "metrics_csv": str(metrics_csv),
     }
+
     copied = []
     if args.copy_to_thesis_assets:
         copied = _copy_to_thesis_assets(outputs, args.copy_to_thesis_assets)

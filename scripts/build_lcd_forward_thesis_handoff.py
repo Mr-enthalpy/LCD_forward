@@ -229,6 +229,8 @@ def write_reconstruction_metrics_summary_csv(handoff_root: Path):
                 "relative_l2": metrics["mean"]["relative_l2"],
                 "psnr": metrics["mean"]["psnr"],
                 "correlation": metrics["mean"]["correlation"],
+                "ssim_raw": metrics["mean"].get("ssim_raw", ""),
+                "ssim_display": metrics["mean"].get("ssim_display", ""),
                 "psnr_gain_vs_single_db": mean_gain,
             })
             for channel_str, channel_metrics in metrics["per_channel"].items():
@@ -245,6 +247,8 @@ def write_reconstruction_metrics_summary_csv(handoff_root: Path):
                     "relative_l2": channel_metrics["relative_l2"],
                     "psnr": channel_metrics["psnr"],
                     "correlation": channel_metrics["correlation"],
+                    "ssim_raw": channel_metrics.get("ssim_raw", ""),
+                    "ssim_display": channel_metrics.get("ssim_display", ""),
                     "psnr_gain_vs_single_db": gain,
                 })
 
@@ -270,6 +274,8 @@ def write_reconstruction_metrics_summary_csv(handoff_root: Path):
         "relative_l2",
         "psnr",
         "correlation",
+        "ssim_raw",
+        "ssim_display",
         "psnr_gain_vs_single_db",
     ]
     with open(out_path, "w", newline="", encoding="utf-8") as f:
@@ -360,9 +366,10 @@ This catalog states what each thesis-facing figure is meant to show and what it 
 | `thesis/phase3_5_forward_validation/figures/psf_basis_preview_wl0.png` | Low-dimensional PSF variation at 450 nm | PCA basis interpretability | Basis is wavelength-specific and empirical |
 | `thesis/phase3_5_forward_validation/figures/psf_basis_preview_wl1.png` | Low-dimensional PSF variation at 550 nm | PCA basis interpretability | Basis is wavelength-specific and empirical |
 | `thesis/phase3_5_forward_validation/figures/psf_basis_preview_wl2.png` | Low-dimensional PSF variation at 650 nm | PCA basis interpretability | Basis is wavelength-specific and empirical |
-| `thesis/h_matrix_diagnostics/figures/h_rank_map.png` | Per-frequency rank of the multi-frame transfer matrix | Non-degenerate spectral encoding evidence | Uses selected mask subset and circular convolution |
-| `thesis/h_matrix_diagnostics/figures/h_log_condition_map.png` | Spatial-frequency conditioning | Explains where inversion is stable or weak | High condition values imply noise sensitivity |
-| `thesis/h_matrix_diagnostics/figures/h_singular_value_maps.png` | Singular-value spread across frequencies | Frequency-domain separability | Downsampled PSF working size only |
+| `thesis/h_matrix_diagnostics/figures/h_rank_map.png` | Per-frequency rank (DC annotated) — auxiliary confirmation; near-uniform full-rank | Quick visual: non-DC regions 100% full-rank; DC shows near-rank-1 collapse | Uses selected mask subset and circular convolution |
+| `thesis/h_matrix_diagnostics/figures/h_log_condition_map.png` | Spatial-frequency conditioning (log10 scale) — primary diagnostic | Explains where inversion is stable or weak; non-DC median condition ~10^1 | High condition values imply noise sensitivity |
+| `thesis/h_matrix_diagnostics/figures/h_condition_histogram.png` | Condition number distribution (log10 + linear panels) — primary diagnostic | Shows heavy tail and median conditioning; complements condition map | Binned histogram; does not show spatial location |
+| `thesis/h_matrix_diagnostics/figures/h_singular_value_maps.png` | Singular-value spread per SV across frequencies (log10 scale) — primary diagnostic | Frequency-domain separability per singular value direction | Downsampled PSF working size only |
 | `thesis/h_matrix_diagnostics/figures/otf_magnitude_grid_selected_masks.png` | OTF diversity for selected masks | Mask diversity sanity check | Qualitative diagnostic |
 | `thesis/phase3_6_linear_recon_synthetic/figures/recon_per_band_comparison.png` | GT, single-frame, multi-frame, and error per wavelength | Synthetic reconstruction pipeline check | Procedural target only |
 | `thesis/phase3_6_linear_recon_synthetic/figures/recon_rgb_pseudocolor_comparison.png` | Pseudo-RGB visual comparison | Human-readable synthetic reconstruction summary | Display normalization is for visualization |
@@ -489,12 +496,12 @@ confirming non-degenerate frequency-domain encoding structure for three-waveleng
     report += f"""
 ## Solver Regularization Audit
 
-Phase 3.6 uses one global `alpha=3e-15` with `policy=adaptive` and internal complex128 solves.
+Phase 3.6 uses one global `alpha=5e-15` with `policy=adaptive` and internal complex128 solves.
 The effective regularization is frequency-scaled as `alpha * max(abs(H(f)^H H(f))) * I`,
 but alpha is not tuned per frequency, scene, or wavelength. The value comes from the
 precision-explicit CAVE alpha sweep and is recorded with the legacy complex64 sweep for
 auditability. See `thesis/reports/solver_regularization_response.md`. The alpha value is
-precision-specific: legacy complex64 used `1e-6`; current complex128 uses `3e-15`.
+precision-specific: legacy complex64 used `1e-6`; current complex128 uses `5e-15`.
 
 ## Scope Boundary
 
@@ -702,7 +709,7 @@ provenance/
 - H matrix full-rank: encoding system is non-degenerate
 - cave_recon: raw PSNR reports absolute amplitude error; interpret it together with per-band correlation, SSIM/audit metrics, and reconstruction figures
 - recon_appendix_arrays.npz: GT object, single-frame recon, multi-frame recon, rendered frames, wavelengths, selected masks, and HDF5 provenance
-- metric_audit_response.md: authoritative interpretation of visual-vs-PSNR mismatch; current complex128/alpha=3e-15 rerun removes the earlier clay_ms 450 nm negative-gain anomaly
+- metric_audit_response.md: authoritative interpretation of visual-vs-PSNR mismatch; current complex128/alpha=5e-15 rerun removes the earlier clay_ms 450 nm negative-gain anomaly
 - h_matrix_dc_otf_response.md: authoritative interpretation of OTF display subset and H-matrix DC rank behavior
 - solver_regularization_response.md: authoritative explanation of precision-specific alpha, adaptive policy, and global-vs-frequency-scaled ridge behavior
 - alpha_sweep/: CAVE alpha sweep CSV/JSON/Markdown and figures comparing complex128 alpha values, SSIM variants, correlation, PSNR gain, and failures below stable range

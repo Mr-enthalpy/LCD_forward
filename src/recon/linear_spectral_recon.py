@@ -5,6 +5,8 @@ from typing import Dict, List, Optional, Tuple
 import numpy as np
 import torch
 
+from src.utils.metrics import compute_channel_metrics
+
 
 def resize_psf_tensor(psf: torch.Tensor, target_size: Tuple[int, int]) -> torch.Tensor:
     if psf.shape[-2:] == target_size:
@@ -228,23 +230,33 @@ def compute_recon_metrics(
         denom = torch.sqrt(torch.sum(gt_centered ** 2) * torch.sum(pred_centered ** 2)) + 1e-8
         corr = float(torch.sum(gt_centered * pred_centered) / denom)
 
+        gt_ch_np = gt[c].cpu().numpy()
+        pred_ch_np = pred[c].cpu().numpy()
+        ch_metrics = compute_channel_metrics(gt_ch_np, pred_ch_np)
+
         metrics["per_channel"][str(c)] = {
             "mse": mse,
             "relative_l2": rel_l2,
             "psnr": psnr_val,
             "correlation": corr,
+            "ssim_raw": ch_metrics["ssim_raw"],
+            "ssim_display": ch_metrics["ssim_display"],
         }
 
     all_mse = [metrics["per_channel"][str(c)]["mse"] for c in range(n_channels)]
     all_rel = [metrics["per_channel"][str(c)]["relative_l2"] for c in range(n_channels)]
     all_psnr = [metrics["per_channel"][str(c)]["psnr"] for c in range(n_channels)]
     all_corr = [metrics["per_channel"][str(c)]["correlation"] for c in range(n_channels)]
+    all_ssim_raw = [metrics["per_channel"][str(c)]["ssim_raw"] for c in range(n_channels)]
+    all_ssim_display = [metrics["per_channel"][str(c)]["ssim_display"] for c in range(n_channels)]
 
     metrics["mean"] = {
         "mse": float(np.mean(all_mse)),
         "relative_l2": float(np.mean(all_rel)),
         "psnr": float(np.mean(all_psnr)),
         "correlation": float(np.mean(all_corr)),
+        "ssim_raw": float(np.mean(all_ssim_raw)),
+        "ssim_display": float(np.mean(all_ssim_display)),
     }
 
     return metrics
