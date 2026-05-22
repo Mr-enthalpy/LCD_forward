@@ -270,39 +270,62 @@ def plot_recon_comparison(
     wavelengths_nm: np.ndarray | None = None,
 ) -> Path:
     n_ch = gt.shape[0]
-    plt.figure(figsize=(n_ch * 4, 12))
+    fig, axes = plt.subplots(4, n_ch, figsize=(n_ch * 4.2, 12.8), squeeze=False)
+    row_labels = [
+        "Ground truth",
+        "Single-frame\nreconstruction",
+        "Multi-frame\nreconstruction",
+        "Absolute error\n(single | multi)",
+    ]
 
     for c in range(n_ch):
-        wl_label = f" ({wavelengths_nm[c]:.0f}nm)" if wavelengths_nm is not None else ""
+        channel_label = f"{wavelengths_nm[c]:.0f} nm" if wavelengths_nm is not None else f"Channel {c}"
 
-        plt.subplot(4, n_ch, c + 1)
-        plt.imshow(gt[c], cmap="viridis")
-        plt.title(f"GT Ch{c}{wl_label}", fontsize=9)
-        plt.axis("off")
+        axes[0, c].imshow(gt[c], cmap="viridis")
+        axes[0, c].set_title(channel_label, fontsize=15, fontweight="bold")
+        axes[0, c].axis("off")
 
-        plt.subplot(4, n_ch, n_ch + c + 1)
-        plt.imshow(recon_single[c], cmap="viridis")
-        plt.title(f"Single Ch{c}{wl_label}", fontsize=9)
-        plt.axis("off")
+        axes[1, c].imshow(recon_single[c], cmap="viridis")
+        axes[1, c].axis("off")
 
-        plt.subplot(4, n_ch, 2 * n_ch + c + 1)
-        plt.imshow(recon_multi[c], cmap="viridis")
-        plt.title(f"Multi Ch{c}{wl_label}", fontsize=9)
-        plt.axis("off")
+        axes[2, c].imshow(recon_multi[c], cmap="viridis")
+        axes[2, c].axis("off")
 
         err_s = np.abs(gt[c] - recon_single[c])
         err_m = np.abs(gt[c] - recon_multi[c])
         combined_err = np.hstack([err_s, err_m])
-        plt.subplot(4, n_ch, 3 * n_ch + c + 1)
-        plt.imshow(combined_err, cmap="inferno")
-        plt.title(f"Err S | M Ch{c}", fontsize=9)
-        plt.axvline(x=err_s.shape[1] - 0.5, color="white", linewidth=1)
-        plt.axis("off")
+        axes[3, c].imshow(combined_err, cmap="inferno")
+        axes[3, c].set_title("single | multi", fontsize=14)
+        axes[3, c].axvline(x=err_s.shape[1] - 0.5, color="white", linewidth=1.2)
+        axes[3, c].axis("off")
 
-    plt.suptitle("Single-Frame vs Multi-Frame Reconstruction", fontsize=12)
-    plt.tight_layout()
-    plt.savefig(out_path, dpi=150, bbox_inches="tight")
-    plt.close()
+    for row_idx, label in enumerate(row_labels):
+        axes[row_idx, 0].text(
+            -0.12,
+            0.5,
+            label,
+            transform=axes[row_idx, 0].transAxes,
+            fontsize=14,
+            rotation=0,
+            va="center",
+            ha="right",
+            clip_on=False,
+        )
+
+    fig.suptitle("Per-band Reconstruction Comparison", fontsize=16, fontweight="bold")
+    fig.tight_layout(rect=[0.06, 0.05, 1.0, 0.96])
+    fig.text(
+        0.5,
+        0.012,
+        "Rows show ground truth, single-frame reconstruction, multi-frame reconstruction, and absolute error. "
+        "In the error row, left/right halves are single-frame/multi-frame errors.",
+        ha="center",
+        va="bottom",
+        fontsize=11,
+        color="#333333",
+    )
+    fig.savefig(out_path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
     return out_path
 
 
@@ -336,20 +359,49 @@ def plot_recon_rgb_pseudocolor_comparison(
     multi_rgb = _to_pseudorgb(recon_multi, wavelengths_nm)
     err_single = np.mean(np.abs(gt_rgb - single_rgb), axis=-1)
     err_multi = np.mean(np.abs(gt_rgb - multi_rgb), axis=-1)
+    err_vmax = float(np.percentile(np.concatenate([err_single.ravel(), err_multi.ravel()]), 99.0))
+    if err_vmax <= 0.0:
+        err_vmax = 1.0
 
-    plt.figure(figsize=(16, 8))
+    fig, axes = plt.subplots(2, 3, figsize=(16, 8.8), squeeze=False)
     panels = [
-        (gt_rgb, "GT pseudo-RGB", None),
-        (single_rgb, "Single-frame pseudo-RGB", None),
-        (multi_rgb, "Multi-frame pseudo-RGB", None),
-        (err_single, "Single abs. RGB error", "inferno"),
-        (err_multi, "Multi abs. RGB error", "inferno"),
+        (0, 0, gt_rgb, "Ground truth", None, None),
+        (0, 1, single_rgb, "Single-frame reconstruction", None, None),
+        (0, 2, multi_rgb, "Multi-frame reconstruction", None, None),
+        (1, 0, err_single, "Absolute error: single-frame", "inferno", err_vmax),
+        (1, 1, err_multi, "Absolute error: multi-frame", "inferno", err_vmax),
     ]
-    for idx, (image, title, cmap) in enumerate(panels):
-        plt.subplot(2, 3, idx + 1)
-        plt.imshow(image, cmap=cmap)
-        plt.title(title, fontsize=10)
-        plt.axis("off")
+    for row_idx, col_idx, image, title, cmap, vmax in panels:
+        if vmax is None:
+            axes[row_idx, col_idx].imshow(image, cmap=cmap)
+        else:
+            axes[row_idx, col_idx].imshow(image, cmap=cmap, vmin=0.0, vmax=vmax)
+        axes[row_idx, col_idx].set_title(title, fontsize=15, fontweight="bold")
+        axes[row_idx, col_idx].axis("off")
+
+    axes[1, 2].axis("off")
+    axes[0, 0].text(
+        -0.12,
+        0.5,
+        "Pseudo-RGB",
+        transform=axes[0, 0].transAxes,
+        fontsize=14,
+        rotation=0,
+        va="center",
+        ha="right",
+        clip_on=False,
+    )
+    axes[1, 0].text(
+        -0.12,
+        0.5,
+        "Absolute\nerror",
+        transform=axes[1, 0].transAxes,
+        fontsize=14,
+        rotation=0,
+        va="center",
+        ha="right",
+        clip_on=False,
+    )
 
     rgb_order = _rgb_indices(wavelengths_nm, gt.shape[0])
     if wavelengths_nm is not None:
@@ -357,15 +409,15 @@ def plot_recon_rgb_pseudocolor_comparison(
     else:
         rgb_text = ", ".join(f"Ch{i}" for i in rgb_order)
 
-    plt.suptitle("Pseudo-RGB Reconstruction Comparison", fontsize=12)
-    plt.tight_layout()
-    plt.subplots_adjust(bottom=0.08)
-    plt.gcf().text(
+    fig.suptitle("Pseudo-RGB Reconstruction Comparison", fontsize=16, fontweight="bold")
+    fig.tight_layout(rect=[0.06, 0.08, 1.0, 0.95])
+    fig.text(
         0.5, 0.005,
-        f"Pseudo-RGB: R,G,B = {rgb_text}  |  Display: per-panel 1st\u201399th percentile clipping",
+        f"Pseudo-RGB uses R,G,B = {rgb_text}. Residual panels show mean absolute pseudo-RGB error. "
+        "RGB panels use per-panel 1st\u201399th percentile clipping; residual panels share one color scale.",
         ha="center", va="bottom",
-        fontsize=8, fontstyle="italic", color="#333333",
+        fontsize=11, color="#333333",
     )
-    plt.savefig(out_path, dpi=150, bbox_inches="tight")
-    plt.close()
+    fig.savefig(out_path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
     return out_path

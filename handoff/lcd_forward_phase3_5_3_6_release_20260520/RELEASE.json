@@ -27,8 +27,12 @@
     "phase3_6_solver_regularization_response": true,
     "phase3_6_alpha_sweep": true,
     "phase3_5_thesis_forward_figures": true,
-    "downstream_thesis_figure_guide": true
+    "downstream_thesis_figure_guide": true,
+    "reconstruction_figure_caption_guide": true
   },
   "scope": "thesis existence proof, not performance-optimized model",
-  "post_release_note": "Metric audit, H-matrix DC/OTF, solver regularization, and precision-specific alpha sweep responses added locally after review; binary payload remains local. Chapter 4 thesis-ready forward figures and downstream reading guide are published under thesis/thesis_figures and thesis/reports."
+  "post_release_note": "Metric audit, H-matrix DC/OTF, solver regularization, and precision-specific alpha sweep responses added locally after review; binary payload remains local. Chapter 4 thesis-ready forward figures and downstream reading guide are published under thesis/thesis_figures and thesis/reports.",
+  "post_release_notes": [
+    "2026-05-22: regenerated Chapter 5 reconstruction figures with larger semantic labels and added reconstruction_figure_caption_guide.md."
+  ]
 }

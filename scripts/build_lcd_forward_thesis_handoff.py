@@ -349,7 +349,8 @@ and caveats needed to audit the handoff.
 1. `thesis/reports/thesis_evidence_summary.md`
 2. `thesis/reports/result_index.md`
 3. `thesis/reports/figure_catalog.md`
-4. `thesis/reports/repro_commands.md`
+4. `thesis/reports/reconstruction_figure_caption_guide.md`
+5. `thesis/reports/repro_commands.md`
 """
     _ensure_dir(handoff_root / "thesis" / "reports")
     (handoff_root / "thesis" / "reports" / "result_index.md").write_text(text, encoding="utf-8")
@@ -371,14 +372,14 @@ This catalog states what each thesis-facing figure is meant to show and what it 
 | `thesis/h_matrix_diagnostics/figures/h_condition_histogram.png` | Condition number distribution (log10 + linear panels) — primary diagnostic | Shows heavy tail and median conditioning; complements condition map | Binned histogram; does not show spatial location |
 | `thesis/h_matrix_diagnostics/figures/h_singular_value_maps.png` | Singular-value spread per SV across frequencies (log10 scale) — primary diagnostic | Frequency-domain separability per singular value direction | Downsampled PSF working size only |
 | `thesis/h_matrix_diagnostics/figures/otf_magnitude_grid_selected_masks.png` | OTF diversity for selected masks | Mask diversity sanity check | Qualitative diagnostic |
-| `thesis/phase3_6_linear_recon_synthetic/figures/recon_per_band_comparison.png` | GT, single-frame, multi-frame, and error per wavelength | Synthetic reconstruction pipeline check | Procedural target only |
-| `thesis/phase3_6_linear_recon_synthetic/figures/recon_rgb_pseudocolor_comparison.png` | Pseudo-RGB visual comparison | Human-readable synthetic reconstruction summary | Display normalization is for visualization |
-| `thesis/phase3_6_linear_recon_cave/figures/scene_cd_ms/recon_per_band_comparison.png` | Per-band CAVE reconstruction quality for `cd_ms` | Public-dataset reconstruction evidence | Simulation with measured PSFs, not captured target |
-| `thesis/phase3_6_linear_recon_cave/figures/scene_cd_ms/recon_rgb_pseudocolor_comparison.png` | Pseudo-RGB CAVE reconstruction for `cd_ms` | Visual comparison across single/multi frame | Pseudo-color is not calibrated camera RGB |
-| `thesis/phase3_6_linear_recon_cave/figures/scene_clay_ms/recon_per_band_comparison.png` | Per-band CAVE reconstruction quality for `clay_ms` | Includes weaker-case behavior | Simulation with measured PSFs, not captured target |
-| `thesis/phase3_6_linear_recon_cave/figures/scene_clay_ms/recon_rgb_pseudocolor_comparison.png` | Pseudo-RGB CAVE reconstruction for `clay_ms` | Visualizes remaining artifacts | Pseudo-color is not calibrated camera RGB |
-| `thesis/phase3_6_linear_recon_cave/figures/scene_superballs_ms/recon_per_band_comparison.png` | Per-band CAVE reconstruction quality for `superballs_ms` | Public-dataset reconstruction evidence | Simulation with measured PSFs, not captured target |
-| `thesis/phase3_6_linear_recon_cave/figures/scene_superballs_ms/recon_rgb_pseudocolor_comparison.png` | Pseudo-RGB CAVE reconstruction for `superballs_ms` | Visual comparison across single/multi frame | Pseudo-color is not calibrated camera RGB |
+| `thesis/phase3_6_linear_recon_synthetic/figures/recon_per_band_comparison.png` | Columns are wavelength channels; rows are ground truth, single-frame, multi-frame, and absolute error split as single &#124; multi | Synthetic reconstruction pipeline check | Procedural target only |
+| `thesis/phase3_6_linear_recon_synthetic/figures/recon_rgb_pseudocolor_comparison.png` | First row is ground truth/single-frame/multi-frame; second row is single/multi absolute pseudo-RGB error | Human-readable synthetic reconstruction summary | Display normalization is for visualization |
+| `thesis/phase3_6_linear_recon_cave/figures/scene_cd_ms/recon_per_band_comparison.png` | Per-band CAVE rows/columns as documented in `reconstruction_figure_caption_guide.md` | Public-dataset reconstruction evidence for `cd_ms` | Simulation with measured PSFs, not captured target |
+| `thesis/phase3_6_linear_recon_cave/figures/scene_cd_ms/recon_rgb_pseudocolor_comparison.png` | Pseudo-RGB CAVE reconstruction and absolute error layout for `cd_ms` | Visual comparison across single/multi frame | Pseudo-color is not calibrated camera RGB |
+| `thesis/phase3_6_linear_recon_cave/figures/scene_clay_ms/recon_per_band_comparison.png` | Per-band CAVE rows/columns as documented in `reconstruction_figure_caption_guide.md` | Includes weaker-case behavior for `clay_ms` | Simulation with measured PSFs, not captured target |
+| `thesis/phase3_6_linear_recon_cave/figures/scene_clay_ms/recon_rgb_pseudocolor_comparison.png` | Pseudo-RGB CAVE reconstruction and absolute error layout for `clay_ms` | Visualizes remaining artifacts | Pseudo-color is not calibrated camera RGB |
+| `thesis/phase3_6_linear_recon_cave/figures/scene_superballs_ms/recon_per_band_comparison.png` | Per-band CAVE rows/columns as documented in `reconstruction_figure_caption_guide.md` | Public-dataset reconstruction evidence for `superballs_ms` | Simulation with measured PSFs, not captured target |
+| `thesis/phase3_6_linear_recon_cave/figures/scene_superballs_ms/recon_rgb_pseudocolor_comparison.png` | Pseudo-RGB CAVE reconstruction and absolute error layout for `superballs_ms` | Visual comparison across single/multi frame | Pseudo-color is not calibrated camera RGB |
 
 ## Array Appendices
 - `thesis/phase3_6_linear_recon_synthetic/data/recon_appendix_arrays.npz`
@@ -396,6 +397,12 @@ rendered frames, wavelengths, selected mask IDs, and source HDF5 provenance.
 """
     _ensure_dir(handoff_root / "thesis" / "reports")
     (handoff_root / "thesis" / "reports" / "figure_catalog.md").write_text(text, encoding="utf-8")
+
+
+def write_reconstruction_figure_caption_guide(handoff_root: Path):
+    src = ROOT / "docs" / "thesis_reconstruction_figures_caption_guide.md"
+    dst = _ensure_dir(handoff_root / "thesis" / "reports") / "reconstruction_figure_caption_guide.md"
+    shutil.copy2(src, dst)
 
 
 def write_repro_commands(handoff_root: Path, release_id: str):
@@ -688,7 +695,9 @@ thesis/
     metric_audit_response.md
     h_matrix_dc_otf_response.md
     solver_regularization_response.md
+    reconstruction_figure_caption_guide.md
     alpha_interpretability.md
+    downstream_thesis_figure_guide.md
   alpha_sweep/
     cave_alpha_sweep_by_scene.csv
     cave_alpha_sweep_summary.csv
@@ -696,6 +705,11 @@ thesis/
     alpha_psnr.png / pdf
     alpha_ssim.png / pdf
     alpha_display_ssim.png / pdf
+  thesis_figures/
+    fig4_pca_basis_subset.pdf / png
+    fig4_forward_prediction_subset.pdf / png
+    fig4_forward_prediction_subset_metrics.csv
+    thesis_figures_manifest.json
 provenance/
   lcd_forward_run_manifest.json
   bishe_first_pass.yaml
@@ -712,8 +726,11 @@ provenance/
 - metric_audit_response.md: authoritative interpretation of visual-vs-PSNR mismatch; current complex128/alpha=5e-15 rerun removes the earlier clay_ms 450 nm negative-gain anomaly
 - h_matrix_dc_otf_response.md: authoritative interpretation of OTF display subset and H-matrix DC rank behavior
 - solver_regularization_response.md: authoritative explanation of precision-specific alpha, adaptive policy, and global-vs-frequency-scaled ridge behavior
+- reconstruction_figure_caption_guide.md: downstream Chapter 5 caption wording and actual row/column semantics for reconstruction figures
 - alpha_sweep/: CAVE alpha sweep CSV/JSON/Markdown and figures comparing complex128 alpha values, SSIM variants, correlation, PSNR gain, and failures below stable range
 - alpha_interpretability.md: explanation of mid-frequency encoding suppression, DC singular-value collapse, and why the selected alpha is precision-specific
+- thesis_figures/: Chapter 4 thesis-ready forward-model figures, metrics CSV, and manifest. PDFs are intended for direct thesis inclusion; PNGs are preview/raster fallbacks.
+- downstream_thesis_figure_guide.md: instructions for downstream thesis repo on which PDFs to copy, which CSV/manifest fields to read, and which claims not to change.
 
 ## Not Included
 
@@ -796,6 +813,7 @@ def write_release_json(handoff_root: Path, release_id: str, optic_release_root: 
             "phase3_6_synthetic_reconstruction": True,
             "phase3_6_cave_reconstruction": True,
             "reconstruction_appendices": True,
+            "reconstruction_figure_caption_guide": True,
             "real_target_capture": False,
         },
         "scope": "thesis existence proof, not performance-optimized model",
@@ -810,16 +828,23 @@ def write_readme(handoff_root: Path, release_id: str):
 
 LCD_forward Phase 3.5-3.6 first-pass thesis handoff.
 
+Large binary payloads for this handoff are stored locally at `D:/datasets/LCD_forward/lcd_forward_phase3_5_3_6_release_20260520/`; Git stores only descriptors, reports, and provenance pointers.
+
 ## Quick Links
 
 - First read: thesis/reports/thesis_evidence_summary.md
 - Result index: thesis/reports/result_index.md
 - Figure catalog: thesis/reports/figure_catalog.md
+- Reconstruction figure caption guide: thesis/reports/reconstruction_figure_caption_guide.md
 - Reproduction commands: thesis/reports/repro_commands.md
 - Metric audit response: thesis/reports/metric_audit_response.md
 - H-matrix DC/OTF response: thesis/reports/h_matrix_dc_otf_response.md
 - Solver regularization response: thesis/reports/solver_regularization_response.md
 - Alpha sweep appendix: thesis/alpha_sweep/cave_alpha_sweep.md
+- Alpha sweep figures: thesis/alpha_sweep/alpha_psnr.png, alpha_ssim.png, alpha_display_ssim.png
+- Alpha interpretability: thesis/reports/alpha_interpretability.md
+- Thesis Chapter 4 figure guide: thesis/reports/downstream_thesis_figure_guide.md
+- Thesis Chapter 4 figure package: thesis/thesis_figures/
 - Data contract: data_contract.md
 - Limitations: thesis/reports/limitations.md
 - Debug record: provenance/phase3_6_debug_and_tuning.md
@@ -831,6 +856,8 @@ LCD_forward Phase 3.5-3.6 first-pass thesis handoff.
 3. Phase 3.6 synthetic reconstruction (smoke test)
 4. Phase 3.6 CAVE reconstruction (public dataset)
 5. Reconstruction appendix: per-band figures, pseudo-RGB figures, and `.npz` arrays
+6. Alpha sweep & interpretability: 27-alpha range (1e-18 to 1e+0), PSNR, SSIM raw, display SSIM analysis
+7. Chapter 4 thesis-ready forward figures: PCA basis subset and measured-vs-predicted subset PDFs with CSV/manifest
 
 ## Input provenance
 
@@ -877,6 +904,7 @@ def main():
     write_thesis_evidence_summary(output_root)
     write_result_index(output_root)
     write_figure_catalog(output_root)
+    write_reconstruction_figure_caption_guide(output_root)
     write_repro_commands(output_root, release_id)
     write_limitations(output_root)
     write_metric_audit_response(output_root)

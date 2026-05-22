@@ -47,6 +47,7 @@ thesis/
     metric_audit_response.md
     h_matrix_dc_otf_response.md
     solver_regularization_response.md
+    reconstruction_figure_caption_guide.md
     alpha_interpretability.md
     downstream_thesis_figure_guide.md
   alpha_sweep/
@@ -74,11 +75,12 @@ provenance/
 - H matrix full-rank: encoding system is non-degenerate
 - cave_recon: raw PSNR reports absolute amplitude error; interpret it together with per-band correlation, SSIM/audit metrics, and reconstruction figures
 - recon_appendix_arrays.npz: GT object, single-frame recon, multi-frame recon, rendered frames, wavelengths, selected masks, and HDF5 provenance
-- metric_audit_response.md: authoritative interpretation of visual-vs-PSNR mismatch; current complex128/alpha=3e-15 rerun removes the earlier clay_ms 450 nm negative-gain anomaly
+- metric_audit_response.md: authoritative interpretation of visual-vs-PSNR mismatch; current complex128/alpha=5e-15 rerun removes the earlier clay_ms 450 nm negative-gain anomaly
 - h_matrix_dc_otf_response.md: authoritative interpretation of OTF display subset and H-matrix DC rank behavior
 - solver_regularization_response.md: authoritative explanation of precision-specific alpha, adaptive policy, and global-vs-frequency-scaled ridge behavior
-- alpha_sweep/: 27-alpha sweep (1e-18 to 1e+0) with PSNR, raw SSIM, display-normalized SSIM, correlation, and PSNR gain per scene. Figures: alpha_psnr.png, alpha_ssim.png, alpha_display_ssim.png
-- alpha_interpretability.md: authoritative explanation of mid-frequency encoding physics and DC singular-value collapse (condition ~3.3e7); explains why optimal alpha is 12 orders of magnitude smaller than typical Tikhonov regularizers
+- reconstruction_figure_caption_guide.md: downstream Chapter 5 caption wording and actual row/column semantics for reconstruction figures
+- alpha_sweep/: CAVE alpha sweep CSV/JSON/Markdown and figures comparing complex128 alpha values, SSIM variants, correlation, PSNR gain, and failures below stable range
+- alpha_interpretability.md: explanation of mid-frequency encoding suppression, DC singular-value collapse, and why the selected alpha is precision-specific
 - thesis_figures/: Chapter 4 thesis-ready forward-model figures, metrics CSV, and manifest. PDFs are intended for direct thesis inclusion; PNGs are preview/raster fallbacks.
 - downstream_thesis_figure_guide.md: instructions for downstream thesis repo on which PDFs to copy, which CSV/manifest fields to read, and which claims not to change.
 

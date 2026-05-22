@@ -9,6 +9,7 @@ Large binary payloads for this handoff are stored locally at `D:/datasets/LCD_fo
 - First read: thesis/reports/thesis_evidence_summary.md
 - Result index: thesis/reports/result_index.md
 - Figure catalog: thesis/reports/figure_catalog.md
+- Reconstruction figure caption guide: thesis/reports/reconstruction_figure_caption_guide.md
 - Reproduction commands: thesis/reports/repro_commands.md
 - Metric audit response: thesis/reports/metric_audit_response.md
 - H-matrix DC/OTF response: thesis/reports/h_matrix_dc_otf_response.md
