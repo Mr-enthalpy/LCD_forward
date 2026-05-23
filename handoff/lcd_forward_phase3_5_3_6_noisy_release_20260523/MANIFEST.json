@@ -10,15 +10,6 @@
     "RELEASE.json": {
       "size_bytes": 1035
     },
-    "docs/noise_injection.md": {
-      "size_bytes": 12461
-    },
-    "docs/phase3_6_cave_metrics_response.md": {
-      "size_bytes": 3780
-    },
-    "docs/phase3_6_solver_regularization_response.md": {
-      "size_bytes": 7860
-    },
     "provenance/bishe_first_pass.yaml": {
       "size_bytes": 1690
     },
@@ -29,94 +20,10 @@
       "size_bytes": 1168
     },
     "provenance/phase3_6_debug_and_tuning.md": {
-      "size_bytes": 12391
+      "size_bytes": 15938
     },
     "provenance/recon_bishe_multiframe_noisy.yaml": {
       "size_bytes": 1658
-    },
-    "thesis/alpha_sweep_noisy/alpha_display_ssim.pdf": {
-      "size_bytes": 42193
-    },
-    "thesis/alpha_sweep_noisy/alpha_display_ssim.png": {
-      "size_bytes": 157772
-    },
-    "thesis/alpha_sweep_noisy/alpha_psnr.pdf": {
-      "size_bytes": 43320
-    },
-    "thesis/alpha_sweep_noisy/alpha_psnr.png": {
-      "size_bytes": 141536
-    },
-    "thesis/alpha_sweep_noisy/alpha_ssim.pdf": {
-      "size_bytes": 41895
-    },
-    "thesis/alpha_sweep_noisy/alpha_ssim.png": {
-      "size_bytes": 139051
-    },
-    "thesis/alpha_sweep_noisy/cave_alpha_sweep.json": {
-      "size_bytes": 291307
-    },
-    "thesis/alpha_sweep_noisy/cave_alpha_sweep.md": {
-      "size_bytes": 2867
-    },
-    "thesis/alpha_sweep_noisy/cave_alpha_sweep_by_scene.csv": {
-      "size_bytes": 21524
-    },
-    "thesis/alpha_sweep_noisy/cave_alpha_sweep_summary.csv": {
-      "size_bytes": 5324
-    },
-    "thesis/h_matrix_diagnostics/data/frequency_diversity_cv_map.npy": {
-      "size_bytes": 524416
-    },
-    "thesis/h_matrix_diagnostics/data/h_condition_map.npy": {
-      "size_bytes": 524416
-    },
-    "thesis/h_matrix_diagnostics/data/h_rank_map.npy": {
-      "size_bytes": 262272
-    },
-    "thesis/h_matrix_diagnostics/data/h_singular_values.npz": {
-      "size_bytes": 1573612
-    },
-    "thesis/h_matrix_diagnostics/figures/h_condition_histogram.png": {
-      "size_bytes": 51543
-    },
-    "thesis/h_matrix_diagnostics/figures/h_log_condition_map.png": {
-      "size_bytes": 451792
-    },
-    "thesis/h_matrix_diagnostics/figures/h_log_condition_map_fftshifted.png": {
-      "size_bytes": 450740
-    },
-    "thesis/h_matrix_diagnostics/figures/h_rank_map.png": {
-      "size_bytes": 28330
-    },
-    "thesis/h_matrix_diagnostics/figures/h_rank_map_fftshifted.png": {
-      "size_bytes": 28637
-    },
-    "thesis/h_matrix_diagnostics/figures/h_singular_value_maps.png": {
-      "size_bytes": 662005
-    },
-    "thesis/h_matrix_diagnostics/figures/h_singular_value_maps_fftshifted.png": {
-      "size_bytes": 660687
-    },
-    "thesis/h_matrix_diagnostics/figures/mask_frequency_diversity_cv_map.png": {
-      "size_bytes": 583921
-    },
-    "thesis/h_matrix_diagnostics/figures/mask_frequency_diversity_cv_map_fftshifted.png": {
-      "size_bytes": 582668
-    },
-    "thesis/h_matrix_diagnostics/figures/otf_magnitude_grid_selected_masks.png": {
-      "size_bytes": 2314550
-    },
-    "thesis/h_matrix_diagnostics/figures/otf_magnitude_grid_selected_masks_fftshifted.png": {
-      "size_bytes": 2315050
-    },
-    "thesis/h_matrix_diagnostics/figures/wavelength_transfer_comparison.png": {
-      "size_bytes": 739301
-    },
-    "thesis/h_matrix_diagnostics/metrics/h_matrix_diagnostics.json": {
-      "size_bytes": 1911
-    },
-    "thesis/h_matrix_diagnostics/reports/h_matrix_diagnostics_report.md": {
-      "size_bytes": 2172
     },
     "thesis/phase3_5_forward_validation/figures/measured_vs_predicted_examples.png": {
       "size_bytes": 587507
