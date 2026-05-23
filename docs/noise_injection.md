@@ -1,8 +1,15 @@
 # Closed-LCD Residual Noise Injection Plan
 
-This document plans how LCD_forward should consume the optic_system closed-LCD
-averaged residual release. It is a design and integration contract, not an optical
-claim change.
+This document records how LCD_forward consumes the optic_system closed-LCD
+averaged residual release. It is an implementation contract, not an optical claim
+change.
+
+Implemented entry points:
+
+- `src/noise/closed_lcd_residual.py`
+- `configs/recon_bishe_multiframe_noisy.yaml`
+- `linear_recon.add_noise` in `configs/bishe_first_pass.yaml`
+- synthetic and CAVE branches in `scripts/run_bishe_first_pass.py`
 
 ## Positioning
 
@@ -78,16 +85,26 @@ sensitivity appendix.
 
 ## Residual Release Contract
 
-Expected HDF5 fields:
+Expected HDF5 fields in the current release:
 
 ```text
 /closed_lcd/residuals_avg10   [L, R, 512, 512]
 /closed_lcd/mean_avg10        [L, 512, 512]
+/closed_lcd/residuals_256     [L, R, 256, 256]  optional upstream convenience copy
 /metadata/wavelengths_nm      [3]
 /metadata/exposure_us         [3]
 /metadata/n_avg_frames        10
 /metadata/source_mask_id      "all_closed_window"
 ```
+
+Canonical local release path:
+
+```text
+D:/datasets/optic_system/optic_system_phase3_closed_lcd_residual_release_20260523/closed_lcd_roi512_avg10_residuals.h5
+```
+
+The LCD_forward implementation reads `/closed_lcd/residuals_avg10` and applies the
+configured transform itself so provenance remains explicit.
 
 Required semantic checks:
 
@@ -139,7 +156,7 @@ Supported policies:
 - `per_lambda_weighted`: optional only; not recommended for main results because
   it creates a wavelength label that the detector frame does not physically have.
 
-## Proposed Module
+## Implemented Module
 
 ```text
 src/noise/
@@ -296,11 +313,11 @@ Use a synthetic tiny HDF5 fixture for CI; do not require the D: release in tests
 
 ## Implementation Order
 
-1. Add `src/noise/closed_lcd_residual.py` and unit tests.
-2. Add noisy config with `enabled: false` default preserved in existing clean config.
-3. Integrate into synthetic and CAVE branches of `run_bishe_first_pass.py`.
-4. Store `noise_metadata` in JSON and `.npz` outputs.
-5. Add clean/noisy split to summary CSV and reports.
+1. Add `src/noise/closed_lcd_residual.py` and unit tests. Done.
+2. Add noisy config with `enabled: false` default preserved in existing clean config. Done.
+3. Integrate into synthetic and CAVE branches of `run_bishe_first_pass.py`. Done.
+4. Store `noise_metadata` in JSON and `.npz` outputs. Done.
+5. Add `setting` support to handoff reconstruction metrics summary CSV. Done.
 6. Run default `count_peak=200` experiment.
 7. Optionally run `count_peak=100` and `50` as sensitivity appendix.
 

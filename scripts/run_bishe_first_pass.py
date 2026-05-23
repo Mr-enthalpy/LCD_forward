@@ -31,6 +31,7 @@ from src.recon.linear_spectral_recon import (
     compute_recon_metrics,
     resize_psf_tensor,
 )
+from src.noise import apply_closed_lcd_residual_noise
 from src.utils.figures import (
     _ensure_dir,
     normalize_for_display,
@@ -64,6 +65,10 @@ def resolve_config(cfg, env_map=None):
     if isinstance(cfg, list):
         return [resolve_config(v, env_map) for v in cfg]
     return resolve_config_value(cfg, env_map)
+
+
+def _json_metadata_array(metadata: dict) -> np.ndarray:
+    return np.asarray([json.dumps(metadata, ensure_ascii=False, sort_keys=True)], dtype="U")
 
 
 def run_forward_validation(cfg, run_dir, env_map):
@@ -215,9 +220,21 @@ def run_linear_recon_synthetic(cfg, run_dir, env_map):
     if psfs_t.ndim == 5:
         psfs_t = psfs_t[:, 0]
 
-    print("Rendering frames via FFT convolution")
-    frames = render_frames_fft(obj, psfs_t)
+    noise_cfg = lr_cfg.get("add_noise", {})
+
+    print("Rendering clean frames via FFT convolution")
+    frames_clean = render_frames_fft(obj, psfs_t)
+    frames, noise_meta = apply_closed_lcd_residual_noise(frames_clean, noise_cfg)
+    frames_clean_np = frames_clean.numpy()
     frames_np = frames.numpy()
+
+    if noise_meta.get("enabled", False):
+        print(
+            "Injected closed-LCD residual noise: "
+            f"count_peak={noise_meta['count_peak']}, "
+            f"gain={noise_meta['gain_counts_per_normalized_unit']:.6g}, "
+            f"policy={noise_meta['sample_policy']}"
+        )
 
     print("Running single-frame reconstruction (baseline)")
     recon_single = single_frame_reconstruct(frames, psfs_t, alpha=alpha, policy=policy)
@@ -230,6 +247,14 @@ def run_linear_recon_synthetic(cfg, run_dir, env_map):
     print("Computing metrics")
     metrics_single = compute_recon_metrics(obj, recon_single)
     metrics_multi = compute_recon_metrics(obj, recon_multi)
+    clean_reference = None
+    if noise_meta.get("enabled", False):
+        clean_single = single_frame_reconstruct(frames_clean, psfs_t, alpha=alpha, policy=policy)
+        clean_multi = frequency_domain_ridge_reconstruct(frames_clean, psfs_t, alpha=alpha, policy=policy)
+        clean_reference = {
+            "single_frame_metrics": compute_recon_metrics(obj, clean_single),
+            "multi_frame_metrics": compute_recon_metrics(obj, clean_multi),
+        }
 
     recon_dir = _ensure_dir(run_dir / "linear_recon")
 
@@ -238,6 +263,8 @@ def run_linear_recon_synthetic(cfg, run_dir, env_map):
     plot_mask_grid(sel_masks_display, sel_ids, recon_dir / "selected_masks.png", title="Selected Encoding Masks")
 
     plot_rendered_frames(frames_np, recon_dir / "rendered_frames.png")
+    if noise_meta.get("enabled", False):
+        plot_rendered_frames(frames_clean_np, recon_dir / "rendered_frames_clean.png")
 
     plot_reconstruction(obj_np, recon_single_np, recon_dir / "recon_single_frame.png",
                         wavelengths_nm=wavelengths, title="Single-Frame Reconstruction")
@@ -261,21 +288,28 @@ def run_linear_recon_synthetic(cfg, run_dir, env_map):
         recon_single=recon_single_np.astype(np.float32),
         recon_multi=recon_multi_np.astype(np.float32),
         rendered_frames=frames_np.astype(np.float32),
+        rendered_frames_input=frames_np.astype(np.float32),
+        rendered_frames_clean=frames_clean_np.astype(np.float32),
         wavelengths_nm=wavelengths.astype(np.float32),
         selected_mask_ids=np.asarray(sel_ids, dtype="U"),
         mask_families=np.asarray(sel_families, dtype="U"),
         source_psf_h5=np.asarray([train_h5], dtype="U"),
+        noise_metadata=_json_metadata_array(noise_meta),
     )
 
     results = {
         "object_size": list(obj_size),
         "n_masks": n_masks,
         "alpha": alpha,
+        "setting": noise_meta.get("setting", "clean"),
+        "noise_metadata": noise_meta,
         "single_frame_metrics": metrics_single,
         "multi_frame_metrics": metrics_multi,
         "selected_masks": sel_ids,
         "mask_families": sel_families,
     }
+    if clean_reference is not None:
+        results["clean_reference"] = clean_reference
 
     with open(recon_dir / "reconstruction_metrics.json", "w", encoding="utf-8") as f:
         json.dump(results, f, indent=2)
@@ -292,6 +326,7 @@ def run_linear_recon_synthetic(cfg, run_dir, env_map):
 - PSF source: measured_dictionary
 - PSF working size: {psf_working_size}
 - Solver: frequency_domain_ridge (alpha={alpha})
+- Reconstruction setting: {noise_meta.get('setting', 'clean')}
 
 ## Results
 
@@ -309,10 +344,17 @@ def run_linear_recon_synthetic(cfg, run_dir, env_map):
 The reconstruction pipeline (FFT convolution renderer + frequency-domain ridge solver)
 operates correctly with measured PSF dictionary kernels.
 
+## Noise Boundary
+- Noise enabled: {noise_meta.get('enabled', False)}
+- Noise type: {noise_meta.get('type', 'none')}
+- Noise is injected only into rendered observation frames before reconstruction.
+- PSFs, OTFs, H matrices, ridge alpha, and ridge policy are unchanged.
+- This setting is not a real sensor/read/shot/PRNU noise model.
+
 ## Appendix Outputs
 - `recon_per_band_comparison.png`: per-wavelength GT / single-frame / multi-frame / error comparison
 - `recon_rgb_pseudocolor_comparison.png`: pseudo-RGB comparison using nearest 650/550/450 nm channels
-- `recon_appendix_arrays.npz`: GT object, reconstructions, rendered frames, wavelengths, selected mask IDs, source HDF5
+- `recon_appendix_arrays.npz`: GT object, reconstructions, clean/input rendered frames, wavelengths, selected mask IDs, source HDF5, noise metadata
 """
     (recon_dir / "linear_recon_report.md").write_text(report, encoding="utf-8")
 
@@ -349,6 +391,7 @@ def run_linear_recon_cave(cfg, run_dir, env_map):
     n_masks = lr_cfg["selected_masks"]["count"]
     obj_size = tuple(lr_cfg["cave_object_size"])
     mask_strategy = lr_cfg["selected_masks"].get("strategy", "representative_first")
+    noise_cfg = lr_cfg.get("add_noise", {})
 
     train_h5 = resolve_config_value(cfg["data"]["train_h5"], env_map)
     psf_data = load_psf_dictionary(train_h5, psf_working_size=psf_working_size)
@@ -389,12 +432,21 @@ def run_linear_recon_cave(cfg, run_dir, env_map):
                 obj.unsqueeze(0), size=obj_size, mode="bilinear", align_corners=False
             ).squeeze(0)
 
-        frames = render_frames_fft(obj, psfs_t)
+        frames_clean = render_frames_fft(obj, psfs_t)
+        frames, noise_meta = apply_closed_lcd_residual_noise(frames_clean, noise_cfg)
         recon_single = single_frame_reconstruct(frames, psfs_t, alpha=alpha, policy=policy)
         recon_multi = frequency_domain_ridge_reconstruct(frames, psfs_t, alpha=alpha, policy=policy)
 
         metrics_s = compute_recon_metrics(obj, recon_single)
         metrics_m = compute_recon_metrics(obj, recon_multi)
+        clean_reference = None
+        if noise_meta.get("enabled", False):
+            clean_single = single_frame_reconstruct(frames_clean, psfs_t, alpha=alpha, policy=policy)
+            clean_multi = frequency_domain_ridge_reconstruct(frames_clean, psfs_t, alpha=alpha, policy=policy)
+            clean_reference = {
+                "single_frame_metrics": compute_recon_metrics(obj, clean_single),
+                "multi_frame_metrics": compute_recon_metrics(obj, clean_multi),
+            }
 
         plot_recon_comparison(obj.numpy(), recon_single.numpy(), recon_multi.numpy(),
                               scene_dir / "recon_comparison.png", wavelengths_nm=wavelengths)
@@ -409,6 +461,9 @@ def run_linear_recon_cave(cfg, run_dir, env_map):
         )
         plot_rendered_frames(frames.numpy(), scene_dir / "rendered_frames.png",
                              title=f"Rendered Frames - {scene_id}")
+        if noise_meta.get("enabled", False):
+            plot_rendered_frames(frames_clean.numpy(), scene_dir / "rendered_frames_clean.png",
+                                 title=f"Clean Rendered Frames - {scene_id}")
 
         np.savez_compressed(
             scene_dir / "recon_appendix_arrays.npz",
@@ -416,19 +471,26 @@ def run_linear_recon_cave(cfg, run_dir, env_map):
             recon_single=recon_single.numpy().astype(np.float32),
             recon_multi=recon_multi.numpy().astype(np.float32),
             rendered_frames=frames.numpy().astype(np.float32),
+            rendered_frames_input=frames.numpy().astype(np.float32),
+            rendered_frames_clean=frames_clean.numpy().astype(np.float32),
             wavelengths_nm=wavelengths.astype(np.float32),
             selected_mask_ids=np.asarray(sel_ids, dtype="U"),
             mask_families=np.asarray(sel_families, dtype="U"),
             source_cave_h5=np.asarray([str(test_h5_path)], dtype="U"),
             source_psf_h5=np.asarray([train_h5], dtype="U"),
             scene_id=np.asarray([scene_id], dtype="U"),
+            noise_metadata=_json_metadata_array(noise_meta),
         )
 
         scene_result = {
             "scene_id": scene_id,
+            "setting": noise_meta.get("setting", "clean"),
+            "noise_metadata": noise_meta,
             "single_frame_metrics": metrics_s,
             "multi_frame_metrics": metrics_m,
         }
+        if clean_reference is not None:
+            scene_result["clean_reference"] = clean_reference
         all_metrics.append(scene_result)
         appendix_entries.append({
             "scene_id": scene_id,
@@ -439,6 +501,7 @@ def run_linear_recon_cave(cfg, run_dir, env_map):
                 f"scene_{scene_id}/rendered_frames.png",
             ],
             "data": f"scene_{scene_id}/recon_appendix_arrays.npz",
+            "setting": noise_meta.get("setting", "clean"),
         })
 
         print(f"  Single: mse={metrics_s['mean']['mse']:.6f}, psnr={metrics_s['mean']['psnr']:.2f}")
@@ -472,6 +535,7 @@ rendered measurements, and compressed arrays for traceability.
 - Wavelengths: {wavelengths.tolist()} nm
 - Selected masks: {sel_ids}
 - Solver: frequency_domain_ridge alpha={alpha}, policy={policy}
+- Reconstruction setting: {noise_cfg.get('type', 'clean') if noise_cfg.get('enabled', False) else 'clean'}
 
 ## Solver Regularization
 
@@ -484,6 +548,9 @@ rendered measurements, and compressed arrays for traceability.
 
 ## Boundary
 This is public-dataset simulation driven by measured PSF kernels. It is not real target capture.
+If closed-LCD residual injection is enabled, residuals are added only to rendered observation frames;
+PSFs, OTFs, H matrices, alpha, and policy remain unchanged. The residual release is not interpreted as
+a real sensor/read/shot/PRNU noise model.
 """
     (cave_dir / "cave_recon_report.md").write_text(report, encoding="utf-8")
 

@@ -211,7 +211,8 @@ def write_reconstruction_metrics_summary_csv(handoff_root: Path):
     wavelengths = [450.0, 550.0, 650.0]
     rows = []
 
-    def add_rows(dataset: str, scene_id: str, result: dict):
+    def add_rows(dataset: str, scene_id: str, result: dict, setting: str | None = None):
+        setting = setting or result.get("setting", "clean")
         single = result["single_frame_metrics"]
         multi = result["multi_frame_metrics"]
         methods = [("single_frame", single), ("multi_frame", multi)]
@@ -222,6 +223,7 @@ def write_reconstruction_metrics_summary_csv(handoff_root: Path):
             rows.append({
                 "dataset": dataset,
                 "scene_id": scene_id,
+                "setting": setting,
                 "channel": "mean",
                 "wavelength_nm": "",
                 "method": method,
@@ -240,6 +242,7 @@ def write_reconstruction_metrics_summary_csv(handoff_root: Path):
                 rows.append({
                     "dataset": dataset,
                     "scene_id": scene_id,
+                    "setting": setting,
                     "channel": channel,
                     "wavelength_nm": wavelengths[channel] if channel < len(wavelengths) else "",
                     "method": method,
@@ -256,17 +259,22 @@ def write_reconstruction_metrics_summary_csv(handoff_root: Path):
         with open(syn_path) as f:
             syn = json.load(f)
         add_rows("synthetic", "synthetic_procedural", syn)
+        if "clean_reference" in syn:
+            add_rows("synthetic", "synthetic_procedural", syn["clean_reference"], setting="clean_reference")
 
     if cave_path.exists():
         with open(cave_path) as f:
             cave = json.load(f)
         for scene in cave.get("results", []):
             add_rows("cave", scene["scene_id"], scene)
+            if "clean_reference" in scene:
+                add_rows("cave", scene["scene_id"], scene["clean_reference"], setting="clean_reference")
 
     _ensure_dir(metrics_dir)
     fieldnames = [
         "dataset",
         "scene_id",
+        "setting",
         "channel",
         "wavelength_nm",
         "method",

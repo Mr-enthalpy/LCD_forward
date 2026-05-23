@@ -1,4 +1,4 @@
-experiment_id: bishe_first_pass_phase3_5_3_6
+experiment_id: bishe_first_pass_phase3_5_3_6_noisy
 run_id: auto_timestamp
 
 release:
@@ -43,7 +43,7 @@ linear_recon:
   ridge_policy: adaptive
   compare_single_frame: true
   add_noise:
-    enabled: false
+    enabled: true
     type: closed_lcd_avg10_residual
     source_h5: ${LCD_CLOSED_LCD_RESIDUAL_H5:D:/datasets/optic_system/optic_system_phase3_closed_lcd_residual_release_20260523/closed_lcd_roi512_avg10_residuals.h5}
     source_mask_id: all_closed_window
@@ -60,4 +60,4 @@ linear_recon:
   num_cave_eval_scenes: 3
 
 output:
-  root: outputs/bishe_first_pass
+  root: outputs/bishe_first_pass_noisy
