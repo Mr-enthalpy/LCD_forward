@@ -7,7 +7,7 @@ from pathlib import Path
 HANDOFF = Path(r"D:\datasets\LCD_forward\lcd_forward_phase3_5_3_6_release_20260520")
 SWEEP_JSON = HANDOFF / "thesis" / "alpha_sweep" / "cave_alpha_sweep.json"
 CAVE_METRICS_DIR = HANDOFF / "thesis" / "phase3_6_linear_recon_cave" / "metrics"
-TARGET_ALPHA_LABEL = "5e-15"
+TARGET_ALPHA_LABEL = "3e-15"
 WAVELENGTHS = [450.0, 550.0, 650.0]
 
 with open(SWEEP_JSON) as f:
@@ -15,7 +15,7 @@ with open(SWEEP_JSON) as f:
 
 scene_results = sweep["scene_results"]
 
-summary = {"n_scenes": 0, "scenes": [], "all_cases_multi_greater_than_single": True, "alpha": 5e-15}
+summary = {"n_scenes": 0, "scenes": [], "all_cases_multi_greater_than_single": True, "alpha": 3e-15}
 results_list = []
 
 for scene_id in ["cd_ms", "clay_ms", "superballs_ms"]:
@@ -48,7 +48,7 @@ with open(CAVE_METRICS_DIR / "cave_recon_summary.json", "w") as f:
 print(f"Wrote cave_recon_summary.json ({summary['n_scenes']} scenes, alpha={TARGET_ALPHA_LABEL})")
 
 with open(CAVE_METRICS_DIR / "cave_recon_metrics.json", "w") as f:
-    json.dump({"n_scenes_evaluated": len(results_list), "results": results_list, "alpha": 5e-15}, f, indent=2)
+    json.dump({"n_scenes_evaluated": len(results_list), "results": results_list, "alpha": 3e-15}, f, indent=2)
 print(f"Wrote cave_recon_metrics.json ({len(results_list)} scenes)")
 
 def write_csv():
@@ -111,8 +111,8 @@ def write_csv():
 
 write_csv()
 
-sweep["current_alpha"] = 5e-15
-sweep["current_alpha_label"] = "5e-15"
+sweep["current_alpha"] = 3e-15
+sweep["current_alpha_label"] = "3e-15"
 with open(SWEEP_JSON, "w") as f:
     json.dump(sweep, f, indent=2)
-print(f"Updated cave_alpha_sweep.json current_alpha -> 5e-15")
+print(f"Updated cave_alpha_sweep.json current_alpha -> 3e-15")

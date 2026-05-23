@@ -293,4 +293,80 @@ over-regularized.
 Alpha is therefore a numerical solver parameter, not a physical parameter. It
 must be reported together with the internal solve precision.
 
+## 8. Closed-LCD Residual Noise Experiment
+
+After the clean reconstruction pipeline was validated, a noise resilience
+experiment was added using the optic_system closed-LCD averaged-frame
+residual release. The residual is injected after measured-PSF rendering
+and before reconstruction; PSFs, OTFs, and the H matrix are unchanged.
+
+### Noise injection model
+
+```
+Y_t^noisy = Y_t^clean + R_t / g
+```
+
+where `R_t` is sampled from the pooled 10-frame averaged closed-LCD ROI
+residuals, and `g` maps normalized clean frames to a count-domain peak
+(default 200 counts at the 99.9% quantile).
+
+### Clean vs noisy alpha sweep comparison
+
+The noisy observation changes the bias/variance tradeoff of the inverse
+solve, requiring its own alpha sweep under the same complex128 solver:
+
+| Setting | Best alpha | Mean single PSNR | Mean multi PSNR | Mean gain | Mean multi corr. | Mean single SSIM display | Mean multi SSIM display |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| clean | 3e-15 | 18.07 | 32.28 | +14.22 | 0.9978 | 0.47 | 0.87 |
+| `closed_lcd_residual` | 1e-12 | 17.01 | 22.12 | +5.11 | 0.9045 | 0.16 | 0.32 |
+
+### Noisy alpha sweep detail
+
+Full sweep range 1e-18 to 1e+0 under complex128 + closed-LCD residual
+(count_peak=200, scale_quantile=0.999, sample_policy=pooled):
+
+| Alpha | Mean multi PSNR | Mean gain | Mean multi corr. | Mean multi SSIM raw | Mean multi SSIM display |
+|---:|---:|---:|---:|---:|---:|
+| 5e-15 | 19.61 | +2.56 | 0.9116 | 0.2890 | 0.3070 |
+| 1e-14 | 20.70 | +3.71 | 0.9095 | 0.2924 | 0.3154 |
+| 1e-13 | 22.08 | +5.07 | 0.9047 | 0.2903 | 0.3208 |
+| **1e-12** | **22.12** | **+5.11** | 0.9045 | 0.2905 | 0.3211 |
+| 1e-6 | 22.08 | +5.06 | 0.9042 | 0.2906 | 0.3212 |
+
+### Key conclusions
+
+1. **Stronger regularization required**: noisy alpha (1e-12) is ~300×
+   larger than clean alpha (3e-15). Noise requires significantly more
+   ridge damping to stabilize the per-frequency inverse.
+
+2. **Multi-frame gain persists but shrinks**: gain drops from +14.22 dB
+   to +5.11 dB under noise, but remains positive. The system does not
+   break.
+
+3. **PSNR drops ~10 dB**: from 32.28 to 22.12, a substantial absolute
+   degradation.
+
+4. **SSIM reveals deeper structural loss — across both single and multi frame,
+   and independent of alpha**: multi-frame display-normalized SSIM drops from
+   0.87 (clean) to 0.32 (noisy), and single-frame from 0.47 to 0.16. Both
+   degrade proportionally (~37% retention). This is a universal property of
+   the noise: in the noisy stable plateau (alpha 1e-13 to 1e-6), multi-frame
+   SSIM display is nearly flat at 0.3208-0.3212. Noise destroys structural
+   fidelity systematically, not just at one alpha choice.
+
+5. **Alpha plateau shifts**: the clean solver effective range starts
+   near 5e-16; under noise, values below 1e-13 produce higher PSNR
+   variance and scene failures. The noisy stable plateau is roughly
+   1e-13 to 1e-6.
+
+6. **Thesis implication — three-layer narrative**: (a) H-matrix
+   frequency-domain diagnostics predict multi-frame measured-PSF
+   three-channel separability; (b) clean reconstruction closes that
+   analysis loop by validating the prediction under the idealized
+   forward model; (c) the closed-LCD residual noisy experiment adds a
+   robustness dimension — it verifies that the predicted encoding
+   structure withstands real-system averaged residual perturbation,
+   with multi-frame gain remaining positive (+5.11 dB) despite
+   significant structural degradation.
+
 

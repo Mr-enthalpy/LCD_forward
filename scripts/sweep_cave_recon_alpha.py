@@ -465,7 +465,7 @@ def main() -> None:
     parser.add_argument("--output-dir", type=Path, default=Path("outputs/alpha_sweep"))
     parser.add_argument("--policy", default="adaptive", choices=["adaptive", "threshold", "none"])
     parser.add_argument("--alphas", nargs="*", type=float, default=DEFAULT_ALPHAS)
-    parser.add_argument("--current-alpha", type=float, default=5e-15)
+    parser.add_argument("--current-alpha", type=float, default=3e-15)
     parser.add_argument("--device", default="cpu")
     parser.add_argument(
         "--closed-lcd-residual-h5",

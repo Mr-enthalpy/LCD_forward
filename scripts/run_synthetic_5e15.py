@@ -25,7 +25,7 @@ from src.utils.figures import (
     plot_reconstruction, plot_recon_comparison, plot_recon_rgb_pseudocolor_comparison,
 )
 
-ALPHA = 5e-15
+ALPHA = 3e-15
 POLICY = "adaptive"
 H5_PATH = r"D:\datasets\optic_system\phase3_release_20260520\lcd_forward\psf_dictionary\train.h5"
 HANDOFF_SYN_DIR = Path(

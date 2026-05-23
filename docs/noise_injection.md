@@ -314,26 +314,27 @@ cd_ms | closed_lcd_residual | single | ...
 cd_ms | closed_lcd_residual | multi | ...
 ```
 
-Recommended hierarchy:
+Recommended reporting structure:
 
-- `clean measured-operator reconstruction`: upper-bound / sanity check.
-- `closed-LCD residual noisy reconstruction`: main empirical residual setting.
+- H-matrix frequency-domain diagnostics: predicts multi-frame encoding separability.
+- Clean measured-operator reconstruction: validates that prediction under the idealized forward model — natural experiment closure of the H-matrix analysis.
+- Closed-LCD residual noisy reconstruction: robustness supplement — tests whether the encoding structure withstands real-system averaged residual perturbation.
 - `count_peak stress tests`: appendix or sensitivity analysis.
 
-Main interpretation should emphasize single-frame vs multi-frame relative gain,
-not absolute PSNR. Clean metrics can be moved to appendix if they are too ideal.
+Clean and noisy results should be reported as separate columns/rows, not as primary/secondary. Both settings emphasize single-frame vs multi-frame relative gain, not absolute PSNR.
 
 ## Thesis Wording
 
 Suggested Chapter 5 wording:
 
 ```text
-为降低 clean measured-operator reconstruction 的理想化程度，本文进一步使用 optic_system 发布的
-closed-LCD averaged-frame residual release 构造 noisy reconstruction setting。该 release 从
-all_closed_window 样本中导出与 PSF dictionary 曝光匹配、10 帧平均后的 roi_512 残差。
-LCD_forward 在 measured PSF renderer 生成 clean frames 后，将 residual 按 count-domain scale
-注入观测帧，再使用相同的 measured PSF H 矩阵进行频域 ridge reconstruction。该设置用于评估当前
-平均采集流程下经验背景残差对重建的影响，不被解释为完整传感器噪声模型。
+在频域 H 矩阵诊断预测多帧 measured PSF 具备三通道可分性的基础上，clean reconstruction
+首先验证了该预测在理想观测下成立（H 矩阵分析的实验闭环）。本文进一步使用 optic_system 发布的
+closed-LCD averaged-frame residual release 构造 noisy reconstruction setting（鲁棒性补充）。
+该 release 从 all_closed_window 样本中导出与 PSF dictionary 曝光匹配、10 帧平均后的 roi_512
+残差。LCD_forward 在 measured PSF renderer 生成 clean frames 后，将 residual 按 count-domain
+scale 注入观测帧，再使用相同的 measured PSF H 矩阵进行频域 ridge reconstruction。该设置用于
+检验实测编码结构在实际系统平均残差扰动下是否保持稳定，不被解释为完整传感器噪声模型。
 ```
 
 ## Tests
