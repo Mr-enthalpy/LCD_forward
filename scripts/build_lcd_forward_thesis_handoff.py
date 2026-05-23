@@ -107,6 +107,13 @@ def collect_files(run_dir: Path, handoff_root: Path):
     prov_dir = _ensure_dir(handoff_root / "provenance")
     shutil.copy2(run_dir / "run_manifest.json", prov_dir / "lcd_forward_run_manifest.json")
     shutil.copy2(ROOT / "configs" / "bishe_first_pass.yaml", prov_dir / "bishe_first_pass.yaml")
+    run_manifest_path = run_dir / "run_manifest.json"
+    if run_manifest_path.exists():
+        with open(run_manifest_path, encoding="utf-8") as f:
+            manifest = json.load(f)
+        config_path = Path(manifest.get("config", ""))
+        if config_path.exists():
+            shutil.copy2(config_path, prov_dir / config_path.name)
     shutil.copy2(ROOT / "docs" / "phase3_6_debug_and_tuning.md", prov_dir / "phase3_6_debug_and_tuning.md")
 
 
@@ -880,13 +887,14 @@ def main():
     parser.add_argument("--run-dir", required=True)
     parser.add_argument("--optic-release-root", required=True)
     parser.add_argument("--output-root", required=True)
+    parser.add_argument("--release-id", default=None)
     args = parser.parse_args()
 
     run_dir = Path(args.run_dir)
     optic_root = Path(args.optic_release_root)
     output_root = Path(args.output_root)
 
-    release_id = f"lcd_forward_phase3_5_3_6_release_{datetime.now().strftime('%Y%m%d')}"
+    release_id = args.release_id or f"lcd_forward_phase3_5_3_6_release_{datetime.now().strftime('%Y%m%d')}"
 
     if output_root.exists():
         print(f"Output directory exists, removing: {output_root}")

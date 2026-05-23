@@ -207,6 +207,21 @@ def _add_best_alpha_vline(ax, best_alpha, best_val, y_min, y_max, color, annotat
     )
 
 
+def _best_alpha_annotation_xy(best_alpha, alpha_log10, y_min, y_max):
+    x = math.log10(best_alpha)
+    x_min = float(np.nanmin(alpha_log10))
+    x_max = float(np.nanmax(alpha_log10))
+    x_span = max(x_max - x_min, 1.0)
+    y_span = max(y_max - y_min, 1e-6)
+    if x > x_min + 0.65 * x_span:
+        tx = x - 0.28 * x_span
+    else:
+        tx = x + 0.16 * x_span
+    tx = min(max(tx, x_min + 0.06 * x_span), x_max - 0.06 * x_span)
+    ty = y_max - 0.10 * y_span
+    return tx, ty
+
+
 def _setup_xaxis(ax, alpha_log10, xticks_log10):
     ax.set_xlim(alpha_log10.min() - 0.5, alpha_log10.max() + 0.5)
     xtk = sorted(set(xticks_log10))
@@ -252,7 +267,11 @@ def plot_psnr(curves: dict[str, Any], output_dir: Path):
     _add_zone_shading(ax, x_min, x_max, y_min, y_max, collapse_right, high_reg_left)
     _add_zone_labels(ax, y_min, y_max, [alpha_log10.min(), alpha_log10.max()])
     _add_per_scene_lines(ax, per_scene, "psnr", SCENE_COLORS, alpha=0.18, lw=0.35, ms=1.5, label_scenes=True)
-    _add_best_alpha_vline(ax, best_alpha, best_psnr, y_min, y_max, MEAN_PSNR_COLOR, annotate_x=-12, annotate_y=55)
+    annotate_x, annotate_y = _best_alpha_annotation_xy(best_alpha, alpha_log10, y_min, y_max)
+    _add_best_alpha_vline(
+        ax, best_alpha, best_psnr, y_min, y_max, MEAN_PSNR_COLOR,
+        annotate_x=annotate_x, annotate_y=annotate_y,
+    )
 
     ax.plot(a_log10, m_psnr, "s-", color=MEAN_PSNR_COLOR, linewidth=2.8,
             markersize=7, label="Mean multi-frame PSNR", zorder=6)
@@ -301,7 +320,11 @@ def plot_ssim_raw(curves: dict[str, Any], output_dir: Path):
     _add_zone_shading(ax, x_min, x_max, y_min, y_max, collapse_right, high_reg_left)
     _add_zone_labels(ax, y_min, y_max, [alpha_log10.min(), alpha_log10.max()])
     _add_per_scene_lines(ax, per_scene, "ssim_raw", SCENE_COLORS, alpha=0.18, lw=0.35, ms=1.5, label_scenes=True)
-    _add_best_alpha_vline(ax, best_alpha, best_ssim_raw, y_min, y_max, MEAN_SSIM_RAW_COLOR, annotate_x=-12, annotate_y=0.85)
+    annotate_x, annotate_y = _best_alpha_annotation_xy(best_alpha, alpha_log10, y_min, y_max)
+    _add_best_alpha_vline(
+        ax, best_alpha, best_ssim_raw, y_min, y_max, MEAN_SSIM_RAW_COLOR,
+        annotate_x=annotate_x, annotate_y=annotate_y,
+    )
 
     ax.plot(a_log10, m_raw, "D-", color=MEAN_SSIM_RAW_COLOR, linewidth=2.8,
             markersize=7, label="Mean SSIM (raw)", zorder=6)
@@ -349,7 +372,11 @@ def plot_ssim_display(curves: dict[str, Any], output_dir: Path):
     _add_zone_shading(ax, x_min, x_max, y_min, y_max, collapse_right, high_reg_left)
     _add_zone_labels(ax, y_min, y_max, [alpha_log10.min(), alpha_log10.max()])
     _add_per_scene_lines(ax, per_scene, "ssim_display", SCENE_COLORS, alpha=0.18, lw=0.35, ms=1.5, label_scenes=True)
-    _add_best_alpha_vline(ax, best_alpha, best_ssim_disp, y_min, y_max, MEAN_SSIM_DISPLAY_COLOR, annotate_x=-12, annotate_y=0.80)
+    annotate_x, annotate_y = _best_alpha_annotation_xy(best_alpha, alpha_log10, y_min, y_max)
+    _add_best_alpha_vline(
+        ax, best_alpha, best_ssim_disp, y_min, y_max, MEAN_SSIM_DISPLAY_COLOR,
+        annotate_x=annotate_x, annotate_y=annotate_y,
+    )
 
     ax.plot(a_log10, m_disp, "^--", color=MEAN_SSIM_DISPLAY_COLOR, linewidth=2.8,
             markersize=7, label="Mean SSIM (display)", zorder=6)

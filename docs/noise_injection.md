@@ -259,6 +259,47 @@ noise_metadata
 If backward compatibility is needed, keep `rendered_frames` as the actual
 reconstruction input and add `rendered_frames_clean` separately.
 
+## Noisy Alpha Sweep Result
+
+The closed-LCD residual setting has its own alpha sweep because the injected
+observation residual changes the numerical bias/variance tradeoff of the inverse
+solve. It does not change PSFs, OTFs, or the H matrix.
+
+Current command:
+
+```bash
+python scripts/sweep_cave_recon_alpha.py \
+  --output-dir outputs/alpha_sweep_noisy \
+  --closed-lcd-residual-h5 D:/datasets/optic_system/optic_system_phase3_closed_lcd_residual_release_20260523/closed_lcd_roi512_avg10_residuals.h5 \
+  --noise-count-peak 200 \
+  --noise-scale-quantile 0.999 \
+  --noise-sample-policy pooled \
+  --noise-resize-mode center_crop \
+  --noise-seed 20260520 \
+  --current-alpha 1e-12
+```
+
+Current CAVE noisy sweep result:
+
+| Setting | Primary metric | Best alpha | Mean single PSNR | Mean multi PSNR | Mean gain | Mean multi corr. |
+|---|---|---:|---:|---:|---:|---:|
+| `closed_lcd_residual` | mean multi-frame raw PSNR | `1e-12` | 17.01 | 22.12 | +5.11 | 0.9045 |
+
+The clean reconstruction config remains `alpha=5e-15`. The noisy reconstruction
+config uses `alpha=1e-12` in `configs/recon_bishe_multiframe_noisy.yaml`.
+
+The sweep outputs are:
+
+```text
+outputs/alpha_sweep_noisy/cave_alpha_sweep.json
+outputs/alpha_sweep_noisy/cave_alpha_sweep_by_scene.csv
+outputs/alpha_sweep_noisy/cave_alpha_sweep_summary.csv
+outputs/alpha_sweep_noisy/cave_alpha_sweep.md
+outputs/alpha_sweep_noisy/alpha_psnr.{png,pdf}
+outputs/alpha_sweep_noisy/alpha_ssim.{png,pdf}
+outputs/alpha_sweep_noisy/alpha_display_ssim.{png,pdf}
+```
+
 ## Reporting
 
 Do not overwrite clean results. Report settings as separate rows:

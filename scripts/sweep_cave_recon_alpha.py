@@ -16,11 +16,16 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from src.datasets.optic_handoff import load_psf_dictionary
+from src.noise import apply_closed_lcd_residual_noise
 from src.utils.metrics import ssim_box11, minmax_normalize
 
 
 DEFAULT_RELEASE_ROOT = Path("D:/datasets/LCD_forward/lcd_forward_phase3_5_3_6_release_20260520")
 DEFAULT_TRAIN_H5 = Path("D:/datasets/optic_system/phase3_release_20260520/lcd_forward/psf_dictionary/train.h5")
+DEFAULT_CLOSED_LCD_RESIDUAL_H5 = Path(
+    "D:/datasets/optic_system/optic_system_phase3_closed_lcd_residual_release_20260523/"
+    "closed_lcd_roi512_avg10_residuals.h5"
+)
 DEFAULT_ALPHAS = [
     1e-18,
     3e-16,
@@ -186,6 +191,21 @@ def load_scene_npzs(release_root: Path) -> list[Path]:
     return scene_npzs
 
 
+def build_noise_cfg(args: argparse.Namespace) -> dict[str, Any] | None:
+    if args.closed_lcd_residual_h5 is None:
+        return None
+    return {
+        "enabled": True,
+        "type": "closed_lcd_avg10_residual",
+        "source_h5": str(args.closed_lcd_residual_h5),
+        "count_peak": args.noise_count_peak,
+        "scale_quantile": args.noise_scale_quantile,
+        "sample_policy": args.noise_sample_policy,
+        "resize_mode": args.noise_resize_mode,
+        "seed": args.noise_seed,
+    }
+
+
 def run_sweep(args: argparse.Namespace) -> dict[str, Any]:
     scene_npzs = load_scene_npzs(args.release_root)
     first = np.load(scene_npzs[0])
@@ -196,13 +216,27 @@ def run_sweep(args: argparse.Namespace) -> dict[str, Any]:
 
     rows = []
     scene_results = {}
+    noise_enabled = args.closed_lcd_residual_h5 is not None
+    setting = "closed_lcd_residual" if noise_enabled else "clean"
+    scene_noise_metadata = {}
     for scene_npz in scene_npzs:
         data = np.load(scene_npz)
         scene_id = str(data["scene_id"][0])
         gt = torch.from_numpy(data["gt_object"]).float().to(args.device)
-        frames = torch.from_numpy(data["rendered_frames"]).float().to(args.device)
+        frames_clean = torch.from_numpy(data["rendered_frames"]).float().to(args.device)
+        noise_cfg = build_noise_cfg(args)
+        frames, noise_meta = apply_closed_lcd_residual_noise(frames_clean, noise_cfg)
+        scene_noise_metadata[scene_id] = noise_meta
         scene_results[scene_id] = {}
-        print(f"Scene {scene_id}: {gt.shape}, frames={frames.shape}")
+        print(f"Scene {scene_id}: {gt.shape}, frames={frames.shape}, setting={setting}")
+        if noise_meta.get("enabled"):
+            print(
+                "  noise="
+                f"count_peak={noise_meta['count_peak']}, "
+                f"gain={noise_meta['gain_counts_per_normalized_unit']:.3f}, "
+                f"residual_std_count={noise_meta['residual_std_count']:.6f}, "
+                f"seed={noise_meta['seed']}"
+            )
 
         for alpha in args.alphas:
             try:
@@ -213,6 +247,7 @@ def run_sweep(args: argparse.Namespace) -> dict[str, Any]:
                 scene_results[scene_id][format_alpha(alpha)] = {
                     "alpha": alpha,
                     "policy": args.policy,
+                    "setting": setting,
                     "single_frame_metrics": single_metrics,
                     "multi_frame_metrics": multi_metrics,
                 }
@@ -222,6 +257,7 @@ def run_sweep(args: argparse.Namespace) -> dict[str, Any]:
                         "alpha": alpha,
                         "alpha_label": format_alpha(alpha),
                         "policy": args.policy,
+                        "setting": setting,
                         "status": "ok",
                         "error": "",
                         "single_psnr": single_metrics["mean"]["psnr"],
@@ -252,6 +288,7 @@ def run_sweep(args: argparse.Namespace) -> dict[str, Any]:
                         "alpha": alpha,
                         "alpha_label": format_alpha(alpha),
                         "policy": args.policy,
+                        "setting": setting,
                         "status": "failed",
                         "error": str(exc),
                         "single_psnr": np.nan,
@@ -279,6 +316,7 @@ def run_sweep(args: argparse.Namespace) -> dict[str, Any]:
                     "alpha": alpha,
                     "alpha_label": format_alpha(alpha),
                     "policy": args.policy,
+                    "setting": setting,
                     "n_scenes_ok": len(selected),
                     "n_scenes_failed": len(failed),
                     "mean_single_psnr": np.nan,
@@ -297,6 +335,7 @@ def run_sweep(args: argparse.Namespace) -> dict[str, Any]:
                 "alpha": alpha,
                 "alpha_label": format_alpha(alpha),
                 "policy": args.policy,
+                "setting": setting,
                 "n_scenes_ok": len(selected),
                 "n_scenes_failed": 0,
                 "mean_single_psnr": float(np.mean([row["single_psnr"] for row in selected])),
@@ -317,8 +356,22 @@ def run_sweep(args: argparse.Namespace) -> dict[str, Any]:
         "release_root": str(args.release_root),
         "train_h5": str(args.train_h5),
         "policy": args.policy,
+        "setting": setting,
         "alphas": args.alphas,
         "mask_ids": mask_ids,
+        "noise": {
+            "enabled": noise_enabled,
+            "source_h5": str(args.closed_lcd_residual_h5) if noise_enabled else None,
+            "type": "closed_lcd_avg10_residual" if noise_enabled else None,
+            "count_peak": args.noise_count_peak if noise_enabled else None,
+            "scale_quantile": args.noise_scale_quantile if noise_enabled else None,
+            "sample_policy": args.noise_sample_policy if noise_enabled else None,
+            "resize_mode": args.noise_resize_mode if noise_enabled else None,
+            "seed": args.noise_seed if noise_enabled else None,
+            "injection_point": "after measured-PSF rendering, before ridge reconstruction",
+            "psf_and_h_matrix_changed": False,
+        },
+        "scene_noise_metadata": scene_noise_metadata,
         "scene_results": scene_results,
         "rows": rows,
         "summary": summary,
@@ -347,14 +400,30 @@ def write_outputs(result: dict[str, Any], output_dir: Path) -> None:
     lines = [
         "# CAVE Alpha Sweep",
         "",
+        f"- Setting: `{result.get('setting', 'clean')}`",
         f"- Policy: `{result['policy']}`",
         f"- Current alpha: `{result['current_alpha_label']}`",
         f"- Best by mean multi-frame raw PSNR: `{result['best_by_mean_multi_psnr']['alpha_label']}`",
         f"- Best by mean PSNR gain: `{result['best_by_mean_gain_psnr']['alpha_label']}`",
-        "",
-        "| Alpha | Mean multi PSNR | Mean gain | Mean multi corr | Mean multi SSIM raw | Mean multi SSIM display |",
-        "|---:|---:|---:|---:|---:|---:|",
     ]
+    if result.get("noise", {}).get("enabled"):
+        noise = result["noise"]
+        lines.extend(
+            [
+                f"- Noise source: `{noise['source_h5']}`",
+                f"- Noise injection: `{noise['injection_point']}`",
+                f"- Count peak: `{noise['count_peak']}` at quantile `{noise['scale_quantile']}`",
+                f"- Sampling: `{noise['sample_policy']}`, resize `{noise['resize_mode']}`, seed `{noise['seed']}`",
+                "- PSF / OTF / H matrix: unchanged",
+            ]
+        )
+    lines.extend(
+        [
+            "",
+            "| Alpha | Mean multi PSNR | Mean gain | Mean multi corr | Mean multi SSIM raw | Mean multi SSIM display |",
+            "|---:|---:|---:|---:|---:|---:|",
+        ]
+    )
     for row in summary:
         if row["n_scenes_failed"]:
             lines.append(f"| {row['alpha_label']} | failed | failed | failed | failed | failed |")
@@ -375,7 +444,7 @@ def write_outputs(result: dict[str, Any], output_dir: Path) -> None:
             "",
             "The primary selection metric is mean multi-frame raw PSNR across the three saved CAVE scenes.",
             "SSIM (raw) measures structural similarity on the original value range.",
-            "SSIM (display) measures structural similarity after per-channel min-max normalization —",
+            "SSIM (display) measures structural similarity after per-channel min-max normalization;",
             "this separates structural recovery from amplitude/DC offset errors.",
             "Correlation is reported as a structural companion metric.",
             "",
@@ -398,6 +467,24 @@ def main() -> None:
     parser.add_argument("--alphas", nargs="*", type=float, default=DEFAULT_ALPHAS)
     parser.add_argument("--current-alpha", type=float, default=5e-15)
     parser.add_argument("--device", default="cpu")
+    parser.add_argument(
+        "--closed-lcd-residual-h5",
+        type=Path,
+        default=None,
+        help=(
+            "Enable closed-LCD avg10 residual noise injection from this HDF5. "
+            f"Typical release path: {DEFAULT_CLOSED_LCD_RESIDUAL_H5}"
+        ),
+    )
+    parser.add_argument("--noise-count-peak", type=float, default=200.0)
+    parser.add_argument("--noise-scale-quantile", type=float, default=0.999)
+    parser.add_argument(
+        "--noise-sample-policy",
+        default="pooled",
+        choices=["pooled", "cycle_by_frame", "per_lambda_weighted"],
+    )
+    parser.add_argument("--noise-resize-mode", default="center_crop", choices=["center_crop", "none"])
+    parser.add_argument("--noise-seed", type=int, default=20260520)
     args = parser.parse_args()
 
     result = run_sweep(args)

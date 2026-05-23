@@ -2,7 +2,7 @@
 
 ## Short Answer
 
-The Phase 3.6 reconstruction solver uses one global configured ridge scalar and one global policy:
+The clean Phase 3.6 reconstruction solver uses one global configured ridge scalar and one global policy:
 
 ```yaml
 ridge_alpha: 5.0e-15
@@ -10,6 +10,18 @@ ridge_policy: adaptive
 ```
 
 This value is the current handoff setting after the extended alpha sweep with internal `complex128` FFT / linear solves.
+
+For the closed-LCD residual noisy reconstruction setting, the same solver and
+policy are used, but the sweep-selected alpha is:
+
+```yaml
+ridge_alpha: 1.0e-12
+ridge_policy: adaptive
+```
+
+This noisy alpha is not a change to the optical model. It is a setting-specific
+regularization choice after injecting averaged closed-LCD residuals into the
+rendered observation frames.
 
 The older `alpha=1e-6` result remains valid only for the earlier `complex64` internal solver regime. It should not be treated as contradictory: the effective stable alpha range changes when the numerical precision of the Fourier-domain linear solve changes.
 
@@ -62,6 +74,38 @@ Extended CAVE alpha sweep under the current `complex128` solver:
 | `1e-4` | ok | 18.05 | 22.29 | +4.24 | 0.8941 |
 
 Conclusion for `complex128`: `alpha=5e-15` is the best tested value by mean multi-frame raw PSNR and mean PSNR gain across the three CAVE scenes.
+
+### Closed-LCD residual noisy setting
+
+The noisy setting injects the optic_system closed-LCD avg10 ROI residual release
+after clean measured-PSF rendering and before reconstruction. PSFs, OTFs, and
+the H matrix are unchanged.
+
+Current noisy sweep settings:
+
+```text
+noise source: D:/datasets/optic_system/optic_system_phase3_closed_lcd_residual_release_20260523/closed_lcd_roi512_avg10_residuals.h5
+count_peak: 200
+scale_quantile: 0.999
+sample_policy: pooled
+resize_mode: center_crop
+seed: 20260520
+```
+
+Best noisy CAVE result by mean multi-frame raw PSNR:
+
+| Alpha | Mean single PSNR | Mean multi PSNR | Mean gain | Mean multi corr. | Mean multi SSIM raw | Mean multi SSIM display |
+|---:|---:|---:|---:|---:|---:|---:|
+| `5e-15` | 17.05 | 19.61 | +2.56 | 0.9116 | 0.2890 | 0.3070 |
+| `1e-14` | 16.99 | 20.70 | +3.71 | 0.9095 | 0.2924 | 0.3154 |
+| `1e-13` | 17.01 | 22.08 | +5.07 | 0.9047 | 0.2903 | 0.3208 |
+| `1e-12` | 17.01 | **22.12** | **+5.11** | 0.9045 | 0.2905 | 0.3211 |
+| `1e-6` | 17.02 | 22.08 | +5.06 | 0.9042 | 0.2906 | 0.3212 |
+
+Conclusion for the closed-LCD residual setting: `alpha=1e-12` is the selected
+PSNR-optimal value for `configs/recon_bishe_multiframe_noisy.yaml`. The plateau
+from roughly `1e-13` to `1e-6` is narrow in PSNR terms, but much smaller alpha
+values under-regularize noisy observations.
 
 ## Why Precision Changes the Preferred Alpha
 
