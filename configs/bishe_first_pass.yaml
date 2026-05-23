@@ -39,7 +39,7 @@ linear_recon:
   psf_source: measured_dictionary
   psf_working_size: [256, 256]
   solver: frequency_domain_ridge
-  ridge_alpha: 5.0e-15
+  ridge_alpha: 3.0e-15
   ridge_policy: adaptive
   compare_single_frame: true
   add_noise:

@@ -420,7 +420,33 @@ def write_reconstruction_figure_caption_guide(handoff_root: Path):
     shutil.copy2(src, dst)
 
 
+def read_recon_context(handoff_root: Path) -> dict:
+    syn_metrics_path = handoff_root / "thesis" / "phase3_6_linear_recon_synthetic" / "metrics" / "reconstruction_metrics.json"
+    context = {
+        "setting": "clean",
+        "alpha": 3e-15,
+        "policy": "adaptive",
+        "config_name": "bishe_first_pass.yaml",
+        "output_root_hint": "outputs/bishe_first_pass/<YYYYMMDD_HHMMSS>",
+        "noise_enabled": False,
+        "noise_source": None,
+    }
+    if syn_metrics_path.exists():
+        with open(syn_metrics_path, encoding="utf-8") as f:
+            syn = json.load(f)
+        context["setting"] = syn.get("setting", context["setting"])
+        context["alpha"] = syn.get("alpha", context["alpha"])
+        noise = syn.get("noise_metadata", {})
+        context["noise_enabled"] = bool(noise.get("enabled", False))
+        context["noise_source"] = noise.get("source_h5")
+        if context["noise_enabled"]:
+            context["config_name"] = "recon_bishe_multiframe_noisy.yaml"
+            context["output_root_hint"] = "outputs/bishe_first_pass_noisy/<YYYYMMDD_HHMMSS>"
+    return context
+
+
 def write_repro_commands(handoff_root: Path, release_id: str):
+    context = read_recon_context(handoff_root)
     text = f"""# Reproduction Commands
 
 These commands reproduce or verify the thesis handoff on this repository branch.
@@ -433,20 +459,21 @@ pip install -e .
 
 ## Run Phase 3.5/3.6 First Pass
 ```bash
-python scripts/run_bishe_first_pass.py --config configs/bishe_first_pass.yaml --skip-handoff-verify
+python scripts/run_bishe_first_pass.py --config configs/{context['config_name']} --skip-handoff-verify
 ```
 
 Expected run output root:
 ```text
-outputs/bishe_first_pass/<YYYYMMDD_HHMMSS>/
+{context['output_root_hint']}/
 ```
 
 ## Build Handoff Payload
 ```bash
 python scripts/build_lcd_forward_thesis_handoff.py \\
-  --run-dir outputs/bishe_first_pass/<YYYYMMDD_HHMMSS> \\
+  --run-dir {context['output_root_hint']} \\
   --optic-release-root D:/datasets/optic_system/phase3_release_20260520 \\
-  --output-root D:/datasets/LCD_forward/{release_id}
+  --output-root D:/datasets/LCD_forward/{release_id} \
+  --release-id {release_id}
 ```
 
 ## Verify Handoff
@@ -458,18 +485,26 @@ python scripts/verify_lcd_forward_handoff.py D:/datasets/LCD_forward/{release_id
 - optic_system release: `D:/datasets/optic_system/phase3_release_20260520`
 - PSF HDF5: `D:/datasets/optic_system/phase3_release_20260520/lcd_forward/psf_dictionary/train.h5`
 - CAVE test HDF5: `D:/CAVE/processed/test.h5`
-- Config: `provenance/bishe_first_pass.yaml`
+- Config: `provenance/{context['config_name']}`
+- Reconstruction setting: `{context['setting']}`
+- Ridge alpha: `{context['alpha']}`
 
 ## Reproduction Boundary
 - No hardware control is invoked.
 - No `optic_system` device services are imported.
 - Outputs are feasibility evidence, not superiority claims.
 """
+    if context["noise_enabled"]:
+        text = text.replace(
+            "## Reproduction Boundary",
+            f"- Closed-LCD residual source: `{context['noise_source']}`\n\n## Reproduction Boundary",
+        )
     _ensure_dir(handoff_root / "thesis" / "reports")
     (handoff_root / "thesis" / "reports" / "repro_commands.md").write_text(text, encoding="utf-8")
 
 
 def write_thesis_evidence_summary(handoff_root: Path):
+    context = read_recon_context(handoff_root)
     with open(handoff_root / "thesis" / "phase3_5_forward_validation" / "metrics" / "psf_prediction_metrics.json") as f:
         fwd_metrics = json.load(f)
 
@@ -518,12 +553,11 @@ confirming non-degenerate frequency-domain encoding structure for three-waveleng
     report += f"""
 ## Solver Regularization Audit
 
-Phase 3.6 uses one global `alpha=5e-15` with `policy=adaptive` and internal complex128 solves.
+Phase 3.6 uses one global `alpha={context['alpha']}` with `policy={context['policy']}` and internal complex128 solves.
 The effective regularization is frequency-scaled as `alpha * max(abs(H(f)^H H(f))) * I`,
-but alpha is not tuned per frequency, scene, or wavelength. The value comes from the
-precision-explicit CAVE alpha sweep and is recorded with the legacy complex64 sweep for
-auditability. See `thesis/reports/solver_regularization_response.md`. The alpha value is
-precision-specific: legacy complex64 used `1e-6`; current complex128 uses `5e-15`.
+but alpha is not tuned per frequency, scene, or wavelength. Reconstruction setting:
+`{context['setting']}`. See `thesis/reports/solver_regularization_response.md` for
+the clean/noisy alpha interpretation and precision-specific sweep evidence.
 
 ## Scope Boundary
 
@@ -738,7 +772,7 @@ provenance/
 - H matrix full-rank: encoding system is non-degenerate
 - cave_recon: raw PSNR reports absolute amplitude error; interpret it together with per-band correlation, SSIM/audit metrics, and reconstruction figures
 - recon_appendix_arrays.npz: GT object, single-frame recon, multi-frame recon, rendered frames, wavelengths, selected masks, and HDF5 provenance
-- metric_audit_response.md: authoritative interpretation of visual-vs-PSNR mismatch; current complex128/alpha=5e-15 rerun removes the earlier clay_ms 450 nm negative-gain anomaly
+- metric_audit_response.md: authoritative interpretation of visual-vs-PSNR mismatch; clean complex128/alpha=3e-15 and noisy alpha=1e-12 runs are reported separately; metric interpretation must be setting-specific
 - h_matrix_dc_otf_response.md: authoritative interpretation of OTF display subset and H-matrix DC rank behavior
 - solver_regularization_response.md: authoritative explanation of precision-specific alpha, adaptive policy, and global-vs-frequency-scaled ridge behavior
 - reconstruction_figure_caption_guide.md: downstream Chapter 5 caption wording and actual row/column semantics for reconstruction figures

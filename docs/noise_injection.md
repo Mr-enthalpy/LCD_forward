@@ -285,7 +285,7 @@ Current CAVE noisy sweep result:
 |---|---|---:|---:|---:|---:|---:|
 | `closed_lcd_residual` | mean multi-frame raw PSNR | `1e-12` | 17.01 | 22.12 | +5.11 | 0.9045 |
 
-The clean reconstruction config remains `alpha=5e-15`. The noisy reconstruction
+The clean reconstruction config now uses the clean-sweep PSNR optimum `alpha=3e-15`. The noisy reconstruction
 config uses `alpha=1e-12` in `configs/recon_bishe_multiframe_noisy.yaml`.
 
 The sweep outputs are:

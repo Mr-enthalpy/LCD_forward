@@ -1,5 +1,5 @@
 {
-  "release_id": "lcd_forward_phase3_5_3_6_noisy_release_20260523",
+  "release_id": "lcd_forward_phase3_5_3_6_clean_release_20260523",
   "files": {
     "data_contract.md": {
       "size_bytes": 4493
@@ -23,7 +23,7 @@
       "size_bytes": 1690
     },
     "provenance/lcd_forward_run_manifest.json": {
-      "size_bytes": 1252
+      "size_bytes": 1234
     },
     "provenance/optic_system_release_reference.json": {
       "size_bytes": 1168
@@ -31,38 +31,35 @@
     "provenance/phase3_6_debug_and_tuning.md": {
       "size_bytes": 12391
     },
-    "provenance/recon_bishe_multiframe_noisy.yaml": {
-      "size_bytes": 1658
+    "thesis/alpha_sweep_clean/alpha_display_ssim.pdf": {
+      "size_bytes": 43948
     },
-    "thesis/alpha_sweep_noisy/alpha_display_ssim.pdf": {
-      "size_bytes": 42193
+    "thesis/alpha_sweep_clean/alpha_display_ssim.png": {
+      "size_bytes": 147446
     },
-    "thesis/alpha_sweep_noisy/alpha_display_ssim.png": {
-      "size_bytes": 157772
+    "thesis/alpha_sweep_clean/alpha_psnr.pdf": {
+      "size_bytes": 44044
     },
-    "thesis/alpha_sweep_noisy/alpha_psnr.pdf": {
-      "size_bytes": 43320
+    "thesis/alpha_sweep_clean/alpha_psnr.png": {
+      "size_bytes": 153239
     },
-    "thesis/alpha_sweep_noisy/alpha_psnr.png": {
-      "size_bytes": 141536
+    "thesis/alpha_sweep_clean/alpha_ssim.pdf": {
+      "size_bytes": 42086
     },
-    "thesis/alpha_sweep_noisy/alpha_ssim.pdf": {
-      "size_bytes": 41895
+    "thesis/alpha_sweep_clean/alpha_ssim.png": {
+      "size_bytes": 139475
     },
-    "thesis/alpha_sweep_noisy/alpha_ssim.png": {
-      "size_bytes": 139051
+    "thesis/alpha_sweep_clean/cave_alpha_sweep.json": {
+      "size_bytes": 283613
     },
-    "thesis/alpha_sweep_noisy/cave_alpha_sweep.json": {
-      "size_bytes": 291307
+    "thesis/alpha_sweep_clean/cave_alpha_sweep.md": {
+      "size_bytes": 2512
     },
-    "thesis/alpha_sweep_noisy/cave_alpha_sweep.md": {
-      "size_bytes": 2867
+    "thesis/alpha_sweep_clean/cave_alpha_sweep_by_scene.csv": {
+      "size_bytes": 20315
     },
-    "thesis/alpha_sweep_noisy/cave_alpha_sweep_by_scene.csv": {
-      "size_bytes": 21524
-    },
-    "thesis/alpha_sweep_noisy/cave_alpha_sweep_summary.csv": {
-      "size_bytes": 5324
+    "thesis/alpha_sweep_clean/cave_alpha_sweep_summary.csv": {
+      "size_bytes": 4920
     },
     "thesis/h_matrix_diagnostics/data/frequency_diversity_cv_map.npy": {
       "size_bytes": 524416
@@ -137,93 +134,81 @@
       "size_bytes": 717
     },
     "thesis/phase3_6_linear_recon_cave/data/scene_cd_ms/recon_appendix_arrays.npz": {
-      "size_bytes": 9911547
+      "size_bytes": 9986735
     },
     "thesis/phase3_6_linear_recon_cave/data/scene_clay_ms/recon_appendix_arrays.npz": {
-      "size_bytes": 9939331
+      "size_bytes": 9909520
     },
     "thesis/phase3_6_linear_recon_cave/data/scene_superballs_ms/recon_appendix_arrays.npz": {
-      "size_bytes": 9914498
+      "size_bytes": 9948190
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_cd_ms/recon_comparison.png": {
-      "size_bytes": 2952568
+      "size_bytes": 1279522
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_cd_ms/recon_per_band_comparison.png": {
-      "size_bytes": 2952568
+      "size_bytes": 1279522
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_cd_ms/recon_rgb_pseudocolor_comparison.png": {
-      "size_bytes": 2780377
+      "size_bytes": 1124547
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_cd_ms/rendered_frames.png": {
-      "size_bytes": 320179
-    },
-    "thesis/phase3_6_linear_recon_cave/figures/scene_cd_ms/rendered_frames_clean.png": {
-      "size_bytes": 315154
+      "size_bytes": 314282
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_clay_ms/recon_comparison.png": {
-      "size_bytes": 2946231
+      "size_bytes": 1249888
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_clay_ms/recon_per_band_comparison.png": {
-      "size_bytes": 2946231
+      "size_bytes": 1249888
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_clay_ms/recon_rgb_pseudocolor_comparison.png": {
-      "size_bytes": 2721482
+      "size_bytes": 1129798
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_clay_ms/rendered_frames.png": {
-      "size_bytes": 346757
-    },
-    "thesis/phase3_6_linear_recon_cave/figures/scene_clay_ms/rendered_frames_clean.png": {
-      "size_bytes": 346232
+      "size_bytes": 345529
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_superballs_ms/recon_comparison.png": {
-      "size_bytes": 2814552
+      "size_bytes": 1354374
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_superballs_ms/recon_per_band_comparison.png": {
-      "size_bytes": 2814552
+      "size_bytes": 1354374
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_superballs_ms/recon_rgb_pseudocolor_comparison.png": {
-      "size_bytes": 2845046
+      "size_bytes": 1334093
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_superballs_ms/rendered_frames.png": {
-      "size_bytes": 405911
-    },
-    "thesis/phase3_6_linear_recon_cave/figures/scene_superballs_ms/rendered_frames_clean.png": {
-      "size_bytes": 405454
+      "size_bytes": 404585
     },
     "thesis/phase3_6_linear_recon_cave/metrics/cave_recon_metrics.json": {
-      "size_bytes": 21241
+      "size_bytes": 8212
     },
     "thesis/phase3_6_linear_recon_cave/metrics/cave_recon_summary.json": {
-      "size_bytes": 639
+      "size_bytes": 641
     },
     "thesis/phase3_6_linear_recon_cave/metrics/reconstruction_metrics_summary.csv": {
-      "size_bytes": 11909
+      "size_bytes": 5634
     },
     "thesis/phase3_6_linear_recon_cave/reports/cave_recon_report.md": {
-      "size_bytes": 3206
+      "size_bytes": 3186
     },
     "thesis/phase3_6_linear_recon_synthetic/data/recon_appendix_arrays.npz": {
-      "size_bytes": 9677859
+      "size_bytes": 9724483
     },
     "thesis/phase3_6_linear_recon_synthetic/figures/recon_comparison.png": {
-      "size_bytes": 3021831
+      "size_bytes": 1591731
     },
     "thesis/phase3_6_linear_recon_synthetic/figures/recon_multiframe.png": {
-      "size_bytes": 1740170
+      "size_bytes": 1058312
     },
     "thesis/phase3_6_linear_recon_synthetic/figures/recon_per_band_comparison.png": {
-      "size_bytes": 3021831
+      "size_bytes": 1591731
     },
     "thesis/phase3_6_linear_recon_synthetic/figures/recon_rgb_pseudocolor_comparison.png": {
-      "size_bytes": 2797084
+      "size_bytes": 1453383
     },
     "thesis/phase3_6_linear_recon_synthetic/figures/recon_single_frame.png": {
-      "size_bytes": 1709863
+      "size_bytes": 1259020
     },
     "thesis/phase3_6_linear_recon_synthetic/figures/rendered_frames.png": {
-      "size_bytes": 381003
-    },
-    "thesis/phase3_6_linear_recon_synthetic/figures/rendered_frames_clean.png": {
       "size_bytes": 378741
     },
     "thesis/phase3_6_linear_recon_synthetic/figures/selected_masks.png": {
@@ -233,10 +218,10 @@
       "size_bytes": 221542
     },
     "thesis/phase3_6_linear_recon_synthetic/metrics/reconstruction_metrics.json": {
-      "size_bytes": 6930
+      "size_bytes": 3090
     },
     "thesis/phase3_6_linear_recon_synthetic/reports/linear_recon_report.md": {
-      "size_bytes": 1426
+      "size_bytes": 1392
     },
     "thesis/reports/figure_catalog.md": {
       "size_bytes": 5380
@@ -257,16 +242,16 @@
       "size_bytes": 2932
     },
     "thesis/reports/repro_commands.md": {
-      "size_bytes": 1747
+      "size_bytes": 1543
     },
     "thesis/reports/result_index.md": {
-      "size_bytes": 1909
+      "size_bytes": 1911
     },
     "thesis/reports/solver_regularization_response.md": {
       "size_bytes": 7860
     },
     "thesis/reports/thesis_evidence_summary.md": {
-      "size_bytes": 2425
+      "size_bytes": 2413
     }
   }
 }
