@@ -49,7 +49,6 @@ def plot_mask_grid(
         r, c = divmod(idx, ncols)
         axes[r, c].axis("off")
 
-    fig.suptitle(title, fontsize=12)
     fig.tight_layout()
     fig.savefig(out_path, dpi=150, bbox_inches="tight")
     plt.close(fig)
@@ -100,7 +99,6 @@ def plot_psf_panel(
                     axes[i, col].set_title(f"{wavelengths_nm[j]:.0f} nm 误差", fontsize=8)
                 axes[i, col].axis("off")
 
-    fig.suptitle(title, fontsize=12)
     fig.tight_layout()
     fig.savefig(out_path, dpi=150, bbox_inches="tight")
     plt.close(fig)
@@ -149,7 +147,6 @@ def plot_measured_vs_predicted(
 
         axes[i, 0].set_ylabel(f"样本 {i + 1}", fontsize=7)
 
-    fig.suptitle(title, fontsize=12)
     fig.tight_layout()
     fig.savefig(out_path, dpi=150, bbox_inches="tight")
     plt.close(fig)
@@ -180,7 +177,6 @@ def plot_pca_basis_preview(
         r, c = divmod(i, ncols)
         axes[r, c].axis("off")
 
-    fig.suptitle("PSF 的 PCA 基底预览", fontsize=12)
     fig.tight_layout()
     fig.savefig(out_path, dpi=150, bbox_inches="tight")
     plt.close(fig)
@@ -195,7 +191,6 @@ def plot_synthetic_objects(objects: np.ndarray, out_path: Path) -> Path:
         plt.imshow(objects[c], cmap="viridis")
         plt.title(f"通道 {c + 1}", fontsize=10)
         plt.axis("off")
-    plt.suptitle("合成目标物体", fontsize=12)
     plt.tight_layout()
     plt.savefig(out_path, dpi=150, bbox_inches="tight")
     plt.close()
@@ -223,7 +218,6 @@ def plot_rendered_frames(frames: np.ndarray, out_path: Path, title: str = "渲�
         r, c = divmod(t, ncols)
         axes[r, c].axis("off")
 
-    fig.suptitle(title, fontsize=12)
     fig.tight_layout()
     fig.savefig(out_path, dpi=150, bbox_inches="tight")
     plt.close(fig)
@@ -258,7 +252,6 @@ def plot_reconstruction(
         plt.title(f"误差 通道{c + 1}", fontsize=9)
         plt.axis("off")
 
-    plt.suptitle(title, fontsize=12)
     plt.tight_layout()
     plt.savefig(out_path, dpi=150, bbox_inches="tight")
     plt.close()
@@ -276,9 +269,9 @@ def plot_recon_comparison(
     fig, axes = plt.subplots(4, n_ch, figsize=(n_ch * 4.2, 12.8), squeeze=False)
     row_labels = [
         "真实目标",
-        "单帧\n重建",
-        "多帧\n重建",
-        "绝对误差\n（单帧 | 多帧）",
+        "单帧重建",
+        "多帧重建",
+        "绝对误差",
     ]
 
     for c in range(n_ch):
@@ -298,25 +291,23 @@ def plot_recon_comparison(
         err_m = np.abs(gt[c] - recon_multi[c])
         combined_err = np.hstack([err_s, err_m])
         axes[3, c].imshow(combined_err, cmap="inferno")
-        axes[3, c].set_title("单帧 | 多帧", fontsize=14)
         axes[3, c].axvline(x=err_s.shape[1] - 0.5, color="white", linewidth=1.2)
         axes[3, c].axis("off")
 
     for row_idx, label in enumerate(row_labels):
         axes[row_idx, 0].text(
-            -0.12,
+            -0.14,
             0.5,
             label,
             transform=axes[row_idx, 0].transAxes,
             fontsize=14,
             rotation=0,
             va="center",
-            ha="right",
+            ha="left",
             clip_on=False,
         )
 
-    fig.suptitle("逐波段重建对比", fontsize=16, fontweight="bold")
-    fig.tight_layout(rect=[0.06, 0.02, 1.0, 0.96])
+    fig.tight_layout(rect=[0.06, 0.02, 1.0, 0.99])
     fig.savefig(out_path, dpi=150, bbox_inches="tight")
     plt.close(fig)
     return out_path
@@ -358,46 +349,44 @@ def plot_recon_rgb_pseudocolor_comparison(
 
     fig, axes = plt.subplots(2, 3, figsize=(16, 8.8), squeeze=False)
     panels = [
-        (0, 0, gt_rgb, "真实目标", None, None),
-        (0, 1, single_rgb, "单帧重建", None, None),
-        (0, 2, multi_rgb, "多帧重建", None, None),
-        (1, 0, err_single, "绝对误差：单帧", "inferno", err_vmax),
-        (1, 1, err_multi, "绝对误差：多帧", "inferno", err_vmax),
+        (0, 0, gt_rgb, None, None),
+        (0, 1, single_rgb, None, None),
+        (0, 2, multi_rgb, None, None),
+        (1, 0, err_single, "inferno", err_vmax),
+        (1, 1, err_multi, "inferno", err_vmax),
     ]
-    for row_idx, col_idx, image, title, cmap, vmax in panels:
+    for row_idx, col_idx, image, cmap, vmax in panels:
         if vmax is None:
             axes[row_idx, col_idx].imshow(image, cmap=cmap)
         else:
             axes[row_idx, col_idx].imshow(image, cmap=cmap, vmin=0.0, vmax=vmax)
-        axes[row_idx, col_idx].set_title(title, fontsize=15, fontweight="bold")
         axes[row_idx, col_idx].axis("off")
 
     axes[1, 2].axis("off")
     axes[0, 0].text(
-        -0.12,
+        -0.14,
         0.5,
         "伪彩色",
         transform=axes[0, 0].transAxes,
         fontsize=14,
         rotation=0,
         va="center",
-        ha="right",
+        ha="left",
         clip_on=False,
     )
     axes[1, 0].text(
-        -0.12,
+        -0.14,
         0.5,
-        "绝对\n误差",
+        "绝对误差",
         transform=axes[1, 0].transAxes,
         fontsize=14,
         rotation=0,
         va="center",
-        ha="right",
+        ha="left",
         clip_on=False,
     )
 
-    fig.suptitle("伪彩色重建对比", fontsize=16, fontweight="bold")
-    fig.tight_layout(rect=[0.06, 0.02, 1.0, 0.95])
+    fig.tight_layout(rect=[0.06, 0.02, 1.0, 0.99])
     fig.savefig(out_path, dpi=150, bbox_inches="tight")
     plt.close(fig)
     return out_path

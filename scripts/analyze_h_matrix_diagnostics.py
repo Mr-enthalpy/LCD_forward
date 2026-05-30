@@ -137,7 +137,6 @@ def plot_singular_value_maps(sv_maps: np.ndarray, out_path: Path):
         im = axes[k].imshow(np.log10(sv_maps[k] + 1e-16), cmap="plasma", origin="lower")
         axes[k].set_title(f"奇异值 {k + 1}（log10）")
         plt.colorbar(im, ax=axes[k])
-    plt.suptitle("H 矩阵奇异值频率分布（零频居中）")
     plt.tight_layout()
     plt.savefig(out_path, dpi=150)
     plt.close()
@@ -173,7 +172,6 @@ def plot_otf_magnitude_grid(
                 axes[l, t].set_ylabel(f"波长 {l + 1}", fontsize=8)
             axes[l, t].axis("off")
 
-    fig.suptitle("OTF 振幅分布（log10，零频居中）", fontsize=11)
     plt.savefig(out_path, dpi=150)
     plt.close()
 
@@ -196,7 +194,6 @@ def plot_wavelength_transfer_comparison(psf_fft: np.ndarray, mask_id: str, wavel
         im = axes[l].imshow(np.log10(np.abs(psf_fft[0, l]) + 1e-16), cmap="hot", origin="lower")
         axes[l].set_title(f"{wavelengths_nm[l]:.0f} nm")
         plt.colorbar(im, ax=axes[l])
-    plt.suptitle("三波长传递函数对比（零频居中）")
     plt.tight_layout()
     plt.savefig(out_path, dpi=150)
     plt.close()

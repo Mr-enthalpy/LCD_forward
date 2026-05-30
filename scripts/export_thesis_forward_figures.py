@@ -316,7 +316,6 @@ def export_pca_basis_figure(
             if pc_idx == 0:
                 ax.set_ylabel(f"{wavelengths_nm[wl_idx]:.0f} nm", fontsize=10, rotation=0, labelpad=30, va="center")
 
-    fig.suptitle("实测 PSF 的 PCA 基底示例", fontsize=12, fontweight="bold")
     fig.tight_layout(pad=0.9)
     return _save_figure(fig, out_dir / "fig4_pca_basis_subset", formats, dpi)
 
@@ -588,7 +587,6 @@ def export_forward_prediction_figure(
             axes[row_idx, col_idx].set_xticks([])
             axes[row_idx, col_idx].set_yticks([])
 
-    fig.suptitle("前向模型代表性预测结果", fontsize=14, fontweight="bold")
     fig.tight_layout(pad=0.85)
     outputs = {f"main_{key}": value for key, value in _save_figure(fig, out_dir / "fig4_forward_prediction_subset", formats, dpi).items()}
 
@@ -625,7 +623,6 @@ def export_forward_prediction_figure(
             residual_axes[row_idx, col_idx].set_xticks([])
             residual_axes[row_idx, col_idx].set_yticks([])
 
-    residual_fig.suptitle("前向模型残差伪彩色对比", fontsize=14, fontweight="bold")
     residual_fig.tight_layout(pad=0.85)
     outputs.update(
         {f"residual_{key}": value for key, value in _save_figure(residual_fig, out_dir / "fig4_forward_prediction_residuals", formats, dpi).items()}
