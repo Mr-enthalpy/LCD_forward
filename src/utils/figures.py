@@ -349,17 +349,18 @@ def plot_recon_rgb_pseudocolor_comparison(
 
     fig, axes = plt.subplots(2, 3, figsize=(16, 8.8), squeeze=False)
     panels = [
-        (0, 0, gt_rgb, None, None),
-        (0, 1, single_rgb, None, None),
-        (0, 2, multi_rgb, None, None),
-        (1, 0, err_single, "inferno", err_vmax),
-        (1, 1, err_multi, "inferno", err_vmax),
+        (0, 0, gt_rgb, "真实目标", None, None),
+        (0, 1, single_rgb, "单帧重建", None, None),
+        (0, 2, multi_rgb, "多帧重建", None, None),
+        (1, 0, err_single, "绝对误差：单帧", "inferno", err_vmax),
+        (1, 1, err_multi, "绝对误差：多帧", "inferno", err_vmax),
     ]
-    for row_idx, col_idx, image, cmap, vmax in panels:
+    for row_idx, col_idx, image, title, cmap, vmax in panels:
         if vmax is None:
             axes[row_idx, col_idx].imshow(image, cmap=cmap)
         else:
             axes[row_idx, col_idx].imshow(image, cmap=cmap, vmin=0.0, vmax=vmax)
+        axes[row_idx, col_idx].set_title(title, fontsize=15, fontweight="bold")
         axes[row_idx, col_idx].axis("off")
 
     axes[1, 2].axis("off")

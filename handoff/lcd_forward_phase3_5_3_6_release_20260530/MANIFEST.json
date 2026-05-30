@@ -113,7 +113,7 @@
       "size_bytes": 1603050
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_cd_ms/recon_rgb_pseudocolor_comparison.png": {
-      "size_bytes": 1392896
+      "size_bytes": 1296913
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_cd_ms/rendered_frames.png": {
       "size_bytes": 343132
@@ -125,7 +125,7 @@
       "size_bytes": 1552994
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_clay_ms/recon_rgb_pseudocolor_comparison.png": {
-      "size_bytes": 1488362
+      "size_bytes": 1384560
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_clay_ms/rendered_frames.png": {
       "size_bytes": 353562
@@ -137,7 +137,7 @@
       "size_bytes": 1676721
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_superballs_ms/recon_rgb_pseudocolor_comparison.png": {
-      "size_bytes": 1640911
+      "size_bytes": 1522816
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_superballs_ms/rendered_frames.png": {
       "size_bytes": 412090
@@ -167,7 +167,7 @@
       "size_bytes": 1868339
     },
     "thesis/phase3_6_linear_recon_synthetic/figures/recon_rgb_pseudocolor_comparison.png": {
-      "size_bytes": 1941153
+      "size_bytes": 1789468
     },
     "thesis/phase3_6_linear_recon_synthetic/figures/recon_single_frame.png": {
       "size_bytes": 1425427
