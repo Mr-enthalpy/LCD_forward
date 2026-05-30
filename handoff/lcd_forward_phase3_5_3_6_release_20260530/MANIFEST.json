@@ -107,37 +107,37 @@
       "size_bytes": 10063383
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_cd_ms/recon_comparison.png": {
-      "size_bytes": 1603050
+      "size_bytes": 1618143
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_cd_ms/recon_per_band_comparison.png": {
-      "size_bytes": 1603050
+      "size_bytes": 1618143
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_cd_ms/recon_rgb_pseudocolor_comparison.png": {
-      "size_bytes": 1296913
+      "size_bytes": 1301027
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_cd_ms/rendered_frames.png": {
       "size_bytes": 343132
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_clay_ms/recon_comparison.png": {
-      "size_bytes": 1552994
+      "size_bytes": 1568483
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_clay_ms/recon_per_band_comparison.png": {
-      "size_bytes": 1552994
+      "size_bytes": 1568483
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_clay_ms/recon_rgb_pseudocolor_comparison.png": {
-      "size_bytes": 1384560
+      "size_bytes": 1388681
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_clay_ms/rendered_frames.png": {
       "size_bytes": 353562
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_superballs_ms/recon_comparison.png": {
-      "size_bytes": 1676721
+      "size_bytes": 1693919
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_superballs_ms/recon_per_band_comparison.png": {
-      "size_bytes": 1676721
+      "size_bytes": 1693919
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_superballs_ms/recon_rgb_pseudocolor_comparison.png": {
-      "size_bytes": 1522816
+      "size_bytes": 1527177
     },
     "thesis/phase3_6_linear_recon_cave/figures/scene_superballs_ms/rendered_frames.png": {
       "size_bytes": 412090
@@ -158,16 +158,16 @@
       "size_bytes": 9681311
     },
     "thesis/phase3_6_linear_recon_synthetic/figures/recon_comparison.png": {
-      "size_bytes": 1868339
+      "size_bytes": 1887061
     },
     "thesis/phase3_6_linear_recon_synthetic/figures/recon_multiframe.png": {
       "size_bytes": 1112378
     },
     "thesis/phase3_6_linear_recon_synthetic/figures/recon_per_band_comparison.png": {
-      "size_bytes": 1868339
+      "size_bytes": 1887061
     },
     "thesis/phase3_6_linear_recon_synthetic/figures/recon_rgb_pseudocolor_comparison.png": {
-      "size_bytes": 1789468
+      "size_bytes": 1793105
     },
     "thesis/phase3_6_linear_recon_synthetic/figures/recon_single_frame.png": {
       "size_bytes": 1425427

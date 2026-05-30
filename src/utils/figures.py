@@ -268,10 +268,10 @@ def plot_recon_comparison(
     n_ch = gt.shape[0]
     fig, axes = plt.subplots(4, n_ch, figsize=(n_ch * 4.2, 12.8), squeeze=False)
     row_labels = [
-        "真实目标",
-        "单帧重建",
-        "多帧重建",
-        "绝对误差",
+        "真实\n目标",
+        "单帧\n重建",
+        "多帧\n重建",
+        "绝对\n误差",
     ]
 
     for c in range(n_ch):
@@ -295,19 +295,11 @@ def plot_recon_comparison(
         axes[3, c].axis("off")
 
     for row_idx, label in enumerate(row_labels):
-        axes[row_idx, 0].text(
-            -0.14,
-            0.5,
-            label,
-            transform=axes[row_idx, 0].transAxes,
-            fontsize=14,
-            rotation=0,
-            va="center",
-            ha="left",
-            clip_on=False,
-        )
+        pos = axes[row_idx, 0].get_position()
+        y_center = pos.y0 + pos.height / 2
+        fig.text(0.02, y_center, label, ha="left", va="center", fontsize=14)
 
-    fig.tight_layout(rect=[0.06, 0.02, 1.0, 0.99])
+    fig.tight_layout(rect=[0.08, 0.02, 1.0, 0.99])
     fig.savefig(out_path, dpi=150, bbox_inches="tight")
     plt.close(fig)
     return out_path
@@ -364,30 +356,12 @@ def plot_recon_rgb_pseudocolor_comparison(
         axes[row_idx, col_idx].axis("off")
 
     axes[1, 2].axis("off")
-    axes[0, 0].text(
-        -0.14,
-        0.5,
-        "伪彩色",
-        transform=axes[0, 0].transAxes,
-        fontsize=14,
-        rotation=0,
-        va="center",
-        ha="left",
-        clip_on=False,
-    )
-    axes[1, 0].text(
-        -0.14,
-        0.5,
-        "绝对误差",
-        transform=axes[1, 0].transAxes,
-        fontsize=14,
-        rotation=0,
-        va="center",
-        ha="left",
-        clip_on=False,
-    )
+    pos0 = axes[0, 0].get_position()
+    pos1 = axes[1, 0].get_position()
+    fig.text(0.02, pos0.y0 + pos0.height / 2, "伪彩色", ha="left", va="center", fontsize=14)
+    fig.text(0.02, pos1.y0 + pos1.height / 2, "绝对误差", ha="left", va="center", fontsize=14)
 
-    fig.tight_layout(rect=[0.06, 0.02, 1.0, 0.99])
+    fig.tight_layout(rect=[0.08, 0.02, 1.0, 0.99])
     fig.savefig(out_path, dpi=150, bbox_inches="tight")
     plt.close(fig)
     return out_path
