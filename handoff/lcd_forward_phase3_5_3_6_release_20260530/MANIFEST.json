@@ -1,0 +1,221 @@
+{
+  "release_id": "lcd_forward_phase3_5_3_6_release_20260530",
+  "files": {
+    "data_contract.md": {
+      "size_bytes": 4498
+    },
+    "README.md": {
+      "size_bytes": 2052
+    },
+    "RELEASE.json": {
+      "size_bytes": 1029
+    },
+    "provenance/bishe_first_pass.yaml": {
+      "size_bytes": 1690
+    },
+    "provenance/lcd_forward_run_manifest.json": {
+      "size_bytes": 1234
+    },
+    "provenance/optic_system_release_reference.json": {
+      "size_bytes": 1168
+    },
+    "provenance/phase3_6_debug_and_tuning.md": {
+      "size_bytes": 15938
+    },
+    "thesis/h_matrix_diagnostics/data/frequency_diversity_cv_map.npy": {
+      "size_bytes": 524416
+    },
+    "thesis/h_matrix_diagnostics/data/h_condition_map.npy": {
+      "size_bytes": 524416
+    },
+    "thesis/h_matrix_diagnostics/data/h_rank_map.npy": {
+      "size_bytes": 262272
+    },
+    "thesis/h_matrix_diagnostics/data/h_singular_values.npz": {
+      "size_bytes": 1573612
+    },
+    "thesis/h_matrix_diagnostics/figures/h_condition_histogram.png": {
+      "size_bytes": 34503
+    },
+    "thesis/h_matrix_diagnostics/figures/h_log_condition_map.png": {
+      "size_bytes": 454834
+    },
+    "thesis/h_matrix_diagnostics/figures/h_log_condition_map_fftshifted.png": {
+      "size_bytes": 454834
+    },
+    "thesis/h_matrix_diagnostics/figures/h_rank_map.png": {
+      "size_bytes": 30690
+    },
+    "thesis/h_matrix_diagnostics/figures/h_rank_map_fftshifted.png": {
+      "size_bytes": 30690
+    },
+    "thesis/h_matrix_diagnostics/figures/h_singular_value_maps.png": {
+      "size_bytes": 680653
+    },
+    "thesis/h_matrix_diagnostics/figures/h_singular_value_maps_fftshifted.png": {
+      "size_bytes": 680653
+    },
+    "thesis/h_matrix_diagnostics/figures/mask_frequency_diversity_cv_map.png": {
+      "size_bytes": 587625
+    },
+    "thesis/h_matrix_diagnostics/figures/mask_frequency_diversity_cv_map_fftshifted.png": {
+      "size_bytes": 587625
+    },
+    "thesis/h_matrix_diagnostics/figures/otf_magnitude_grid_selected_masks.png": {
+      "size_bytes": 2303438
+    },
+    "thesis/h_matrix_diagnostics/figures/otf_magnitude_grid_selected_masks_fftshifted.png": {
+      "size_bytes": 2303438
+    },
+    "thesis/h_matrix_diagnostics/figures/wavelength_transfer_comparison.png": {
+      "size_bytes": 757146
+    },
+    "thesis/h_matrix_diagnostics/figures/wavelength_transfer_comparison_fftshifted.png": {
+      "size_bytes": 757146
+    },
+    "thesis/h_matrix_diagnostics/metrics/h_matrix_diagnostics.json": {
+      "size_bytes": 2082
+    },
+    "thesis/h_matrix_diagnostics/reports/h_matrix_diagnostics_report.md": {
+      "size_bytes": 2363
+    },
+    "thesis/phase3_5_forward_validation/figures/measured_vs_predicted_examples.png": {
+      "size_bytes": 664065
+    },
+    "thesis/phase3_5_forward_validation/figures/psf_basis_preview_wl0.png": {
+      "size_bytes": 148904
+    },
+    "thesis/phase3_5_forward_validation/figures/psf_basis_preview_wl1.png": {
+      "size_bytes": 155398
+    },
+    "thesis/phase3_5_forward_validation/figures/psf_basis_preview_wl2.png": {
+      "size_bytes": 138203
+    },
+    "thesis/phase3_5_forward_validation/metrics/psf_prediction_metrics.json": {
+      "size_bytes": 3421
+    },
+    "thesis/phase3_5_forward_validation/reports/forward_validation_report.md": {
+      "size_bytes": 717
+    },
+    "thesis/phase3_6_linear_recon_cave/data/scene_cd_ms/recon_appendix_arrays.npz": {
+      "size_bytes": 10037723
+    },
+    "thesis/phase3_6_linear_recon_cave/data/scene_clay_ms/recon_appendix_arrays.npz": {
+      "size_bytes": 9924890
+    },
+    "thesis/phase3_6_linear_recon_cave/data/scene_superballs_ms/recon_appendix_arrays.npz": {
+      "size_bytes": 10063383
+    },
+    "thesis/phase3_6_linear_recon_cave/figures/scene_cd_ms/recon_comparison.png": {
+      "size_bytes": 1453823
+    },
+    "thesis/phase3_6_linear_recon_cave/figures/scene_cd_ms/recon_per_band_comparison.png": {
+      "size_bytes": 1453823
+    },
+    "thesis/phase3_6_linear_recon_cave/figures/scene_cd_ms/recon_rgb_pseudocolor_comparison.png": {
+      "size_bytes": 1146976
+    },
+    "thesis/phase3_6_linear_recon_cave/figures/scene_cd_ms/rendered_frames.png": {
+      "size_bytes": 313373
+    },
+    "thesis/phase3_6_linear_recon_cave/figures/scene_clay_ms/recon_comparison.png": {
+      "size_bytes": 1402191
+    },
+    "thesis/phase3_6_linear_recon_cave/figures/scene_clay_ms/recon_per_band_comparison.png": {
+      "size_bytes": 1402191
+    },
+    "thesis/phase3_6_linear_recon_cave/figures/scene_clay_ms/recon_rgb_pseudocolor_comparison.png": {
+      "size_bytes": 1224315
+    },
+    "thesis/phase3_6_linear_recon_cave/figures/scene_clay_ms/rendered_frames.png": {
+      "size_bytes": 323712
+    },
+    "thesis/phase3_6_linear_recon_cave/figures/scene_superballs_ms/recon_comparison.png": {
+      "size_bytes": 1513592
+    },
+    "thesis/phase3_6_linear_recon_cave/figures/scene_superballs_ms/recon_per_band_comparison.png": {
+      "size_bytes": 1513592
+    },
+    "thesis/phase3_6_linear_recon_cave/figures/scene_superballs_ms/recon_rgb_pseudocolor_comparison.png": {
+      "size_bytes": 1343332
+    },
+    "thesis/phase3_6_linear_recon_cave/figures/scene_superballs_ms/rendered_frames.png": {
+      "size_bytes": 374547
+    },
+    "thesis/phase3_6_linear_recon_cave/metrics/cave_recon_metrics.json": {
+      "size_bytes": 8181
+    },
+    "thesis/phase3_6_linear_recon_cave/metrics/cave_recon_summary.json": {
+      "size_bytes": 643
+    },
+    "thesis/phase3_6_linear_recon_cave/metrics/reconstruction_metrics_summary.csv": {
+      "size_bytes": 5595
+    },
+    "thesis/phase3_6_linear_recon_cave/reports/cave_recon_report.md": {
+      "size_bytes": 3186
+    },
+    "thesis/phase3_6_linear_recon_synthetic/data/recon_appendix_arrays.npz": {
+      "size_bytes": 9681311
+    },
+    "thesis/phase3_6_linear_recon_synthetic/figures/recon_comparison.png": {
+      "size_bytes": 1658155
+    },
+    "thesis/phase3_6_linear_recon_synthetic/figures/recon_multiframe.png": {
+      "size_bytes": 1029569
+    },
+    "thesis/phase3_6_linear_recon_synthetic/figures/recon_per_band_comparison.png": {
+      "size_bytes": 1658155
+    },
+    "thesis/phase3_6_linear_recon_synthetic/figures/recon_rgb_pseudocolor_comparison.png": {
+      "size_bytes": 1557200
+    },
+    "thesis/phase3_6_linear_recon_synthetic/figures/recon_single_frame.png": {
+      "size_bytes": 1324363
+    },
+    "thesis/phase3_6_linear_recon_synthetic/figures/rendered_frames.png": {
+      "size_bytes": 349547
+    },
+    "thesis/phase3_6_linear_recon_synthetic/figures/selected_masks.png": {
+      "size_bytes": 17604
+    },
+    "thesis/phase3_6_linear_recon_synthetic/figures/synthetic_objects.png": {
+      "size_bytes": 228670
+    },
+    "thesis/phase3_6_linear_recon_synthetic/metrics/reconstruction_metrics.json": {
+      "size_bytes": 3077
+    },
+    "thesis/phase3_6_linear_recon_synthetic/reports/linear_recon_report.md": {
+      "size_bytes": 1392
+    },
+    "thesis/reports/figure_catalog.md": {
+      "size_bytes": 5981
+    },
+    "thesis/reports/h_matrix_dc_otf_response.md": {
+      "size_bytes": 3160
+    },
+    "thesis/reports/lcd_forward_phase3_5_3_6_summary.md": {
+      "size_bytes": 1478
+    },
+    "thesis/reports/limitations.md": {
+      "size_bytes": 1444
+    },
+    "thesis/reports/metric_audit_response.md": {
+      "size_bytes": 3780
+    },
+    "thesis/reports/reconstruction_figure_caption_guide.md": {
+      "size_bytes": 2932
+    },
+    "thesis/reports/repro_commands.md": {
+      "size_bytes": 1525
+    },
+    "thesis/reports/result_index.md": {
+      "size_bytes": 1952
+    },
+    "thesis/reports/solver_regularization_response.md": {
+      "size_bytes": 7860
+    },
+    "thesis/reports/thesis_evidence_summary.md": {
+      "size_bytes": 2413
+    }
+  }
+}

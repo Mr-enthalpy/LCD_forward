@@ -4,7 +4,7 @@
 
 This handoff publishes thesis-ready replacements for Chapter 4 forward-model figures from `LCD_forward` Phase 3.5 artifacts. It is a figure/data handoff only: do not change thesis claims, do not reinterpret optical assumptions, and do not retrain or regenerate figures downstream unless the source handoff is replaced.
 
-Update note, 2026-05-22: the measured-vs-predicted PSF subset figure was reorganized for thesis readability. The main figure now keeps sample metadata, mask, measured PSF, and predicted PSF in a wider layout with larger text, while residuals were moved into a separate companion figure so the residual structure is visible at publication scale. The underlying selected samples and numeric metrics are unchanged; only the presentation layout and published figure set were updated.
+Update note, 2026-05-30: sample metadata and NC values were removed from the forward prediction and residual figures. The figures now show only Chinese labels and compact sample indices; sample IDs, mask families, and NC values are published in the companion Markdown/CSV tables for thesis table formatting.
 
 ## Published Root
 
@@ -25,6 +25,7 @@ thesis/thesis_figures/
 - fig4_forward_prediction_residuals.pdf
 - fig4_forward_prediction_residuals.png
 - fig4_forward_prediction_subset_metrics.csv
+- fig4_forward_prediction_subset_metrics.md
 - thesis_figures_manifest.json
 ```
 
@@ -97,7 +98,7 @@ thesis/thesis_figures/fig4_forward_prediction_subset.pdf
 This replaces the dense measured-vs-predicted prediction montage. It shows four representative held-out test masks with:
 
 ```text
-Sample metadata | Mask | Measured pseudo-RGB PSF | Predicted pseudo-RGB PSF
+样本 | 掩膜 | 实测 PSF | 预测 PSF
 ```
 
 Use this companion figure when discussing residual structure:
@@ -109,7 +110,7 @@ thesis/thesis_figures/fig4_forward_prediction_residuals.pdf
 It shows:
 
 ```text
-Sample metadata | Mask | Residual pseudo-RGB
+样本 | 掩膜 | 残差
 ```
 
 Pseudo-RGB mapping:
@@ -143,7 +144,13 @@ Mean normalized correlation over the selected examples:
 
 ## Numeric Values For Thesis Text
 
-Use this CSV for representative per-wavelength and per-sample values:
+Use this Markdown table for direct thesis table formatting:
+
+```text
+thesis/thesis_figures/fig4_forward_prediction_subset_metrics.md
+```
+
+Use this CSV for machine-readable representative per-wavelength and per-sample values:
 
 ```text
 thesis/thesis_figures/fig4_forward_prediction_subset_metrics.csv

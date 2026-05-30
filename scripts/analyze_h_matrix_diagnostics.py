@@ -11,6 +11,9 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
+plt.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei", "Noto Sans CJK SC", "Arial Unicode MS", "DejaVu Sans"]
+plt.rcParams["axes.unicode_minus"] = False
+
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
@@ -84,13 +87,13 @@ def compute_frequency_diversity_cv(psf_fft: np.ndarray) -> np.ndarray:
 def plot_h_rank_map(rank_map: np.ndarray, out_path: Path, dc_pixel: tuple | None = None):
     plt.figure(figsize=(6, 5))
     plt.imshow(rank_map, cmap="viridis", origin="lower")
-    plt.colorbar(label="Rank")
-    plt.title("H Matrix Rank per Frequency Point")
+    plt.colorbar(label="秩")
+    plt.title("H 矩阵频率点秩分布（零频居中）")
     if dc_pixel is not None:
         y_dc, x_dc = dc_pixel
         plt.plot(x_dc, y_dc, "ro", markersize=8, markeredgewidth=2)
         plt.annotate(
-            "DC",
+            "零频",
             xy=(x_dc, y_dc),
             xytext=(x_dc + 12, y_dc + 12),
             fontsize=9,
@@ -106,29 +109,21 @@ def plot_h_rank_map(rank_map: np.ndarray, out_path: Path, dc_pixel: tuple | None
 def plot_h_condition_map(cond_map: np.ndarray, out_path: Path):
     plt.figure(figsize=(6, 5))
     plt.imshow(np.log10(cond_map + 1), cmap="inferno", origin="lower")
-    plt.colorbar(label="log10(condition)")
-    plt.title("H Matrix log10(Condition) per Frequency")
+    plt.colorbar(label="log10(条件数)")
+    plt.title("H 矩阵条件数分布（零频居中）")
     plt.tight_layout()
     plt.savefig(out_path, dpi=150)
     plt.close()
 
 
 def plot_condition_histogram(conditions: np.ndarray, out_path: Path):
-    fig, axes = plt.subplots(1, 2, figsize=(10, 4))
-    axes[0].hist(np.log10(conditions + 1), bins=100, color="steelblue", edgecolor="white")
-    axes[0].set_xlabel("log10(condition)")
-    axes[0].set_ylabel("Frequency count")
-    axes[0].set_title("Condition Number Distribution")
-    axes[0].axvline(x=np.log10(np.median(conditions) + 1), color="red", linestyle="--", label="median")
-    axes[0].legend()
-
-    axes[1].hist(conditions, bins=200, color="steelblue", edgecolor="white")
-    axes[1].set_xlabel("Condition number")
-    axes[1].set_ylabel("Frequency count")
-    axes[1].set_title("Condition Number (linear)")
-    axes[1].set_xlim(0, np.percentile(conditions, 99))
-    axes[1].axvline(x=np.median(conditions), color="red", linestyle="--", label="median")
-    axes[1].legend()
+    fig, ax = plt.subplots(1, 1, figsize=(6.2, 4.2))
+    ax.hist(np.log10(conditions + 1), bins=100, color="steelblue", edgecolor="white")
+    ax.set_xlabel("log10(条件数)")
+    ax.set_ylabel("频率点数量")
+    ax.set_title("H 矩阵条件数分布直方图")
+    ax.axvline(x=np.log10(np.median(conditions) + 1), color="red", linestyle="--", label="中位数")
+    ax.legend()
 
     plt.tight_layout()
     plt.savefig(out_path, dpi=150)
@@ -140,9 +135,9 @@ def plot_singular_value_maps(sv_maps: np.ndarray, out_path: Path):
     fig, axes = plt.subplots(1, n_sv, figsize=(n_sv * 4, 3.5))
     for k in range(n_sv):
         im = axes[k].imshow(np.log10(sv_maps[k] + 1e-16), cmap="plasma", origin="lower")
-        axes[k].set_title(f"Singular Value {k + 1} (log10)")
+        axes[k].set_title(f"奇异值 {k + 1}（log10）")
         plt.colorbar(im, ax=axes[k])
-    plt.suptitle("H Matrix Singular Values per Frequency")
+    plt.suptitle("H 矩阵奇异值频率分布（零频居中）")
     plt.tight_layout()
     plt.savefig(out_path, dpi=150)
     plt.close()
@@ -173,12 +168,12 @@ def plot_otf_magnitude_grid(
         for t in range(display_T):
             axes[l, t].imshow(np.log10(np.abs(psf_fft[t, l]) + 1e-16), cmap="hot", origin="lower")
             if l == 0:
-                axes[l, t].set_title(mask_ids[t][:24], fontsize=8, pad=6)
+                axes[l, t].set_title(f"掩膜 {t + 1}", fontsize=8, pad=6)
             if t == 0:
-                axes[l, t].set_ylabel(f"Ch {l}", fontsize=8)
+                axes[l, t].set_ylabel(f"波长 {l + 1}", fontsize=8)
             axes[l, t].axis("off")
 
-    fig.suptitle("OTF Magnitude (log10) - Representative Masks x Wavelengths", fontsize=11)
+    fig.suptitle("OTF 振幅分布（log10，零频居中）", fontsize=11)
     plt.savefig(out_path, dpi=150)
     plt.close()
 
@@ -186,8 +181,8 @@ def plot_otf_magnitude_grid(
 def plot_diversity_cv_map(cv_map: np.ndarray, out_path: Path):
     plt.figure(figsize=(6, 5))
     plt.imshow(cv_map, cmap="plasma", origin="lower")
-    plt.colorbar(label="CV of |H| across masks")
-    plt.title("Mask Frequency Diversity (CV of |H|)")
+    plt.colorbar(label="|H| 跨掩膜变异系数")
+    plt.title("频率多样性变异系数分布（零频居中）")
     plt.tight_layout()
     plt.savefig(out_path, dpi=150)
     plt.close()
@@ -201,7 +196,7 @@ def plot_wavelength_transfer_comparison(psf_fft: np.ndarray, mask_id: str, wavel
         im = axes[l].imshow(np.log10(np.abs(psf_fft[0, l]) + 1e-16), cmap="hot", origin="lower")
         axes[l].set_title(f"{wavelengths_nm[l]:.0f} nm")
         plt.colorbar(im, ax=axes[l])
-    plt.suptitle(f"Wavelength Transfer Comparison - {mask_id}")
+    plt.suptitle("三波长传递函数对比（零频居中）")
     plt.tight_layout()
     plt.savefig(out_path, dpi=150)
     plt.close()
@@ -250,9 +245,16 @@ def main():
     n_full_rank_excluding_dc = int(np.sum(results["rank_map"][dc_excluded_mask] == L))
     n_points_excluding_dc = int(np.sum(dc_excluded_mask))
 
-    display_rank = _downsample_for_display(results["rank_map"].astype(np.float64))
-    display_cond = _downsample_for_display(results["cond_map"])
-    display_cv = _downsample_for_display(cv_map)
+    rank_shift = np.fft.fftshift(results["rank_map"].astype(np.float64))
+    cond_shift = np.fft.fftshift(results["cond_map"])
+    cv_shift = np.fft.fftshift(cv_map)
+    sv_shift = np.fft.fftshift(results["sv_maps"], axes=(-2, -1))
+    otf_shift = np.fft.fftshift(psf_fft, axes=(-2, -1))
+
+    display_rank_shift = _downsample_for_display(rank_shift)
+    display_cond_shift = _downsample_for_display(cond_shift)
+    display_cv_shift = _downsample_for_display(cv_shift)
+    dc_display_shifted = (display_rank_shift.shape[0] // 2, display_rank_shift.shape[1] // 2)
 
     figs_dir = out_dir / "figures"
     figs_dir.mkdir(exist_ok=True)
@@ -263,30 +265,24 @@ def main():
     reports_dir = out_dir / "reports"
     reports_dir.mkdir(exist_ok=True)
 
-    plot_h_condition_map(display_cond, figs_dir / "h_log_condition_map.png")
+    plot_h_condition_map(display_cond_shift, figs_dir / "h_log_condition_map.png")
     plot_condition_histogram(results["all_conditions"], figs_dir / "h_condition_histogram.png")
-    plot_singular_value_maps(results["sv_maps"], figs_dir / "h_singular_value_maps.png")
-    plot_h_rank_map(display_rank, figs_dir / "h_rank_map.png", dc_pixel=dc_unshifted)
+    plot_singular_value_maps(sv_shift, figs_dir / "h_singular_value_maps.png")
+    plot_h_rank_map(display_rank_shift, figs_dir / "h_rank_map.png", dc_pixel=dc_display_shifted)
     plot_otf_magnitude_grid(
-        psf_fft,
+        otf_shift,
         sel_ids,
         figs_dir / "otf_magnitude_grid_selected_masks.png",
         max_masks=args.otf_display_mask_count,
     )
-    plot_diversity_cv_map(display_cv, figs_dir / "mask_frequency_diversity_cv_map.png")
-    plot_wavelength_transfer_comparison(psf_fft, sel_ids[0],
+    plot_diversity_cv_map(display_cv_shift, figs_dir / "mask_frequency_diversity_cv_map.png")
+    plot_wavelength_transfer_comparison(otf_shift, sel_ids[0],
                                          data["wavelengths_nm"],
                                          figs_dir / "wavelength_transfer_comparison.png")
 
-    display_rank_shift = np.fft.fftshift(display_rank)
-    display_cond_shift = np.fft.fftshift(display_cond)
-    display_cv_shift = np.fft.fftshift(display_cv)
-    sv_shift = np.fft.fftshift(results["sv_maps"], axes=(-2, -1))
-    otf_shift = np.fft.fftshift(psf_fft, axes=(-2, -1))
-
     plot_h_condition_map(display_cond_shift, figs_dir / "h_log_condition_map_fftshifted.png")
     plot_singular_value_maps(sv_shift, figs_dir / "h_singular_value_maps_fftshifted.png")
-    plot_h_rank_map(display_rank_shift, figs_dir / "h_rank_map_fftshifted.png", dc_pixel=dc_fftshifted)
+    plot_h_rank_map(display_rank_shift, figs_dir / "h_rank_map_fftshifted.png", dc_pixel=dc_display_shifted)
     plot_otf_magnitude_grid(
         otf_shift,
         sel_ids,
@@ -294,6 +290,9 @@ def main():
         max_masks=args.otf_display_mask_count,
     )
     plot_diversity_cv_map(display_cv_shift, figs_dir / "mask_frequency_diversity_cv_map_fftshifted.png")
+    plot_wavelength_transfer_comparison(otf_shift, sel_ids[0],
+                                         data["wavelengths_nm"],
+                                         figs_dir / "wavelength_transfer_comparison_fftshifted.png")
 
     np.save(data_dir / "h_rank_map.npy", results["rank_map"])
     np.save(data_dir / "h_condition_map.npy", results["cond_map"])
@@ -311,6 +310,8 @@ def main():
         "rank_threshold": 1e-8,
         "dc_unshifted_pixel_coordinate": list(dc_unshifted),
         "dc_fftshifted_pixel_coordinate": list(dc_fftshifted),
+        "dc_display_pixel_coordinate": list(dc_display_shifted),
+        "frequency_figure_display": "all spatial-frequency figures are FFT-shifted for display, with DC centered",
         "dc_singular_values": dc_singular_values.tolist(),
         "dc_condition_number": float(results["cond_map"][dc_unshifted]),
         "dc_rank_at_rank_threshold": int(results["rank_map"][dc_unshifted]),
@@ -343,7 +344,9 @@ def main():
 ## Results
 - Frequency points: {results['n_total']}
 - Full-rank points: {results['n_full_rank']} ({100*results['n_full_rank']/results['n_total']:.1f}%)
-- DC point in FFT-shifted figures: pixel {dc_fftshifted}
+- DC point in stored FFT arrays: pixel {dc_unshifted}
+- DC point in native FFT-shifted arrays: pixel {dc_fftshifted}
+- DC point in displayed frequency figures: pixel {dc_display_shifted}
 - DC singular values: {dc_singular_values.tolist()}
 - DC rank at threshold 1e-8: {int(results['rank_map'][dc_unshifted])}
 - DC rank by threshold: {dc_rank_by_threshold}
@@ -367,8 +370,9 @@ Cross-mask frequency diversity (CV of |H|) is concentrated at mid-to-high
 spatial frequencies, not at DC (where all sum-normalized PSFs have
 identical transfer = 1.0). This validates Phase 3.2b conclusions.
 
-The FFT-shifted figures place the DC point at pixel {dc_fftshifted}. The
-stored rank map reports this point as rank 3 under the relative threshold
+All thesis-facing spatial-frequency figures are FFT-shifted for display,
+placing the DC point at pixel {dc_display_shifted} in the rendered maps.
+The stored unshifted rank array reports DC as rank 3 under the relative threshold
 1e-8 because the second and third singular values are small but above that
 threshold. Under a looser effective threshold of 1e-6, the same DC point is
 rank 1, matching the expected near-DC behavior of sum-normalized PSFs.

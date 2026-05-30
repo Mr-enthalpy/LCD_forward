@@ -6,8 +6,8 @@ The OTF magnitude grid is a qualitative sanity figure, not a quantitative H-rank
 
 The regenerated handoff now uses a representative subset:
 
-- Figure: `thesis/h_matrix_diagnostics/figures/otf_magnitude_grid_selected_masks.png`
-- FFT-shifted figure: `thesis/h_matrix_diagnostics/figures/otf_magnitude_grid_selected_masks_fftshifted.png`
+- Figure: `thesis/h_matrix_diagnostics/figures/otf_magnitude_grid_selected_masks.png` (FFT-shifted, DC centered)
+- Compatibility alias: `thesis/h_matrix_diagnostics/figures/otf_magnitude_grid_selected_masks_fftshifted.png`
 - Layout: 3 wavelengths by 4 representative masks
 - Purpose: show representative OTF magnitude diversity without overcrowding the panel
 
@@ -15,14 +15,14 @@ The H-rank and condition-number conclusions are still based on all selected mask
 
 ## DC Coordinate
 
-The H diagnostics use NumPy `fft2` indexing before display.
+The H diagnostics use NumPy `fft2` indexing for computation and FFT-shifted indexing for thesis-facing display.
 
 - In the unshifted FFT arrays, DC is at pixel `(0, 0)`.
-- In FFT-shifted figures, DC is displayed at pixel `(128, 128)` for the 256x256 grid.
+- In canonical spatial-frequency figures, DC is displayed at pixel `(128, 128)` for the 256x256 grid.
 
 Therefore, the answer to "(a)" is:
 
-> In FFT-shifted H/OTF figures, the DC point is at pixel `(128, 128)`.
+> In thesis-facing H/OTF figures, the DC point is centered at pixel `(128, 128)`.
 
 ## DC Rank Behavior
 

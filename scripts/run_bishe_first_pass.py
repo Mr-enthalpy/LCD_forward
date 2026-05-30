@@ -260,16 +260,16 @@ def run_linear_recon_synthetic(cfg, run_dir, env_map):
 
     plot_synthetic_objects(obj_np, recon_dir / "synthetic_objects.png")
 
-    plot_mask_grid(sel_masks_display, sel_ids, recon_dir / "selected_masks.png", title="Selected Encoding Masks")
+    plot_mask_grid(sel_masks_display, sel_ids, recon_dir / "selected_masks.png", title="选定编码掩膜")
 
     plot_rendered_frames(frames_np, recon_dir / "rendered_frames.png")
     if noise_meta.get("enabled", False):
         plot_rendered_frames(frames_clean_np, recon_dir / "rendered_frames_clean.png")
 
     plot_reconstruction(obj_np, recon_single_np, recon_dir / "recon_single_frame.png",
-                        wavelengths_nm=wavelengths, title="Single-Frame Reconstruction")
+                        wavelengths_nm=wavelengths, title="单帧重建")
     plot_reconstruction(obj_np, recon_multi_np, recon_dir / "recon_multiframe.png",
-                        wavelengths_nm=wavelengths, title="Multi-Frame Reconstruction")
+                        wavelengths_nm=wavelengths, title="多帧重建")
     plot_recon_comparison(obj_np, recon_single_np, recon_multi_np,
                           recon_dir / "recon_comparison.png", wavelengths_nm=wavelengths)
     plot_recon_comparison(obj_np, recon_single_np, recon_multi_np,
@@ -460,10 +460,10 @@ def run_linear_recon_cave(cfg, run_dir, env_map):
             wavelengths_nm=wavelengths,
         )
         plot_rendered_frames(frames.numpy(), scene_dir / "rendered_frames.png",
-                             title=f"Rendered Frames - {scene_id}")
+                             title=f"渲染观测帧：{scene_id}")
         if noise_meta.get("enabled", False):
             plot_rendered_frames(frames_clean.numpy(), scene_dir / "rendered_frames_clean.png",
-                                 title=f"Clean Rendered Frames - {scene_id}")
+                                 title=f"无噪声渲染观测帧：{scene_id}")
 
         np.savez_compressed(
             scene_dir / "recon_appendix_arrays.npz",

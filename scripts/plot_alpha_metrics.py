@@ -13,6 +13,9 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
+plt.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei", "Noto Sans CJK SC", "Arial Unicode MS", "DejaVu Sans"]
+plt.rcParams["axes.unicode_minus"] = False
+
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
@@ -24,6 +27,11 @@ SCENE_COLORS = {
     "cd_ms": "#4c72b0",
     "clay_ms": "#55a868",
     "superballs_ms": "#c44e52",
+}
+SCENE_LABELS = {
+    "cd_ms": "场景 cd",
+    "clay_ms": "场景 clay",
+    "superballs_ms": "场景 superballs",
 }
 MEAN_PSNR_COLOR = "#d62728"
 MEAN_SSIM_RAW_COLOR = "#1f77b4"
@@ -85,9 +93,12 @@ def extract_metric_curves(data: dict[str, Any]) -> dict[str, Any]:
         if psnrs:
             alpha_values.append(alpha)
             mean_psnr.append(float(np.mean(psnrs)))
-            mean_ssim_raw.append(float(np.nanmean(ssims_raw)))
-            mean_ssim_display.append(float(np.nanmean(ssims_disp)))
-            mean_corr.append(float(np.nanmean(corrs)))
+            _ssim_raw_arr = np.array([v if v is not None else np.nan for v in ssims_raw], dtype=np.float64)
+            _ssim_disp_arr = np.array([v if v is not None else np.nan for v in ssims_disp], dtype=np.float64)
+            _corr_arr = np.array([v if v is not None else np.nan for v in corrs], dtype=np.float64)
+            mean_ssim_raw.append(float(np.nanmean(_ssim_raw_arr)))
+            mean_ssim_display.append(float(np.nanmean(_ssim_disp_arr)))
+            mean_corr.append(float(np.nanmean(_corr_arr)))
             mean_gain.append(float(np.nanmean([g for g in gains if g is not None])) if any(g is not None for g in gains) else np.nan)
         else:
             alpha_values.append(alpha)
@@ -156,13 +167,13 @@ def _add_zone_shading(ax, x_min, x_max, y_min, y_max, collapse_right, high_reg_l
 def _add_zone_labels(ax, y_min, y_max, alpha_log10_range):
     y_label = y_max - (y_max - y_min) * 0.065
     cx = alpha_log10_range[0] + (math.log10(5e-16) - alpha_log10_range[0]) / 2
-    ax.text(cx, y_label, "Singular\nValue\nCollapse",
+    ax.text(cx, y_label, "奇异值\n塌缩区",
             fontsize=7.5, ha="center", va="top", color="#555555",
             fontstyle="italic", fontweight="bold",
             bbox=dict(boxstyle="round,pad=0.25", fc="white", ec="gray", alpha=0.75))
 
     mid_cx = math.log10(5e-16) + (math.log10(5e-7) - math.log10(5e-16)) / 2
-    ax.text(mid_cx, y_label, "Stable Encoding Region",
+    ax.text(mid_cx, y_label, "稳定编码区",
             fontsize=7.5, ha="center", va="top", color="#1a7a1a",
             fontstyle="italic", fontweight="bold",
             bbox=dict(boxstyle="round,pad=0.25", fc="white", ec="#2ca02c", alpha=0.75))
@@ -177,7 +188,7 @@ def _add_mid_frequency_label_below_legend(fig, ax, legend):
     ax.text(
         x,
         y,
-        "Mid-Frequency\nEncoding\nSuppressed",
+        "中频编码\n被抑制",
         transform=ax.transAxes,
         fontsize=7.5,
         ha="left",
@@ -197,7 +208,7 @@ def _add_best_alpha_vline(ax, best_alpha, best_val, y_min, y_max, color, annotat
     else:
         tx, ty = x + 1.5, y_min + (y_max - y_min) * 0.12
     ax.annotate(
-        f"best \u03b1={_format_alpha_exponent(best_alpha)}",
+        f"最优 α={_format_alpha_exponent(best_alpha)}",
         xy=(x, best_val),
         xytext=(tx, ty),
         fontsize=7.5,
@@ -238,7 +249,7 @@ def _add_per_scene_lines(ax, per_scene, metric_key, colors_map, alpha=0.35, lw=0
         if len(s_log10) < 2:
             continue
         color = colors_map.get(scene_id, "#888888")
-        lbl = scene_id if label_scenes else None
+        lbl = SCENE_LABELS.get(scene_id, scene_id) if label_scenes else None
         ax.plot(s_log10, s_vals, marker=marker, markersize=ms, linewidth=lw,
                 color=color, alpha=alpha, label=lbl)
 
@@ -274,17 +285,17 @@ def plot_psnr(curves: dict[str, Any], output_dir: Path):
     )
 
     ax.plot(a_log10, m_psnr, "s-", color=MEAN_PSNR_COLOR, linewidth=2.8,
-            markersize=7, label="Mean multi-frame PSNR", zorder=6)
+            markersize=7, label="多帧平均峰值信噪比", zorder=6)
 
     legend = ax.legend(loc="upper right", fontsize=7, framealpha=0.85, ncol=2)
 
-    ax.set_ylabel("PSNR (dB)", fontsize=13, fontweight="bold", color=MEAN_PSNR_COLOR)
+    ax.set_ylabel("峰值信噪比 (dB)", fontsize=13, fontweight="bold", color=MEAN_PSNR_COLOR)
     ax.tick_params(axis="y", labelcolor=MEAN_PSNR_COLOR, labelsize=10)
     ax.tick_params(axis="x", labelsize=9.5)
     ax.set_ylim(y_min, y_max)
     _setup_xaxis(ax, alpha_log10, list(range(-18, 2, 2)) + [0])
 
-    ax.set_title("PSNR vs Regularization \u03b1", fontsize=12, fontweight="bold", loc="left")
+    ax.set_title("峰值信噪比与正则化参数 α 的关系", fontsize=12, fontweight="bold", loc="left")
 
     fig.tight_layout(pad=1.2)
     _add_mid_frequency_label_below_legend(fig, ax, legend)
@@ -303,6 +314,9 @@ def plot_ssim_raw(curves: dict[str, Any], output_dir: Path):
     per_scene = curves["per_scene"]
 
     valid = ~np.isnan(mean_ssim_raw)
+    if valid.sum() == 0:
+        print("Skipping SSIM (raw) plot: no valid SSIM data in sweep")
+        return
     a_log10 = alpha_log10[valid]
     m_raw = mean_ssim_raw[valid]
 
@@ -327,16 +341,16 @@ def plot_ssim_raw(curves: dict[str, Any], output_dir: Path):
     )
 
     ax.plot(a_log10, m_raw, "D-", color=MEAN_SSIM_RAW_COLOR, linewidth=2.8,
-            markersize=7, label="Mean SSIM (raw)", zorder=6)
+            markersize=7, label="平均结构相似度（原始）", zorder=6)
 
-    ax.set_ylabel("SSIM", fontsize=13, fontweight="bold", color=MEAN_SSIM_RAW_COLOR)
+    ax.set_ylabel("结构相似度", fontsize=13, fontweight="bold", color=MEAN_SSIM_RAW_COLOR)
     ax.tick_params(axis="y", labelcolor=MEAN_SSIM_RAW_COLOR, labelsize=10)
     ax.tick_params(axis="x", labelsize=9.5)
     ax.set_ylim(y_min, y_max)
     _setup_xaxis(ax, alpha_log10, list(range(-18, 2, 2)) + [0])
 
     legend = ax.legend(loc="upper right", fontsize=7, framealpha=0.85, ncol=2)
-    ax.set_title("SSIM (raw) vs Regularization \u03b1", fontsize=12, fontweight="bold", loc="left")
+    ax.set_title("原始结构相似度与正则化参数 α 的关系", fontsize=12, fontweight="bold", loc="left")
 
     fig.tight_layout(pad=1.2)
     _add_mid_frequency_label_below_legend(fig, ax, legend)
@@ -355,6 +369,9 @@ def plot_ssim_display(curves: dict[str, Any], output_dir: Path):
     per_scene = curves["per_scene"]
 
     valid = ~np.isnan(mean_ssim_display)
+    if valid.sum() == 0:
+        print("Skipping SSIM (display) plot: no valid SSIM data in sweep")
+        return
     a_log10 = alpha_log10[valid]
     m_disp = mean_ssim_display[valid]
 
@@ -379,16 +396,16 @@ def plot_ssim_display(curves: dict[str, Any], output_dir: Path):
     )
 
     ax.plot(a_log10, m_disp, "^--", color=MEAN_SSIM_DISPLAY_COLOR, linewidth=2.8,
-            markersize=7, label="Mean SSIM (display)", zorder=6)
+            markersize=7, label="平均结构相似度（显示）", zorder=6)
 
-    ax.set_ylabel("SSIM", fontsize=13, fontweight="bold", color=MEAN_SSIM_DISPLAY_COLOR)
+    ax.set_ylabel("结构相似度", fontsize=13, fontweight="bold", color=MEAN_SSIM_DISPLAY_COLOR)
     ax.tick_params(axis="y", labelcolor=MEAN_SSIM_DISPLAY_COLOR, labelsize=10)
     ax.tick_params(axis="x", labelsize=9.5)
     ax.set_ylim(y_min, y_max)
     _setup_xaxis(ax, alpha_log10, list(range(-18, 2, 2)) + [0])
 
     legend = ax.legend(loc="upper right", fontsize=7, framealpha=0.85, ncol=2)
-    ax.set_title("SSIM (display) vs Regularization \u03b1", fontsize=12, fontweight="bold", loc="left")
+    ax.set_title("显示结构相似度与正则化参数 α 的关系", fontsize=12, fontweight="bold", loc="left")
 
     fig.tight_layout(pad=1.2)
     _add_mid_frequency_label_below_legend(fig, ax, legend)

@@ -16,6 +16,9 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
+plt.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei", "Noto Sans CJK SC", "Arial Unicode MS", "DejaVu Sans"]
+plt.rcParams["axes.unicode_minus"] = False
+
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
@@ -309,11 +312,11 @@ def export_pca_basis_figure(
             ax.set_yticks([])
             if wl_idx == 0:
                 evr = explained_variance[wl_idx, pc_idx] if pc_idx < explained_variance.shape[1] else np.nan
-                ax.set_title(f"PC{pc_idx + 1}\nEVR {evr * 100:.1f}%", fontsize=9)
+                ax.set_title(f"主成分 {pc_idx + 1}\n解释方差 {evr * 100:.1f}%", fontsize=9)
             if pc_idx == 0:
                 ax.set_ylabel(f"{wavelengths_nm[wl_idx]:.0f} nm", fontsize=10, rotation=0, labelpad=30, va="center")
 
-    fig.suptitle("Measured PSF PCA Basis Subset", fontsize=12, fontweight="bold")
+    fig.suptitle("实测 PSF 的 PCA 基底示例", fontsize=12, fontweight="bold")
     fig.tight_layout(pad=0.9)
     return _save_figure(fig, out_dir / "fig4_pca_basis_subset", formats, dpi)
 
@@ -503,6 +506,39 @@ def write_metrics_csv(
             )
 
 
+def write_metrics_markdown_table(
+    selected_indices: list[int],
+    test_data: dict[str, Any],
+    corr_matrix: np.ndarray,
+    mean_corr: np.ndarray,
+    out_path: Path,
+) -> None:
+    wavelengths = [float(x) for x in test_data["wavelengths_nm"]]
+    wavelength_headers = " | ".join(f"NC {wl:.0f} nm" for wl in wavelengths)
+    lines = [
+        "# 图4前向模型代表性样本指标表",
+        "",
+        "该表对应 `fig4_forward_prediction_subset` 与 `fig4_forward_prediction_residuals` 中的样本顺序。图中只保留样本序号，样本 ID、掩膜类型和数值指标在本文档中发布，便于论文排版为表格。",
+        "",
+        f"| 图中编号 | 样本 ID | 掩膜类型 | 平均 NC | {wavelength_headers} |",
+        f"| --- | --- | --- | ---: | {' | '.join(['---:'] * len(wavelengths))} |",
+    ]
+    for row_idx, sample_idx in enumerate(selected_indices, start=1):
+        corr_values = " | ".join(f"{corr_matrix[sample_idx, wl_idx]:.3f}" for wl_idx in range(len(wavelengths)))
+        lines.append(
+            f"| 样本 {row_idx} | `{test_data['mask_id'][sample_idx]}` | "
+            f"`{test_data['mask_family'][sample_idx]}` | {mean_corr[sample_idx]:.3f} | {corr_values} |"
+        )
+    lines.extend(
+        [
+            "",
+            "说明：NC 为归一化相关系数。450/550/650 nm 三列对应三个离散波长通道；平均 NC 为三波长均值。",
+            "",
+        ]
+    )
+    out_path.write_text("\n".join(lines), encoding="utf-8")
+
+
 def export_forward_prediction_figure(
     test_data: dict[str, Any],
     pred_psfs: np.ndarray,
@@ -519,11 +555,11 @@ def export_forward_prediction_figure(
     fig, axes = plt.subplots(
         n_rows,
         4,
-        figsize=(12.2, 2.45 * n_rows),
+        figsize=(10.4, 2.45 * n_rows),
         squeeze=False,
-        gridspec_kw={"width_ratios": [1.72, 1.0, 1.15, 1.15]},
+        gridspec_kw={"width_ratios": [0.58, 1.0, 1.15, 1.15]},
     )
-    column_titles = ["Sample", "Mask", "Measured", "Predicted"]
+    column_titles = ["样本", "掩膜", "实测 PSF", "预测 PSF"]
 
     for col_idx, title in enumerate(column_titles):
         axes[0, col_idx].set_title(title, fontsize=FORWARD_COLUMN_TITLE_FONTSIZE, fontweight="bold")
@@ -534,18 +570,11 @@ def export_forward_prediction_figure(
         predicted = pred_psfs[sample_idx, 0]
         shared_scale = float(np.percentile(np.concatenate([measured.ravel(), predicted.ravel()]), 99.8))
 
-        corr_text = " / ".join(f"{corr_matrix[sample_idx, wl_idx]:.3f}" for wl_idx in range(corr_matrix.shape[1]))
-        sample_text = (
-            f"{test_data['mask_id'][sample_idx]}\n"
-            f"{test_data['mask_family'][sample_idx]}\n"
-            f"mean NC={mean_corr[sample_idx]:.3f}\n"
-            f"NC 450/550/650={corr_text}"
-        )
         axes[row_idx, 0].text(
-            0.0,
             0.5,
-            sample_text,
-            ha="left",
+            0.5,
+            f"样本 {row_idx + 1}",
+            ha="center",
             va="center",
             fontsize=FORWARD_SAMPLE_TEXT_FONTSIZE,
             linespacing=1.28,
@@ -559,18 +588,18 @@ def export_forward_prediction_figure(
             axes[row_idx, col_idx].set_xticks([])
             axes[row_idx, col_idx].set_yticks([])
 
-    fig.suptitle("Measured vs Predicted PSF Subset", fontsize=14, fontweight="bold")
+    fig.suptitle("前向模型代表性预测结果", fontsize=14, fontweight="bold")
     fig.tight_layout(pad=0.85)
     outputs = {f"main_{key}": value for key, value in _save_figure(fig, out_dir / "fig4_forward_prediction_subset", formats, dpi).items()}
 
     residual_fig, residual_axes = plt.subplots(
         n_rows,
         3,
-        figsize=(10.6, 2.55 * n_rows),
+        figsize=(8.4, 2.55 * n_rows),
         squeeze=False,
-        gridspec_kw={"width_ratios": [1.7, 1.0, 1.45]},
+        gridspec_kw={"width_ratios": [0.58, 1.0, 1.45]},
     )
-    residual_titles = ["Sample", "Mask", "Residual"]
+    residual_titles = ["样本", "掩膜", "残差"]
     for col_idx, title in enumerate(residual_titles):
         residual_axes[0, col_idx].set_title(title, fontsize=FORWARD_COLUMN_TITLE_FONTSIZE, fontweight="bold")
 
@@ -580,19 +609,11 @@ def export_forward_prediction_figure(
         predicted = pred_psfs[sample_idx, 0]
         residual = np.abs(measured - predicted)
         residual_scale = float(np.percentile(residual, 99.8))
-        corr_text = " / ".join(f"{corr_matrix[sample_idx, wl_idx]:.3f}" for wl_idx in range(corr_matrix.shape[1]))
-        sample_text = (
-            f"{test_data['mask_id'][sample_idx]}\n"
-            f"{test_data['mask_family'][sample_idx]}\n"
-            f"mean NC={mean_corr[sample_idx]:.3f}\n"
-            f"NC 450/550/650={corr_text}"
-        )
-
         residual_axes[row_idx, 0].text(
-            0.0,
             0.5,
-            sample_text,
-            ha="left",
+            0.5,
+            f"样本 {row_idx + 1}",
+            ha="center",
             va="center",
             fontsize=FORWARD_SAMPLE_TEXT_FONTSIZE,
             linespacing=1.28,
@@ -604,7 +625,7 @@ def export_forward_prediction_figure(
             residual_axes[row_idx, col_idx].set_xticks([])
             residual_axes[row_idx, col_idx].set_yticks([])
 
-    residual_fig.suptitle("Measured vs Predicted PSF Residuals", fontsize=14, fontweight="bold")
+    residual_fig.suptitle("前向模型残差伪彩色对比", fontsize=14, fontweight="bold")
     residual_fig.tight_layout(pad=0.85)
     outputs.update(
         {f"residual_{key}": value for key, value in _save_figure(residual_fig, out_dir / "fig4_forward_prediction_residuals", formats, dpi).items()}
@@ -669,6 +690,8 @@ def export_figures(args: argparse.Namespace) -> dict[str, Any]:
     )
     metrics_csv = args.out_dir / "fig4_forward_prediction_subset_metrics.csv"
     write_metrics_csv(metric_rows, selected_indices, test_data, mean_corr, metrics_csv)
+    metrics_md = args.out_dir / "fig4_forward_prediction_subset_metrics.md"
+    write_metrics_markdown_table(selected_indices, test_data, corr_matrix, mean_corr, metrics_md)
 
     outputs = {
         "pca_pdf": str(args.out_dir / "fig4_pca_basis_subset.pdf"),
@@ -678,6 +701,7 @@ def export_figures(args: argparse.Namespace) -> dict[str, Any]:
         "residual_pdf": forward_outputs.get("residual_pdf", str(args.out_dir / "fig4_forward_prediction_residuals.pdf")),
         "residual_png": forward_outputs.get("residual_png", str(args.out_dir / "fig4_forward_prediction_residuals.png")),
         "metrics_csv": str(metrics_csv),
+        "metrics_markdown": str(metrics_md),
     }
 
     copied = []
@@ -714,6 +738,7 @@ def export_figures(args: argparse.Namespace) -> dict[str, Any]:
             "sample_ids": selected_sample_ids,
             "mask_families": selected_families,
             "mean_norm_corr": float(np.mean(mean_corr[selected_indices])),
+            "sample_metrics_table": str(metrics_md),
             "per_sample_mean_norm_corr": {
                 test_data["mask_id"][idx]: float(mean_corr[idx]) for idx in selected_indices
             },

@@ -337,7 +337,8 @@ and caveats needed to audit the handoff.
     text += (
         f"| Multi-frame transfer matrix is non-degenerate for the analyzed setup | "
         f"`thesis/h_matrix_diagnostics/figures/h_rank_map.png` and "
-        f"`thesis/h_matrix_diagnostics/figures/h_singular_value_maps.png` | "
+        f"`thesis/h_matrix_diagnostics/figures/h_singular_value_maps.png` "
+        f"(FFT-shifted, DC-centered displays) | "
         f"`thesis/h_matrix_diagnostics/metrics/h_matrix_diagnostics.json` "
         f"(rank evidence={full_rank}) | `provenance/bishe_first_pass.yaml` | "
         "FFT/circulant approximation at downsampled PSF size |\n"
@@ -378,15 +379,17 @@ This catalog states what each thesis-facing figure is meant to show and what it 
 
 | Figure | What to inspect | Supports | Limit |
 | --- | --- | --- | --- |
-| `thesis/phase3_5_forward_validation/figures/measured_vs_predicted_examples.png` | PSF shape agreement between measured and PCA+ridge-predicted kernels | Simple forward validation sanity baseline | Does not prove a first-principles optical model |
+| `thesis/phase3_5_forward_validation/figures/measured_vs_predicted_examples.png` | PSF shape agreement between measured and PCA+ridge-predicted kernels; figure labels are Chinese | Simple forward validation sanity baseline | Does not prove a first-principles optical model |
 | `thesis/phase3_5_forward_validation/figures/psf_basis_preview_wl0.png` | Low-dimensional PSF variation at 450 nm | PCA basis interpretability | Basis is wavelength-specific and empirical |
 | `thesis/phase3_5_forward_validation/figures/psf_basis_preview_wl1.png` | Low-dimensional PSF variation at 550 nm | PCA basis interpretability | Basis is wavelength-specific and empirical |
 | `thesis/phase3_5_forward_validation/figures/psf_basis_preview_wl2.png` | Low-dimensional PSF variation at 650 nm | PCA basis interpretability | Basis is wavelength-specific and empirical |
-| `thesis/h_matrix_diagnostics/figures/h_rank_map.png` | Per-frequency rank (DC annotated) — auxiliary confirmation; near-uniform full-rank | Quick visual: non-DC regions 100% full-rank; DC shows near-rank-1 collapse | Uses selected mask subset and circular convolution |
-| `thesis/h_matrix_diagnostics/figures/h_log_condition_map.png` | Spatial-frequency conditioning (log10 scale) — primary diagnostic | Explains where inversion is stable or weak; non-DC median condition ~10^1 | High condition values imply noise sensitivity |
-| `thesis/h_matrix_diagnostics/figures/h_condition_histogram.png` | Condition number distribution (log10 + linear panels) — primary diagnostic | Shows heavy tail and median conditioning; complements condition map | Binned histogram; does not show spatial location |
-| `thesis/h_matrix_diagnostics/figures/h_singular_value_maps.png` | Singular-value spread per SV across frequencies (log10 scale) — primary diagnostic | Frequency-domain separability per singular value direction | Downsampled PSF working size only |
-| `thesis/h_matrix_diagnostics/figures/otf_magnitude_grid_selected_masks.png` | OTF diversity for selected masks | Mask diversity sanity check | Qualitative diagnostic |
+| `thesis/h_matrix_diagnostics/figures/h_rank_map.png` | Per-frequency rank (FFT-shifted, DC centered and annotated) — auxiliary confirmation; near-uniform full-rank | Quick visual: non-DC regions 100% full-rank; DC shows near-rank-1 collapse | Uses selected mask subset and circular convolution |
+| `thesis/h_matrix_diagnostics/figures/h_log_condition_map.png` | Spatial-frequency conditioning (FFT-shifted, DC centered, log10 scale) — primary diagnostic | Explains where inversion is stable or weak; non-DC median condition ~10^1 | High condition values imply noise sensitivity |
+| `thesis/h_matrix_diagnostics/figures/h_condition_histogram.png` | Condition number distribution (single log10 histogram) — primary diagnostic | Shows heavy tail and median conditioning; complements condition map | Binned histogram; does not show spatial location |
+| `thesis/h_matrix_diagnostics/figures/h_singular_value_maps.png` | Singular-value spread per SV across frequencies (FFT-shifted, DC centered, log10 scale) — primary diagnostic | Frequency-domain separability per singular value direction | Downsampled PSF working size only |
+| `thesis/h_matrix_diagnostics/figures/otf_magnitude_grid_selected_masks.png` | OTF diversity for selected masks (FFT-shifted, DC centered) | Mask diversity sanity check | Qualitative diagnostic |
+| `thesis/h_matrix_diagnostics/figures/mask_frequency_diversity_cv_map.png` | Cross-mask frequency diversity CV map (FFT-shifted, DC centered) | Shows where mask diversity appears in frequency space | Qualitative diagnostic |
+| `thesis/h_matrix_diagnostics/figures/wavelength_transfer_comparison.png` | Three-wavelength transfer comparison for a representative mask (FFT-shifted, DC centered) | Checks wavelength-dependent OTF differences | Qualitative diagnostic |
 | `thesis/phase3_6_linear_recon_synthetic/figures/recon_per_band_comparison.png` | Columns are wavelength channels; rows are ground truth, single-frame, multi-frame, and absolute error split as single &#124; multi | Synthetic reconstruction pipeline check | Procedural target only |
 | `thesis/phase3_6_linear_recon_synthetic/figures/recon_rgb_pseudocolor_comparison.png` | First row is ground truth/single-frame/multi-frame; second row is single/multi absolute pseudo-RGB error | Human-readable synthetic reconstruction summary | Display normalization is for visualization |
 | `thesis/phase3_6_linear_recon_cave/figures/scene_cd_ms/recon_per_band_comparison.png` | Per-band CAVE rows/columns as documented in `reconstruction_figure_caption_guide.md` | Public-dataset reconstruction evidence for `cd_ms` | Simulation with measured PSFs, not captured target |
@@ -720,7 +723,7 @@ thesis/
     metrics/    - psf_prediction_metrics.json
     reports/    - forward_validation_report.md
   h_matrix_diagnostics/
-    figures/    - rank map, condition map, histogram, SV maps, OTF grid, CV map
+    figures/    - FFT-shifted rank/condition/SV/OTF/CV maps plus condition histogram
     data/       - numpy arrays (.npy, .npz)
     metrics/    - h_matrix_diagnostics.json
     reports/    - h_matrix_diagnostics_report.md

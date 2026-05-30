@@ -139,7 +139,7 @@ The H-matrix frequency diagnostics (`scripts/analyze_h_matrix_diagnostics.py`) c
 | Max condition (non-DC) | ~10⁶ | Heavy tail requires regularization even away from DC |
 | Cross-mask CV peak location | Mid-high frequencies | Diversity is concentrated where OTF magnitude is weakest |
 
-The H-rank map (both unshifted and FFT-shifted) shows full rank (3) across all non-DC frequency points. The singular value maps show that the second and third singular values are orders of magnitude smaller at DC than elsewhere, confirming that DC is the singular-value-collapse locus.
+The thesis-facing H-rank map and singular value maps are FFT-shifted for display, so DC is centered. The rank map shows full rank (3) across all non-DC frequency points. The singular value maps show that the second and third singular values are orders of magnitude smaller at DC than elsewhere, confirming that DC is the singular-value-collapse locus.
 
 ---
 
