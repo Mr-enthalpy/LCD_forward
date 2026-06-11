@@ -10,7 +10,9 @@ It intentionally does not commit to final loaders, final external schemas, recon
 - Define mainline inputs and outputs.
 - Add the cross-repository boundary document.
 - Add handoff placeholder docs only.
-- Preserve existing legacy tests and scripts unless explicitly scoped otherwise.
+- Reset the active source tree to `src/lcd_forward/`.
+- Remove old active dense-PSF, training, reconstruction, dataset, config, and sample-data paths.
+- Keep only minimal package-shape tests.
 
 ## Phase 1: Measured Evidence Contract Alignment
 
@@ -26,7 +28,7 @@ It intentionally does not commit to final loaders, final external schemas, recon
 - Prototype a sparse shift-patch forward operator.
 - Implement adjoint consistency tests.
 - Keep dense PSF materialization only for debugging and baseline comparison.
-- Preserve compatibility with legacy dense PSF tests where practical.
+- Do not restore deleted dense PSF tests or prototype code unless compatibility work is explicitly scoped.
 
 ## Phase 3: LCD-to-Operator Surrogate
 

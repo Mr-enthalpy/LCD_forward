@@ -49,7 +49,7 @@ See `docs/cross_repository_boundary.md` for the normative cross-repository bound
 
 ## Legacy Thesis-Continuity Route
 
-The existing dense prototype remains useful for continuity, sanity checks, and regression tests, but it no longer defines the mainline architecture.
+The dense prototype remains useful as historical context, but it no longer exists in the active source tree and no longer defines the mainline architecture.
 
 Legacy components include:
 
@@ -70,13 +70,13 @@ out = recon_model(frames)
 objects_hat = out["objects"]
 ```
 
-This interface is a compatibility path only. It should not be treated as the main repository API.
+This interface is historical only. It is preserved in Git history, not in the active package.
 
 See `docs/legacy_thesis_prototype.md` for details.
 
 ## Data Contracts
 
-The dense HDF5 tensor format is a legacy / thesis-continuity format. It remains acceptable for baselines, compatibility, simple regression tests, and debugging dense PSF materialization.
+The dense HDF5 tensor format is a legacy / thesis-continuity format. It is documented for historical context and possible future compatibility work, but it is not an active repository contract.
 
 Legacy dense tensors use:
 
@@ -87,26 +87,24 @@ Legacy dense tensors use:
 - optional `wavelengths`: `[L]`
 - optional `spectral_response`: `[L]`
 
-The mainline measured-evidence contract is peak-cluster/operator oriented. Real calibrated data should not be forced into the old dense HDF5 tensor contract as the only future path. Dense materialization may be used for compatibility and debugging, while mainline work should preserve measured evidence, peak-cluster evidence, adaptive peak-cluster dictionaries, operator packages, provenance, and diagnostics.
+The mainline measured-evidence contract is peak-cluster/operator oriented. Real calibrated data should not be forced into the old dense HDF5 tensor contract as the only future path. Dense materialization may be reintroduced only for explicitly scoped compatibility or debugging work, while mainline work should preserve measured evidence, peak-cluster evidence, adaptive peak-cluster dictionaries, operator packages, provenance, and diagnostics.
 
 ## Current Layout
 
 ```text
 src/
-  datasets/     legacy HDF5 dataset wrappers
-  forward/      legacy dense forward models and renderer; future operator code may live here when scoped
-  recon/        legacy reconstruction baseline, not the mainline owner
-  losses/       forward/recon losses and metrics from the prototype
-  train/        legacy train / validation loops
-  utils/        seed and utility functions
+  lcd_forward/
+    masks/          placeholder for mask identity wrappers
+    evidence/       placeholder for measured evidence representations
+    peak_clusters/  placeholder for peak-cluster evidence and response parameters
+    operators/      placeholder for sparse forward/adjoint operators
+    surrogates/     placeholder for LCD-to-operator surrogate models
+    diagnostics/    placeholder for OTF, H-matrix, and operator diagnostics
+    handoffs/       placeholder for internal handoff helpers
+    utils/          placeholder for small package utilities
 
 scripts/
-  prepare_sample_dataset.py
-  train_forward.py
-  train_recon.py
-  eval_forward.py
-  eval_recon.py
-  smoke_test.py
+  README.md        placeholder only; no executable mainline scripts yet
 
 docs/
   cross_repository_boundary.md
@@ -115,6 +113,12 @@ docs/
 
 handoffs/
   placeholder-only incoming and outgoing handoff areas
+
+legacy/
+  README.md        notes that legacy implementation lives in Git history
+
+tests/
+  test_package_import.py
 ```
 
 ## Quick Start
@@ -125,11 +129,10 @@ Install:
 pip install -e .
 ```
 
-Run legacy smoke tests:
+Run the minimal package import test if `pytest` is available:
 
 ```bash
-python scripts/smoke_test.py
 pytest -q
 ```
 
-The current scripts exercise the legacy thesis-continuity stack. They are retained to keep existing behavior reproducible while the mainline operator-modelling route is defined.
+There are no executable mainline scripts yet. The active package contains architecture placeholders only; implementation should be added only when the corresponding measured-evidence, operator, surrogate, diagnostic, or handoff work is explicitly scoped.
