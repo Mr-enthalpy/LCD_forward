@@ -42,7 +42,9 @@ Mainline outputs:
 - Do not duplicate `lcd_mask_families` mask-family generators, mask specs, projection policies, or core deterministic rendering logic.
 - Do not define final external handoff schemas for `optic_system` or `reconstruction` before those producer/consumer contracts exist.
 - Do not add loaders against unstable private paths from other repositories.
-- Do preserve working legacy tests and scripts unless a change is explicitly scoped.
+- Do not refill placeholder directories with speculative implementations.
+- Do not restore deleted thesis-prototype code unless legacy compatibility work is explicitly scoped.
+- Do keep placeholder directories limited to README files, empty `__init__.py` files, and `.gitkeep` files unless implementation work is explicitly scoped.
 
 Allowed documentation and placeholder work:
 
@@ -62,7 +64,7 @@ See `docs/cross_repository_boundary.md` for the normative boundary.
 
 ## Legacy Prototype
 
-The dense thesis-continuity prototype is retained for continuity, sanity checks, and regression tests. It includes:
+The dense thesis-continuity prototype has been removed from the active source tree and is preserved in Git history. It included:
 
 - dense `mask -> PSF` learning
 - `complex_field_basis`
@@ -72,7 +74,20 @@ The dense thesis-continuity prototype is retained for continuity, sanity checks,
 - synthetic sample dataset
 - dense HDF5 tensor format
 
-These components no longer define the mainline repository architecture. The interface pattern `forward_model(masks) -> psfs`, `render_frames(objects, psfs)`, and `recon_model(frames) -> objects_hat` is legacy-only unless explicitly scoped.
+These components no longer define the mainline repository architecture. The interface pattern `forward_model(masks) -> psfs`, `render_frames(objects, psfs)`, and `recon_model(frames) -> objects_hat` is historical unless explicitly scoped for compatibility work.
+
+## Active Package Shape
+
+Active source belongs under `src/lcd_forward/`:
+
+- `masks/`: placeholder for future mask identity wrappers
+- `evidence/`: placeholder for future measured-evidence representations
+- `peak_clusters/`: placeholder for future peak-cluster evidence and response parameters
+- `operators/`: placeholder for future sparse forward/adjoint operators
+- `surrogates/`: placeholder for future LCD-to-operator surrogate models
+- `diagnostics/`: placeholder for future OTF, H-matrix, and operator diagnostics
+- `handoffs/`: placeholder for future internal handoff helpers
+- `utils/`: placeholder for small future utilities
 
 ## Installation
 

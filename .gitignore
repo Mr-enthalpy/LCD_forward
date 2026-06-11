@@ -8,8 +8,8 @@ __pycache__/
 .venv/
 venv/
 env/
-outputs/*
-!outputs/.gitkeep
+data/
+outputs/
 .idea/
 .DS_Store
 

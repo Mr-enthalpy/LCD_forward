@@ -1,6 +1,8 @@
 # Legacy Thesis-Continuity Prototype
 
-The existing dense PSF prototype reflects the thesis-continuity branch of `LCD_forward`. It remains useful for continuity, sanity checks, regression tests, and simple engineering validation, but it no longer defines the mainline repository architecture.
+The old dense PSF prototype reflected the thesis-continuity branch of `LCD_forward`. It has been removed from the active source tree and is preserved in Git history.
+
+It remains useful as historical context for continuity, sanity checks, regression-test design, and simple engineering validation, but it no longer defines the mainline repository architecture.
 
 ## Included Components
 
@@ -16,7 +18,7 @@ The legacy prototype includes:
 
 ## Legacy Interfaces
 
-The legacy interface pattern is:
+The legacy interface pattern was:
 
 ```pycon
 out = forward_model(masks)
@@ -26,7 +28,7 @@ out = recon_model(frames)
 objects_hat = out["objects"]
 ```
 
-This pattern is retained as a prototype compatibility interface only. It should not be presented as the main `LCD_forward` API.
+This pattern is not present in the active package. It should not be presented as the main `LCD_forward` API.
 
 ## Legacy Dense HDF5 Format
 
@@ -39,7 +41,7 @@ Legacy training tensors use:
 - optional `wavelengths`: `[L]`
 - optional `spectral_response`: `[L]`
 
-The dense HDF5 tensor format is not the long-term universal data contract. It remains acceptable for baselines, compatibility tests, and debugging dense materializations.
+The dense HDF5 tensor format is not the long-term universal data contract. It may be referenced for future compatibility tests or debugging dense materializations, but it is not an active repository contract.
 
 ## Model Variants
 
@@ -62,8 +64,8 @@ The legacy baseline model uses:
 
 ## Current Status
 
-Legacy scripts such as `scripts/train_forward.py`, `scripts/eval_forward.py`, `scripts/train_recon.py`, and `scripts/eval_recon.py` exercise the dense prototype stack.
+Legacy scripts such as `scripts/train_forward.py`, `scripts/eval_forward.py`, `scripts/train_recon.py`, and `scripts/eval_recon.py` previously exercised the dense prototype stack. They have been removed from the active tree and are preserved in Git history.
 
-They should be preserved when possible, but new mainline work should target measured evidence, peak-cluster evidence, adaptive peak-cluster dictionaries, sparse shift-patch operators, forward/adjoint operator consistency, OTF diagnostics, H-matrix diagnostics, mask-family evaluation, and operator handoff packages.
+New mainline work should target measured evidence, peak-cluster evidence, adaptive peak-cluster dictionaries, sparse shift-patch operators, forward/adjoint operator consistency, OTF diagnostics, H-matrix diagnostics, mask-family evaluation, and operator handoff packages.
 
 Real calibrated data should not be forced into this old dense HDF5 layout as the only future path. Dense PSF tensors may be generated as compatibility or debugging artifacts, while the mainline measured-evidence contract should remain peak-cluster/operator oriented.

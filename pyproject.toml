@@ -3,22 +3,19 @@ requires = ["setuptools>=61", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "mono-lcd-spectral-prototype"
+name = "lcd-forward"
 version = "0.1.0"
-description = "Prototype for mono LCD programmable diffractive spectral imaging"
+description = "LCD mask-to-operator modelling package"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = [
-    "torch",
-    "numpy",
-    "h5py",
-    "matplotlib",
-    "pyyaml",
-    "pytest",
-]
+dependencies = []
 
 [tool.setuptools]
 package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
+include = ["lcd_forward*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
