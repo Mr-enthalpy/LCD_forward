@@ -1,43 +1,103 @@
-# Mono LCD Spectral Prototype
+# LCD Mask-to-Operator Modelling
 
-This repository contains a prototype pipeline for mono-LCD-based programmable diffractive imaging.
+`LCD_forward` is the LCD mask-to-operator modelling repository for the mono-LCD programmable diffraction imaging system.
 
-Current scope:
-- mono LCD only
-- low-dimensional effective forward model
-- mask -> PSF learning
-- PSF + object -> frame rendering
-- frame -> multispectral / multichannel reconstruction
+The mainline responsibility is to consume mask identity and measured evidence, model the LCD mask-to-peak-cluster response, and publish operator-oriented outputs for downstream reconstruction.
 
-Out of scope for the current prototype:
-- RGB LCD
-- hardware control
-- camera ISP
-- device synchronization
-- full calibration automation
-- full first-principles optical simulation
+## Mainline Route
 
-## Physical assumptions
+The current repository direction is:
 
-The current prototype assumes:
-- mono LCD
-- non-coherent imaging
-- paraxial approximation
-- far-field approximation
-- discrete wavelength bins
-- low-dimensional effective forward model
+```text
+MaskSpec / MaskSequenceSpec + measured evidence
+  -> peak-cluster/operator model
+  -> operator diagnostics
+  -> operator handoff
+```
 
-These assumptions are part of the prototype definition and should not be changed implicitly.
+Mainline inputs:
 
-## Repository structure
+- `lcd_mask_families` `MaskInstanceSpec` and `MaskSequenceSpec`
+- rendered or renderable LCD mask identity
+- `optic_system` measured evidence handoffs
+- measured PSF support evidence, full-frame survey evidence, peak support reports, stability reports, layout profiles, and adaptive peak-cluster dictionaries when those contracts exist
+
+Mainline outputs:
+
+- fitted or learned LCD-to-peak-cluster response models
+- sparse peak-cluster / shift-patch forward operators
+- matching adjoint operators
+- OTF diagnostics, H-matrix diagnostics, and operator diagnostics
+- mask-family evaluation reports
+- operator-aware mask-sequence proposals
+- `OperatorHandoff` packages for `reconstruction`
+- future `CapturePlanHandoff` proposals for `optic_system`
+
+## Repository Boundaries
+
+`LCD_forward` does not own:
+
+- hardware control, camera services, LCD services, or TLS services
+- physical LCD embedding into real display buffers
+- raw HDF5 capture or full-frame PSF survey acquisition
+- mask-family definitions or core deterministic mask rendering logic
+- reconstruction pipelines or learned reconstruction as a mainline responsibility
+- target-scene inverse-problem evaluation
+- final external handoff schemas before producer/consumer contracts exist
+
+See `docs/cross_repository_boundary.md` for the normative cross-repository boundary.
+
+## Legacy Thesis-Continuity Route
+
+The existing dense prototype remains useful for continuity, sanity checks, and regression tests, but it no longer defines the mainline architecture.
+
+Legacy components include:
+
+- dense `mask -> PSF` learning
+- `complex_field_basis` and `psf_basis` model variants
+- dense PSF + object frame rendering
+- simple reconstruction baseline
+- synthetic sample dataset generation
+- dense HDF5 tensor format
+
+The legacy prototype interface is:
+
+```pycon
+out = forward_model(masks)
+psfs = out["psfs"]
+frames = render_frames(objects, psfs, spectral_response=None, noise_std=0.0)
+out = recon_model(frames)
+objects_hat = out["objects"]
+```
+
+This interface is a compatibility path only. It should not be treated as the main repository API.
+
+See `docs/legacy_thesis_prototype.md` for details.
+
+## Data Contracts
+
+The dense HDF5 tensor format is a legacy / thesis-continuity format. It remains acceptable for baselines, compatibility, simple regression tests, and debugging dense PSF materialization.
+
+Legacy dense tensors use:
+
+- `masks`: `[N, T, 1, Hm, Wm]`
+- `psfs`: `[N, T, L, Hp, Wp]`
+- `objects`: `[N, L, H, W]`
+- `frames`: `[N, T, 1, H, W]`
+- optional `wavelengths`: `[L]`
+- optional `spectral_response`: `[L]`
+
+The mainline measured-evidence contract is peak-cluster/operator oriented. Real calibrated data should not be forced into the old dense HDF5 tensor contract as the only future path. Dense materialization may be used for compatibility and debugging, while mainline work should preserve measured evidence, peak-cluster evidence, adaptive peak-cluster dictionaries, operator packages, provenance, and diagnostics.
+
+## Current Layout
 
 ```text
 src/
-  datasets/     HDF5 datasets
-  forward/      forward models and renderer
-  recon/        reconstruction baseline
-  losses/       forward/recon losses and metrics
-  train/        train / validation loops
+  datasets/     legacy HDF5 dataset wrappers
+  forward/      legacy dense forward models and renderer; future operator code may live here when scoped
+  recon/        legacy reconstruction baseline, not the mainline owner
+  losses/       forward/recon losses and metrics from the prototype
+  train/        legacy train / validation loops
   utils/        seed and utility functions
 
 scripts/
@@ -48,139 +108,28 @@ scripts/
   eval_recon.py
   smoke_test.py
 
-tests/
-  test_shapes.py
-  test_forward_model.py
-  test_renderer.py
+docs/
+  cross_repository_boundary.md
+  roadmap.md
+  legacy_thesis_prototype.md
 
+handoffs/
+  placeholder-only incoming and outgoing handoff areas
 ```
 
-## Data format
-
-Training tensors use the following conventions.
-
-Forward calibration:
-
-- masks: [N, T, 1, Hm, Wm]
-- psfs: [N, T, L, Hp, Wp]
-
-Reconstruction:
-
-- objects: [N, L, H, W]
-- frames: [N, T, 1, H, W] (optional in HDF5; may be rendered online)
-- masks: [N, T, 1, Hm, Wm]
-
-Optional metadata:
-
-- wavelengths: [L]
-- spectral_response: [L]
-
-A single .h5 file may contain both forward and reconstruction tensors.
-
-## Core interfaces
-
-Forward model:
-```pycon
-out = forward_model(masks)
-psfs = out["psfs"]
-```
-
-
-Renderer:
-```pycon
-frames = render_frames(objects, psfs, spectral_response=None, noise_std=0.0)
-```
-
-
-Reconstruction model:
-```pycon
-out = recon_model(frames)
-objects_hat = out["objects"]
-```
-
-## Forward models
-
-Two forward-model families are currently supported.
-
-### 1. complex_field_basis
-
-Primary model.
-
-Structure:
-
-- low-resolution mask encoder
-- low-dimensional complex coefficients
-- complex field basis synthesis
-- intensity projection to PSF
-
-This is the preferred route because it preserves a low-dimensional amplitude-phase coupling model without explicitly reconstructing microscopic LCD geometry.
-
-### 2. psf_basis
-
-Baseline model.
-
-Structure:
-
-- low-resolution mask encoder
-- low-dimensional coefficients
-- direct low-rank PSF synthesis
-
-This is a stable baseline and sanity-check path.
-
-## Quick start
+## Quick Start
 
 Install:
-```Bash
+
+```bash
 pip install -e .
 ```
 
-Generate sample data:
-```Bash
-python scripts/prepare_sample_dataset.py
-```
+Run legacy smoke tests:
 
-Run smoke test:
 ```bash
 python scripts/smoke_test.py
-```
-
-Train forward model:
-```bash
-python scripts/train_forward.py
-```
-Evaluate forward model:
-```bash
-python scripts/eval_forward.py
-```
-Train reconstruction baseline:
-```bash
-python scripts/train_recon.py
-```
-Evaluate reconstruction baseline:
-
-```bash
-python scripts/eval_recon.py
-```
-
-Run tests:
-```bash
 pytest -q
 ```
 
-## Current development order
-
-Recommended implementation / experimentation order:
-
-1. sample dataset generation
-2. single-wavelength single-frame forward training
-3. held-out mask generalization check
-4. renderer verification
-5. reconstruction baseline
-6. multi-wavelength extension
-7. learnable masks / multiframe coding design
-## Notes
-
-The sample dataset generator is only a synthetic placeholder for engineering validation.
-It should not be interpreted as a physically faithful mono-LCD forward simulator.
-
-Real calibrated data should be converted into the same HDF5 tensor format so that the training and evaluation stack remains unchanged.
+The current scripts exercise the legacy thesis-continuity stack. They are retained to keep existing behavior reproducible while the mainline operator-modelling route is defined.
